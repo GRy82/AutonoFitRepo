@@ -9,9 +9,9 @@ namespace AutonoFit.Models
     public class Goals
     {
         [Key]
-        public int Id { get; set; }
+        public int GoalId { get; set; }
 
-        public string GoalString { get; set; }
+        public string Name { get; set; }
 
     }
 }
