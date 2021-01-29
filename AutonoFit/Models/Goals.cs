@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace AutonoFit.Models
 {
-    public class Equipment
+    public class Goals
     {
         [Key]
-        public int EquipmentId { get; set; }
-        public string Name { get; set; }
+        public int Id { get; set; }
 
+        public string GoalString { get; set; }
 
     }
 }
