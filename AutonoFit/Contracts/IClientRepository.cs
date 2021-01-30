@@ -11,6 +11,7 @@ namespace AutonoFit.Contracts
         void CreateClient(Client client);
         Task<List<Client>> GetAllClientsAsync();
         Task<Client> GetClientAsync(int clientId);
+        Task<Client> GetClientAsync(string userId);
         void EditClient(Client client); 
         void DeleteClient(Client client);
     }

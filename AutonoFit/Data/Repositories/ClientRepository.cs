@@ -25,6 +25,9 @@ namespace AutonoFit.Repositories
         public async Task<Client> GetClientAsync(int clientId) =>
             await FindByCondition(c => c.ClientId.Equals(clientId)).FirstOrDefaultAsync();
 
+        public async Task<Client> GetClientAsync(string userId) =>
+            await FindByCondition(c => c.IdentityUserId.Equals(userId)).FirstOrDefaultAsync();
+
         public void EditClient(Client client) => Update(client);
         public void DeleteClient(Client client) => Delete(client);
         
