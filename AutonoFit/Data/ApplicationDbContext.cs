@@ -1,4 +1,5 @@
 ﻿using AutonoFit.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -31,6 +32,14 @@ namespace AutonoFit.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<IdentityRole>()
+                .HasData(
+                new IdentityRole
+                {
+                    Name = "Client",
+                    NormalizedName = "CLIENT"
+                });
 
             modelBuilder.Entity<Equipment>()
              .HasData(

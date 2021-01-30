@@ -4,14 +4,16 @@ using AutonoFit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AutonoFit.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210130220957_WithIdentityRole")]
+    partial class WithIdentityRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,15 +43,10 @@ namespace AutonoFit.Data.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdentityUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ClientId");
-
-                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("Client");
                 });
@@ -344,8 +341,8 @@ namespace AutonoFit.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2c31d2e1-e9e2-4756-b3c1-a7dd7547b0a3",
-                            ConcurrencyStamp = "7c48f4fd-0cf0-448d-bc31-020ff8adf08a",
+                            Id = "2de9dd41-3db2-4a86-b8f0-812f56201d17",
+                            ConcurrencyStamp = "13a428f2-3d7e-491a-8efb-1a7aeea0b9e7",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -518,13 +515,6 @@ namespace AutonoFit.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("AutonoFit.Models.Client", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId");
                 });
 
             modelBuilder.Entity("AutonoFit.Models.ClientEquipment", b =>
