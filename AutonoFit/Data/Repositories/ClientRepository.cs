@@ -11,7 +11,7 @@ namespace AutonoFit.Repositories
 {
     public class ClientRepository : RepositoryBase<Client>, IClientRepository
     {
-        private object _repo;
+        private readonly object _repo;
 
         public ClientRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {

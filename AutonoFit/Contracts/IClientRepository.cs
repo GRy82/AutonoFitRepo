@@ -8,10 +8,10 @@ namespace AutonoFit.Contracts
 {
     public interface IClientRepository : IRepositoryBase<Client> //Class interface will contain methods unique to the model
     {
-        void CreateCustomer(Client client);
-        Task<List<Client>> GetAllCustomersAsync();
-        Task<Client> GetCustomerAsync(int clientId);
-        void EditCustomer(Client client); 
-        void DeleteCustomer(Client client);
+        void CreateClient(Client client);
+        Task<List<Client>> GetAllClientsAsync();
+        Task<Client> GetClientAsync(int clientId);
+        void EditClient(Client client); 
+        void DeleteClient(Client client);
     }
 }
