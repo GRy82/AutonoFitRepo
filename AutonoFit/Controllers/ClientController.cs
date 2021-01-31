@@ -36,10 +36,19 @@ namespace AutonoFit.Controllers
 
             if (equipmentList == null)
             {
-                return RedirectToAction("Equipement");
+                return RedirectToAction("Equipment");
             }
 
             return View(client);
+        }
+
+        public async Task<ActionResult> Equipment()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await _repo.Client.GetClientAsync(userId);
+
+
+            return View();
         }
 
 
