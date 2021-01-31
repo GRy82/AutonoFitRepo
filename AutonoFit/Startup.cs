@@ -1,6 +1,8 @@
 using AutonoFit.ActionFilters;
+using AutonoFit.Contracts;
 using AutonoFit.Data;
 using AutonoFit.Models;
+using AutonoFit.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +47,8 @@ namespace AutonoFit
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

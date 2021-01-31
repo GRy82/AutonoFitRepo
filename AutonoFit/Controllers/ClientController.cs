@@ -22,13 +22,14 @@ namespace AutonoFit.Controllers
         }
 
         // GET: Client
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var client = _repo.Client.GetClientAsync(userId);
+            var client = await _repo.Client.GetClientAsync(userId);
+          
             if(client == null)
             {
-                RedirectToAction("Create");
+                return RedirectToAction("Create");
             }
             return View();
         }
@@ -48,18 +49,18 @@ namespace AutonoFit.Controllers
         // POST: Client/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Client client)
+        public async Task<ActionResult> Create(Client client)
         {
             client.IdentityUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             _repo.Client.CreateClient(client);
-
+            await _repo.SaveAsync();
             try
             {
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View("Create");
             }
         }
 

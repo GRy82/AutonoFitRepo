@@ -7,6 +7,7 @@ namespace AutonoFit.Contracts
 {
     public interface IRepositoryWrapper
     {
+
         IClientRepository Client { get; }
     
         Task SaveAsync();
