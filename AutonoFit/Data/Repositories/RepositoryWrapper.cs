@@ -1,5 +1,6 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Data;
+using AutonoFit.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace AutonoFit.Repositories
     {
         private ApplicationDbContext _context; 
         private IClientRepository _client;
+        private IClientEquipmentRepository _clientEquipment;
 
 
         public IClientRepository Client
@@ -22,6 +24,18 @@ namespace AutonoFit.Repositories
                     _client = new ClientRepository(_context);
                 }
                 return _client;
+            }
+        }
+
+        public IClientEquipmentRepository ClientEquipment
+        {
+            get
+            {
+                if (_clientEquipment == null)
+                {
+                    _clientEquipment = new ClientEquipmentRepository(_context);
+                }
+                return _clientEquipment;
             }
         }
 

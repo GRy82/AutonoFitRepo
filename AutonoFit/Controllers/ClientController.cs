@@ -31,8 +31,17 @@ namespace AutonoFit.Controllers
             {
                 return RedirectToAction("Create");
             }
-            return View();
+
+            var equipmentList = _repo.ClientEquipment.GetAllClientEquipmentAsync(client.ClientId);
+
+            if (equipmentList == null)
+            {
+                return RedirectToAction("Equipement");
+            }
+
+            return View(client);
         }
+
 
         // GET: Client/Details/5
         public ActionResult Details(int id)
