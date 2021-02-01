@@ -47,16 +47,65 @@ namespace AutonoFit.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
-            var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+            var clientEquipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+            var equipment = await _repo.Equipment.GetAllEquipmentAsync();
+
+            ClientEquipmentVM clientEquipmentVM = GetClientEquipmentViewModel(client, clientEquipment, equipment);
+
+            return View(clientEquipmentVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Equipment(ClientEquipmentVM clientEquipmentVM)
+        {
+            //clear past equipment
+            foreach (ClientEquipment possession in clientEquipmentVM.ClientEquipmentList)
+            {
+                _repo.ClientEquipment.DeleteClientEquipment(possession);
+            }
+            //add piece of equipment to ClientEquipment table for each piece checked/true.
+            for(int i = 0; i < clientEquipmentVM.EquipmentList.Count; i++)
+            {
+                if(clientEquipmentVM.EquipmentChecks[i] == true)
+                {
+                    ClientEquipment addedEquipment = new ClientEquipment();
+                    addedEquipment.EquipmentId = clientEquipmentVM.EquipmentList[i].EquipmentId;
+                    addedEquipment.ClientId = clientEquipmentVM.Client.ClientId;
+                    _repo.ClientEquipment.CreateClientEquipment(addedEquipment);
+                }
+            }
+            await _repo.SaveAsync();
+
+            return RedirectToAction("index");
+        }
+
+        private ClientEquipmentVM GetClientEquipmentViewModel(Client client, List<ClientEquipment> clientEquipment, List<Equipment> equipment)
+        {
+            
+            List<bool> equipmentChecks = new List<bool> { };
+            for (int i = 0; i < equipment.Count; i++)
+            {
+                equipmentChecks.Add(false);
+                foreach (ClientEquipment possessed in clientEquipment)
+                {
+                    if (possessed.EquipmentId == equipment[i].EquipmentId)
+                    {
+                        equipmentChecks[i] = true;
+                        break;
+                    }
+                }
+            }
 
             ClientEquipmentVM clientEquipmentVM = new ClientEquipmentVM()
             {
                 Client = client,
-                ClientEquipmentList = equipment,
-                EquipmentList = await _repo.Equipment.GetAllEquipmentAsync()
+                ClientEquipmentList = clientEquipment,
+                EquipmentList = equipment,
+                EquipmentChecks = equipmentChecks
             };
 
-            return View(clientEquipmentVM);
+            return clientEquipmentVM;
         }
 
 

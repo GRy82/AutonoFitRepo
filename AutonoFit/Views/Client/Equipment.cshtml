@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Equipment";
-    bool possessed = false;
 }
 
 <div class="row">
@@ -17,37 +16,31 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-10">
-            <form asp-action="Create">
+            <form asp-action="Equipment">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                @foreach (var piece in Model.EquipmentList)
+                @for (int i = 0; i < Model.EquipmentList.Count; i++)
                 {
-                    string checkLabelId = "checkbox" + piece.EquipmentId;
+                    string checkLabelId = "checkbox" + Model.EquipmentList[i].EquipmentId;
                     <div>
-                        @foreach (var possessedPiece in Model.ClientEquipmentList)
+                        @if (Model.EquipmentChecks[i] == true)
                         {
-                            if (possessedPiece.EquipmentId == piece.EquipmentId)
-                            {
-                                possessed = true;
-                                break;
-                            }
-                        }
-                        @if (possessed == true)
-                        {
-                            <input type="checkbox" id="@checkLabelId" checked style="margin-right: 20px;" />
-                            possessed = false;
+                            <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" checked style="margin-right: 20px;" />
                         }
                         else
                         {
-                            <input type="checkbox" id="@checkLabelId" style="margin-right: 20px;" />
+                            <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" style="margin-right: 20px;" />
                         }
-                        <label for="@checkLabelId" style="display: inline-block">@piece.Name</label>
+                        <label for="@checkLabelId" style="display: inline-block">@Model.EquipmentList[i].Name</label>
                         <br />
                         <br />
                     </div>
                 }
-                <input type="checkbox" id="checkbox7" checked style="margin-right: 20px;" />
+                <input type="checkbox" id="checkbox7" checked disabled style="margin-right: 20px;" />
                 <label for="checkbox7" style="display: inline-block">Bodyweight</label>
                 <br /><br /><br />
+                <input type="hidden" asp-for="@Model.ClientEquipmentList" />
+                <input type="hidden" asp-for="@Model.EquipmentList" />
+                <input type="hidden" asp-for="@Model.Client" />
                 <input type="submit" class="btn btn-primary" />
             </form>
         </div>   
