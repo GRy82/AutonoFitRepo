@@ -59,25 +59,30 @@ namespace AutonoFit.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Equipment(ClientEquipmentVM clientEquipmentVM)
         {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await _repo.Client.GetClientAsync(userId);
+            var clientEquipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+            var equipment = await _repo.Equipment.GetAllEquipmentAsync();
+
             //clear past equipment
-            foreach (ClientEquipment possession in clientEquipmentVM.ClientEquipmentList)
+            foreach (ClientEquipment possession in clientEquipment)
             {
                 _repo.ClientEquipment.DeleteClientEquipment(possession);
             }
             //add piece of equipment to ClientEquipment table for each piece checked/true.
-            for(int i = 0; i < clientEquipmentVM.EquipmentList.Count; i++)
+            for(int i = 0; i < clientEquipmentVM.EquipmentChecks.Count; i++)
             {
                 if(clientEquipmentVM.EquipmentChecks[i] == true)
                 {
                     ClientEquipment addedEquipment = new ClientEquipment();
-                    addedEquipment.EquipmentId = clientEquipmentVM.EquipmentList[i].EquipmentId;
-                    addedEquipment.ClientId = clientEquipmentVM.Client.ClientId;
+                    addedEquipment.EquipmentId = equipment[i].EquipmentId;
+                    addedEquipment.ClientId = client.ClientId;
                     _repo.ClientEquipment.CreateClientEquipment(addedEquipment);
                 }
             }
             await _repo.SaveAsync();
 
-            return RedirectToAction("index");
+            return RedirectToAction("Index");
         }
 
         private ClientEquipmentVM GetClientEquipmentViewModel(Client client, List<ClientEquipment> clientEquipment, List<Equipment> equipment)
@@ -100,7 +105,6 @@ namespace AutonoFit.Controllers
             ClientEquipmentVM clientEquipmentVM = new ClientEquipmentVM()
             {
                 Client = client,
-                ClientEquipmentList = clientEquipment,
                 EquipmentList = equipment,
                 EquipmentChecks = equipmentChecks
             };

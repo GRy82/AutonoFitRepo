@@ -9,7 +9,6 @@ namespace AutonoFit.ViewModels
     public class ClientEquipmentVM
     {
         public Client Client { get; set; }
-        public List<ClientEquipment> ClientEquipmentList { get; set; }
         public List<Equipment> EquipmentList { get; set;} 
         public List<bool> EquipmentChecks { get; set; }
     }
