@@ -1,0 +1,38 @@
+﻿h1{
+    height: 30%;
+    width: auto;
+    margin-bottom: 50px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.btn-FitZone {
+    background-color: rgba(250, 30, 90, .9);
+    border-radius: 0px;
+    border: none;
+    color: whitesmoke;
+    font-size: xx-large;
+}
+
+#new-workout {
+    width: 100%;
+    height: auto;
+    background-color: rgba(250, 30, 90, .9);
+    box-shadow: rgba(163, 20, 60, .8) 0px 10px 7px;
+}
+
+#new-program {
+    width: 48%;
+    height: auto;
+    float: left;
+    background-color: rgba(30, 90, 255, .9);
+    box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+}
+
+#continue-program {
+    width: 48%;
+    height: auto;
+    float: right;
+    background-color: rgba(30, 90, 255, .9);
+    box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+}
