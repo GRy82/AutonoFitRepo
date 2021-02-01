@@ -33,9 +33,9 @@ namespace AutonoFit.Controllers
                 return RedirectToAction("Create");
             }
 
-            var equipmentList = _repo.ClientEquipment.GetAllClientEquipmentAsync(client.ClientId);
+            var equipmentList = _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
 
-            if (equipmentList == null)
+            if (equipmentList.Result.Count == 0)
             {
                 return RedirectToAction("Equipment");
             }
@@ -47,7 +47,7 @@ namespace AutonoFit.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
-            var equipment = await _repo.ClientEquipment.GetAllClientEquipmentAsync(client.ClientId);
+            var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
 
             ClientEquipmentVM clientEquipmentVM = new ClientEquipmentVM()
             {

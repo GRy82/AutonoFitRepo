@@ -19,11 +19,11 @@ namespace AutonoFit.Data.Repositories
         }
         public void CreateClientEquipment(ClientEquipment clientEquipment) => Create(clientEquipment);
 
-        public async Task<List<ClientEquipment>> GetAllClientEquipmentAsync(int clientId) =>
-            await FindAll().Where(e => e.ClientId == clientId).ToListAsync();
+        public async Task<List<ClientEquipment>> GetAllClientEquipmentAsync() =>
+            await FindAll().ToListAsync();
 
-        public async Task<ClientEquipment> GetClientEquipmentAsync(int equipmentId) =>
-            await FindByCondition(c => c.Id.Equals(equipmentId)).FirstOrDefaultAsync();
+        public async Task<List<ClientEquipment>> GetClientEquipmentAsync(int clientId) =>
+            await FindByCondition(c => c.ClientId.Equals(clientId)).ToListAsync();
 
         public void EditClientEquipment(ClientEquipment clientEquipment) => Update(clientEquipment);
         public void DeleteClientEquipment(ClientEquipment clientEquipment) => Delete(clientEquipment);
