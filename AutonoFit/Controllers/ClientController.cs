@@ -43,6 +43,14 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
+        public async Task<ActionResult> AccountOverview()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await _repo.Client.GetClientAsync(userId);
+            return View(client);
+        }
+
+
         public async Task<ActionResult> Equipment()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -144,16 +152,22 @@ namespace AutonoFit.Controllers
         }
 
         // GET: Client/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit()
         {
-            return View();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Client client = await _repo.Client.GetClientAsync(userId);
+            return View(client);
         }
 
         // POST: Client/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id)
         {
+            Client client = await _repo.Client.GetClientAsync(id);
+            _repo.Client.EditClient(client);
+            await _repo.SaveAsync();
+
             try
             {
                 return RedirectToAction(nameof(Index));
