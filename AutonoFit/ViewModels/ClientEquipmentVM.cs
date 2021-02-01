@@ -8,7 +8,8 @@ namespace AutonoFit.ViewModels
 {
     public class ClientEquipmentVM
     {
-        Client client { get; set; }
-        List<ClientEquipment> clientEquipment { get; set; }
+        public Client Client { get; set; }
+        public List<ClientEquipment> ClientEquipmentList { get; set; }
+        public List<Equipment> EquipmentList { get; set;} 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Models;
+using AutonoFit.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,9 +47,16 @@ namespace AutonoFit.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
+            var equipment = await _repo.ClientEquipment.GetAllClientEquipmentAsync(client.ClientId);
 
+            ClientEquipmentVM clientEquipmentVM = new ClientEquipmentVM()
+            {
+                Client = client,
+                ClientEquipmentList = equipment,
+                EquipmentList = await _repo.Equipment.GetAllEquipmentAsync()
+            };
 
-            return View();
+            return View(clientEquipmentVM);
         }
 
 

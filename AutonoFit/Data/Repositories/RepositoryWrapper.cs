@@ -13,6 +13,7 @@ namespace AutonoFit.Repositories
         private ApplicationDbContext _context; 
         private IClientRepository _client;
         private IClientEquipmentRepository _clientEquipment;
+        private IEquipmentRepository _equipment;
 
 
         public IClientRepository Client
@@ -36,6 +37,18 @@ namespace AutonoFit.Repositories
                     _clientEquipment = new ClientEquipmentRepository(_context);
                 }
                 return _clientEquipment;
+            }
+        }
+
+        public IEquipmentRepository Equipment
+        {
+            get
+            {
+                if (_equipment == null)
+                {
+                    _equipment = new EquipmentRepository(_context);
+                }
+                return _equipment;
             }
         }
 
