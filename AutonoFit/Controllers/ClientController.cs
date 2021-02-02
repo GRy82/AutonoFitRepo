@@ -50,9 +50,18 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
-        public ActionResult SingleWorkout()
+        public async Task<ActionResult> SingleWorkoutSetup()
         {
-            return View(new ClientWorkout());
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await _repo.Client.GetClientAsync(userId);
+
+            SingleWorkoutVM singleWorkoutVM = new SingleWorkoutVM()
+            {
+                Client = client
+            };
+
+
+            return View(singleWorkoutVM);
         }
 
 

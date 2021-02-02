@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace AutonoFit.ViewModels
 {
-    public class WorkoutVM
+    public class SingleWorkoutVM
     {
         public Client Client { get; set; }
 
         public ClientWorkout Workout { get; set; }
 
-        public ClientEquipment Equipment { get; set; }
+        public List<ClientEquipment> Equipment { get; set; }
 
-        public Goals Goals { get; set; }
+        public List<Goals> Goals { get; set; }
+
+        public int Minutes { get; set; }
 
     }
 }
