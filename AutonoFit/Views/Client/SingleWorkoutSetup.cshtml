@@ -11,20 +11,47 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="~/css/FitZone.css" />
 
 <hr />
 <div class="container">
     <div class="row">
-        <form>
-            <div>
-                <br />
-                <div class="form-group">
-                    <label asp-for="@Model.Minutes" class="control-label">Session Length: </label>
-                    <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block;"/>
-                    <p style="display: inline-block;">minutes</p>
+        <div class="col-md-2"></div>
+        <div class="col-md-10">
+            <form asp-action="SingleWorkoutSetup" method="post">
+                <div>
+                    <br />
+                    <div>
+                        <p><b>Select session duration</b></p>
+                        <label asp-for="@Model.Minutes" style="margin-right: 15px;">Session Length: </label>
+                        <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block; margin-right: 10px;" />
+                        <p style="display: inline-block;">minutes</p>
+                    </div>
+                    <br />
+                    <div>
+                        <p><b>Select 1-2 fitness goals for the session</b></p>
+                        <label asp-for="@Model.GoalIds[0]" style="margin-right: 15px;">Goal One: </label>
+                        <select asp-for="@Model.GoalIds[0]" style="margin-bottom: 10px;">
+                            @foreach (var goal in Model.AvailableGoals)
+                            {
+                                <option>@goal.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <br />
+                    <div>
+                        <label asp-for="@Model.GoalIds[1]" style="margin-right: 15px;">Goal Two: </label>
+                        <select asp-for="@Model.GoalIds[1]">
+                            @foreach (var goal in Model.AvailableGoals)
+                            {
+                                <option>@goal.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <br />
+                    <br />
+                    <input type="submit" class="btn btn-primary" />
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>

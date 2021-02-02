@@ -59,10 +59,18 @@ namespace AutonoFit.Controllers
             SingleWorkoutVM singleWorkoutVM = new SingleWorkoutVM()
             {
                 Client = client,
-                AvailableGoals = await _repo.Goals.GetAllGoalsAsync()
+                AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
+                GoalIds = new List<int> { 0, 0 }
             };
 
             return View(singleWorkoutVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> SingleWorkoutSetup(SingleWorkoutVM singleWorkoutVM)
+        {
+            return RedirectToAction("Index");
         }
 
 

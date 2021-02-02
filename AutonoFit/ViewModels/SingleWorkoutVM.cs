@@ -16,7 +16,7 @@ namespace AutonoFit.ViewModels
 
         public List<Goals> AvailableGoals { get; set; }
 
-        public List<Goals> SelectedGoals { get; set; }
+        public List<int> GoalIds { get; set; }
 
         public int Minutes { get; set; }
 
