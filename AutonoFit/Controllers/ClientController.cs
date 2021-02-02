@@ -50,6 +50,11 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
+        public ActionResult SingleWorkout()
+        {
+            return View(new ClientWorkout());
+        }
+
 
         public async Task<ActionResult> Equipment()
         {

@@ -1,4 +1,8 @@
-﻿h1{
+﻿body{
+    background-image
+}
+
+h1{
     height: 30%;
     width: auto;
     margin-bottom: 50px;
@@ -36,3 +40,5 @@
     background-color: rgba(30, 90, 255, .9);
     box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
 }
+
+
