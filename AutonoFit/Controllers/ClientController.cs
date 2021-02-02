@@ -55,9 +55,11 @@ namespace AutonoFit.Controllers
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
 
+
             SingleWorkoutVM singleWorkoutVM = new SingleWorkoutVM()
             {
-                Client = client
+                Client = client,
+                AvailableGoals = await _repo.Goals.GetAllGoalsAsync()
             };
 
 

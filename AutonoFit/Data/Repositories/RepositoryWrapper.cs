@@ -14,6 +14,7 @@ namespace AutonoFit.Repositories
         private IClientRepository _client;
         private IClientEquipmentRepository _clientEquipment;
         private IEquipmentRepository _equipment;
+        private IGoalsRepository _goals;
 
 
         public IClientRepository Client
@@ -49,6 +50,18 @@ namespace AutonoFit.Repositories
                     _equipment = new EquipmentRepository(_context);
                 }
                 return _equipment;
+            }
+        }
+
+        public IGoalsRepository Goals
+        {
+            get
+            {
+                if (_goals == null)
+                {
+                    _goals = new GoalsRepository(_context);
+                }
+                return _goals;
             }
         }
 

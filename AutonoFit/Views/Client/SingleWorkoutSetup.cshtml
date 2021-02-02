@@ -1,4 +1,4 @@
-﻿@model AutonoFit.Models.Client
+﻿@model AutonoFit.ViewModels.SingleWorkoutVM
 
 @{
     ViewData["Title"] = "Workout Setup";
@@ -14,5 +14,15 @@
 <hr />
 <div class="container">
     <div class="row">
+        <form>
+            <div>
+                <br />
+                <div class="form-group">
+                    <label asp-for="@Model.Minutes" class="control-label">Session Length: </label>
+                    <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block;"/>
+                    <p style="display: inline-block;">minutes</p>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
