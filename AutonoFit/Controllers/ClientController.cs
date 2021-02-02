@@ -62,7 +62,6 @@ namespace AutonoFit.Controllers
                 AvailableGoals = await _repo.Goals.GetAllGoalsAsync()
             };
 
-
             return View(singleWorkoutVM);
         }
 

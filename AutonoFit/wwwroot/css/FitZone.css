@@ -11,11 +11,13 @@ h1{
 }
 
 .btn-FitZone {
+    text-align: center; 
     background-color: rgba(250, 30, 90, .9);
     border-radius: 0px;
     border: none;
     color: whitesmoke;
     font-size: xx-large;
+
 }
 
 #new-workout {
