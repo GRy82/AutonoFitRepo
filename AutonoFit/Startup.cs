@@ -3,6 +3,7 @@ using AutonoFit.Contracts;
 using AutonoFit.Data;
 using AutonoFit.Models;
 using AutonoFit.Repositories;
+using AutonoFit.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -49,6 +50,7 @@ namespace AutonoFit
             services.AddRazorPages();
 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<ExerciseLibrary>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
