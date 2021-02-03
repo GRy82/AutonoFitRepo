@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace AutonoFit.Data.Migrations
+namespace AutonoFit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -99,6 +99,9 @@ namespace AutonoFit.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Reps")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RestSeconds")
                         .HasColumnType("int");
 
                     b.Property<TimeSpan>("TimeSinceLast")
@@ -344,8 +347,8 @@ namespace AutonoFit.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2c31d2e1-e9e2-4756-b3c1-a7dd7547b0a3",
-                            ConcurrencyStamp = "7c48f4fd-0cf0-448d-bc31-020ff8adf08a",
+                            Id = "ca3d8195-f0f0-4844-bf39-31fb7ff3ce6a",
+                            ConcurrencyStamp = "af18363d-9715-41b6-865c-cda3dc6b47ab",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

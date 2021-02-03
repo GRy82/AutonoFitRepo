@@ -19,9 +19,11 @@ namespace AutonoFit.Controllers
     public class ClientController : Controller
     {
         private IRepositoryWrapper _repo;
-        public ClientController(IRepositoryWrapper repo)
+        private ExerciseLibraryService _exerciseLibraryService;
+        public ClientController(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
+            _exerciseLibraryService = exerciseLibraryService;
         }
 
         // GET: Client
@@ -86,7 +88,7 @@ namespace AutonoFit.Controllers
                 return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary( new { controller = "Client", 
                     action = "SingleWorkoutSetup", errorMessage = "You must choose at least one exercise goal to continue." }));
             }
-            if(singleWorkoutVM.BodySection == "")
+            if(singleWorkoutVM.BodySection == null)
             {
                 return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
                 {
@@ -98,13 +100,21 @@ namespace AutonoFit.Controllers
         }
 
        
-        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM, [FromServices] ExerciseLibraryService exerciseLibraryService)
+        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM)
         {
 
             //Attain full list of exercises eligible based on lang=2, equipment, category, and muscles
-            List<ExerciseLibrary> eligibleExercises = exerciseLibraryService.GetExercises(singleWorkoutVM);
+            //Search by category and equipment, one category at a time.
+            //Search by muscles and equipment, one piece of equipment at a time.
+            //Remove repeat exercises by ID repetition.
+            //category is json key. BodyPart is the ExerciseLibrary equivalent.
+            singleWorkoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(singleWorkoutVM.Client.ClientId);
+            string urlString = "https://wger.de/api/v2/exercise?language=2" + BuildEquipmentUrlString(singleWorkoutVM.Equipment);
+
+            ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(urlString);
 
             //Convert ExerciseLibrary objects to ClientExercises
+
 
 
             //Assign sets/reps, rest time to exercises.
@@ -117,6 +127,10 @@ namespace AutonoFit.Controllers
 
 
             return RedirectToAction("DisplaySingleWorkout");
+
+          
+
+            
         }
 
 
@@ -125,7 +139,18 @@ namespace AutonoFit.Controllers
             return RedirectToAction("Index");
         }
 
+        //-----------------------------------Helper Methods----------------------------------------------------
 
+        private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
+        {
+            string equipmentString = null;
+            foreach (ClientEquipment piece in equipmentList)
+            {
+                equipmentString += "&equipment=" + piece.EquipmentId;
+            }
+
+            return equipmentString;
+        }
 
 
         //---------------------------------------------------------------------------------------------------

@@ -50,7 +50,7 @@ namespace AutonoFit
             services.AddRazorPages();
 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
-            services.AddScoped<ExerciseLibrary>();
+            services.AddScoped<ExerciseLibraryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
