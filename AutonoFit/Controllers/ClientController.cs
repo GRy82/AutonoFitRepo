@@ -77,6 +77,15 @@ namespace AutonoFit.Controllers
                 return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary( new { controller = "Client", 
                     action = "SingleWorkoutSetup", errorMessage = true }));
             }
+
+
+
+            return RedirectToAction("DisplaySingleWorkout", new RouteValueDictionary( new { contoller = "Client", 
+                action = "DisplaySingleWorkout" }));
+        }
+
+        public async Task<ActionResult> DisplaySingleWorkout(SingleWorkoutVM singleWorkoutVM)//this parameter subject to change. May be differe VM.
+        {
             return RedirectToAction("Index");
         }
 
