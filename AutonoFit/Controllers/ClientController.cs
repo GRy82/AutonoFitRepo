@@ -51,7 +51,7 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
-        public async Task<ActionResult> SingleWorkoutSetup(bool errorMessage = false)
+        public async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
@@ -70,14 +70,19 @@ namespace AutonoFit.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM)
+        public async Task<ActionResult> CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
         {
             if(singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
             {
                 return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary( new { controller = "Client", 
-                    action = "SingleWorkoutSetup", errorMessage = true }));
+                    action = "SingleWorkoutSetup", errorMessage = "You must choose at least one exercise goal to continue." }));
             }
-
+            if(singleWorkoutVM.BodySection == "")
+            {
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
+                {
+                    controller = "Client", action = "SingleWorkoutSetup", errorMessage = "You must choose a workout type to continue."}));
+            }
 
 
             return RedirectToAction("DisplaySingleWorkout", new RouteValueDictionary( new { contoller = "Client", 

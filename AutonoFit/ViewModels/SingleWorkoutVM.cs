@@ -18,9 +18,12 @@ namespace AutonoFit.ViewModels
 
         public List<int> GoalIds { get; set; }
 
+        public string BodySection { get; set; }
+
         public int Minutes { get; set; }
 
-        public bool ErrorMessage { get; set; }
+
+        public string ErrorMessage { get; set; }
 
     }
 }

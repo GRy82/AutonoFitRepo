@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Workout Setup";
-    ViewData["ErrorMessage"] = "You must select at least one goal to continue";
+    ViewData["ErrorMessage"] = Model.ErrorMessage;
 }
 
 <div class="row">
@@ -14,7 +14,7 @@
 
 
 <hr />
-@if (Model.ErrorMessage == true)
+@if (Model.ErrorMessage != null)
 {
     <script>
         alert("@ViewData["ErrorMessage"]");
@@ -25,7 +25,7 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-10">
-            <form asp-action="GenerateSingleWorkout" method="post">
+            <form asp-action="CheckSingleWorkoutFormValidity" method="post">
                 <div>
                     <br />
                     <div>
@@ -55,6 +55,16 @@
                             {
                                 <option>@goal.Name</option>
                             }
+                        </select>
+                    </div>
+                    <br />
+                    <div>
+                        <label asp-for="@Model.BodySection" style="margin-right: 15px;">Workout Type: </label>
+                        <select asp-for="@Model.BodySection">
+                            <option value="">Select below</option>
+                            <option value="Upper Body">Upper Body</option>
+                            <option value="Lower Body">Lower Body</option>
+                            <option value="Both">Both</option>
                         </select>
                     </div>
                     <br />
