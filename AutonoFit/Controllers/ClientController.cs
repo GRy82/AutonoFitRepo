@@ -98,11 +98,25 @@ namespace AutonoFit.Controllers
         }
 
        
-        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM, [FromServices] ExerciseLibrary exerciseLibrary)
+        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM, [FromServices] ExerciseLibraryService exerciseLibraryService)
         {
 
+            //Attain full list of exercises eligible based on lang=2, equipment, category, and muscles
+            List<ExerciseLibrary> eligibleExercises = exerciseLibraryService.GetExercises(singleWorkoutVM);
 
-            return RedirectToAction("Index");
+            //Convert ExerciseLibrary objects to ClientExercises
+
+
+            //Assign sets/reps, rest time to exercises.
+
+
+            //Decide number of exercises based on time constraints 
+
+
+            //Randomly select N number of exercises from total collection thus far.  
+
+
+            return RedirectToAction("DisplaySingleWorkout");
         }
 
 

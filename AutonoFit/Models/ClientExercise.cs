@@ -22,6 +22,13 @@ namespace AutonoFit.Models
         public int RPE { get; set; }
 
         public int Reps { get; set; }
+
+        public int RestSeconds { get; set; }
+
+        public string[] MusclesOrBodyParts { get; set; }
+
+
+        //These are used for gauging progression
         public int DeltaRPECount { get; set; }
 
         public int? LastPerformed { get; set; } //Id of the exercise the last time it was performed
