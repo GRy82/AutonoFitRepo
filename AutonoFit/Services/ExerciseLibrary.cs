@@ -8,35 +8,26 @@ namespace AutonoFit.Services
 {
     public class ExerciseLibrary
     {
-        [JsonProperty(PropertyName = "id")]
-        public int ExerciseId { get; set; }
-
-        [JsonProperty(PropertyName = "category")]
-        public int BodyPart { get; set; }
-
-        [JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
-
-        [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "name_original")]
-        public string NameOriginal { get; set; }
-
-        [JsonProperty(PropertyName = "muscles")]
-        public int[] MusclesArray { get; set; }
-
-        [JsonProperty(PropertyName = "muscles_secondary")]
-        public int[] MusclesSecondary { get; set; }
-
-        [JsonProperty(PropertyName = "equipment")]
-        public object[] EquipmentRequired { get; set; }
-
-        public string creation_date { get; set; }
-
-        [JsonProperty(PropertyName = "language")]
-        public int LanguageInteger { get; set; }
-        public string uuid { get; set; }
-        public object variations { get; set; }
+        public int count { get; set; }
+        public string next { get; set; }
+        public object previous { get; set; }
+        public Result[] results { get; set; }
     }
+
+    public class Result
+    {
+        public int id { get; set; }
+        public int category { get; set; }
+        public string description { get; set; }
+        public string name { get; set; }
+        public string name_original { get; set; }
+        public int?[] muscles { get; set; }
+        public int?[] muscles_secondary { get; set; }
+        public int?[] equipment { get; set; }
+        public string creation_date { get; set; }
+        public int language { get; set; }
+        public string uuid { get; set; }
+        public int? variations { get; set; }
+    }
+
 }

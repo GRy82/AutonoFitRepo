@@ -81,7 +81,7 @@ namespace AutonoFit.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
+        public async Task<ActionResult> CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
         {
             if(singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
             {
@@ -95,43 +95,42 @@ namespace AutonoFit.Controllers
                     controller = "Client", action = "SingleWorkoutSetup", errorMessage = "You must choose a workout type to continue."}));
             }
 
-            return RedirectToAction("GenerateSingleWorkout", new RouteValueDictionary( new { contoller = "Client", 
-                action = "GenerateSingleWorkout", singleWorkoutVM = singleWorkoutVM}));
+            return RedirectToAction("GenerateSingleWorkout", singleWorkoutVM);
         }
 
        
-        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM)
+        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM workoutVM)
         {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            workoutVM.Client = await _repo.Client.GetClientAsync(userId);
+            workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
+
+            List<ExerciseLibrary> exerciseLibrary = new List<ExerciseLibrary> { };
 
             //Attain full list of exercises eligible based on lang=2, equipment, category, and muscles
             //Search by category and equipment, one category at a time.
             //Search by muscles and equipment, one piece of equipment at a time.
             //Remove repeat exercises by ID repetition.
             //category is json key. BodyPart is the ExerciseLibrary equivalent.
-            singleWorkoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(singleWorkoutVM.Client.ClientId);
-            string urlString = "https://wger.de/api/v2/exercise?language=2" + BuildEquipmentUrlString(singleWorkoutVM.Equipment);
 
-            ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(urlString);
-
-            //Convert ExerciseLibrary objects to ClientExercises
-
+            string urlCategoryString = BuildUrl(workoutVM.BodySection, workoutVM.Equipment, "category");
+            exerciseLibrary.Add(await _exerciseLibraryService.GetExercises(urlCategoryString));
+            string urlMusclesString = BuildUrl(workoutVM.BodySection, workoutVM.Equipment, "muscles");
+            exerciseLibrary.Add(await _exerciseLibraryService.GetExercises(urlMusclesString));
 
 
-            //Assign sets/reps, rest time to exercises.
-
+            //Calculate sets/reps, rest time to exercises.
+            Dictionary<string, int> SetsRepsRest = CalculateSetsRepsRest(workoutVM.GoalIds);
 
             //Decide number of exercises based on time constraints 
 
-
             //Randomly select N number of exercises from total collection thus far.  
 
+            //Convert ExerciseLibrary objects to ClientExercises
 
-            return RedirectToAction("DisplaySingleWorkout");
-
-          
-
-            
+            return RedirectToAction("DisplaySingleWorkout");      
         }
+
 
 
         public async Task<ActionResult> DisplaySingleWorkout(SingleWorkoutVM singleWorkoutVM)//this parameter subject to change. May be differe VM.
@@ -143,13 +142,77 @@ namespace AutonoFit.Controllers
 
         private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
-            string equipmentString = null;
+            string urlString = "https://wger.de/api/v2/exercise?language=2";
             foreach (ClientEquipment piece in equipmentList)
             {
-                equipmentString += "&equipment=" + piece.EquipmentId;
+                urlString += "&equipment=" + piece.EquipmentId;
             }
 
-            return equipmentString;
+            return urlString;
+        }
+
+        private string BuildUrl(string bodySection, List<ClientEquipment> equipment, string searchType)
+        {
+            int[] bodyPartsArray;
+            
+            if (searchType == "category")
+            {
+                bodyPartsArray = CategoryUrl(bodySection);
+            }
+            else
+            {
+                bodyPartsArray = MusclesUrl(bodySection);
+            }
+
+            string urlString = null;
+            for (int i = 0; i < bodyPartsArray.Length; i++)
+            {
+                urlString += "&" + searchType + "=" + Convert.ToString(bodyPartsArray[i]);
+            }
+            urlString = BuildEquipmentUrlString(equipment) + urlString;
+
+            return urlString;
+        }
+
+        private int[] CategoryUrl(string bodySection)
+        {
+            int[] categories;
+            switch (bodySection)
+            {
+                case "Upper Body":
+                    categories = new int[] { 8, 10, 11, 12, 13 };
+                    break;
+                case "Lower Body":
+                    categories = new int[] { 9, 10, 14 };
+                    break;
+                default:
+                    categories = new int[] { 8, 9, 10, 11, 12, 13, 14 };
+                    break;
+            }
+            return categories;
+        }
+
+        private int[] MusclesUrl(string bodySection)
+        {
+            int[] muscles;
+            switch (bodySection)
+            {
+                case "Upper Body":
+                    muscles = new int[] { 1, 2, 3, 4, 5, 6, 9, 12, 13, 14};
+                    break;
+                case "Lower Body":
+                    muscles = new int[] { 6, 7, 8, 10, 11, 14, 15 };
+                    break;
+                default:
+                    muscles = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+                    break;
+            }
+            return muscles;
+        }
+
+        private Dictionary<string, int> CalculateSetsRepsRest(List<int> goalIds)
+        {
+
         }
 
 

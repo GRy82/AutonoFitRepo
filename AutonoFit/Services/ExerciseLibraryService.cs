@@ -24,7 +24,8 @@ namespace AutonoFit.Services
             if (response.IsSuccessStatusCode)
             {
                 string json = response.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<ExerciseLibrary>(json);
+                var donk = JsonConvert.DeserializeObject<ExerciseLibrary>(json);
+                return donk;
             }
 
             return null;
