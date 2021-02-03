@@ -20,5 +20,7 @@ namespace AutonoFit.ViewModels
 
         public int Minutes { get; set; }
 
+        public bool ErrorMessage { get; set; }
+
     }
 }

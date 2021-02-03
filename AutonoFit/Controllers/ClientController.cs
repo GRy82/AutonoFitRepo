@@ -4,6 +4,7 @@ using AutonoFit.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
-        public async Task<ActionResult> SingleWorkoutSetup()
+        public async Task<ActionResult> SingleWorkoutSetup(bool errorMessage = false)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
@@ -60,7 +61,8 @@ namespace AutonoFit.Controllers
             {
                 Client = client,
                 AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
-                GoalIds = new List<int> { 0, 0 }
+                GoalIds = new List<int> { 0, 0 },
+                ErrorMessage = errorMessage
             };
 
             return View(singleWorkoutVM);
@@ -68,8 +70,13 @@ namespace AutonoFit.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SingleWorkoutSetup(SingleWorkoutVM singleWorkoutVM)
+        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM)
         {
+            if(singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
+            {
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary( new { controller = "Client", 
+                    action = "SingleWorkoutSetup", errorMessage = true }));
+            }
             return RedirectToAction("Index");
         }
 

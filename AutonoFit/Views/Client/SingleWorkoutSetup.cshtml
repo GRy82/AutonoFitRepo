@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Workout Setup";
+    ViewData["ErrorMessage"] = "You must select at least one goal to continue";
 }
 
 <div class="row">
@@ -13,11 +14,18 @@
 
 
 <hr />
+@if (Model.ErrorMessage == true)
+{
+    <script>
+        alert("@ViewData["ErrorMessage"]");
+    </script>
+}
+
 <div class="container">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-10">
-            <form asp-action="SingleWorkoutSetup" method="post">
+            <form asp-action="GenerateSingleWorkout" method="post">
                 <div>
                     <br />
                     <div>
@@ -31,9 +39,10 @@
                         <p><b>Select 1-2 fitness goals for the session</b></p>
                         <label asp-for="@Model.GoalIds[0]" style="margin-right: 15px;">Goal One: </label>
                         <select asp-for="@Model.GoalIds[0]" style="margin-bottom: 10px;">
+                            <option value="0">Select below</option>
                             @foreach (var goal in Model.AvailableGoals)
                             {
-                                <option>@goal.Name</option>
+                                <option value="@goal.GoalId">@goal.Name</option>
                             }
                         </select>
                     </div>
@@ -41,6 +50,7 @@
                     <div>
                         <label asp-for="@Model.GoalIds[1]" style="margin-right: 15px;">Goal Two: </label>
                         <select asp-for="@Model.GoalIds[1]">
+                            <option value="0">Select below</option>
                             @foreach (var goal in Model.AvailableGoals)
                             {
                                 <option>@goal.Name</option>
