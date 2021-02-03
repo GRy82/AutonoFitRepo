@@ -1,5 +1,6 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Models;
+using AutonoFit.Services;
 using AutonoFit.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +52,13 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
+
+
+        //---------------------------------------------------------------------------------------------------
+        //-------------------------------------Single Workout------------------------------------------------
+
+
+
         public async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -68,9 +76,10 @@ namespace AutonoFit.Controllers
             return View(singleWorkoutVM);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
+        public ActionResult CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
         {
             if(singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
             {
@@ -84,15 +93,31 @@ namespace AutonoFit.Controllers
                     controller = "Client", action = "SingleWorkoutSetup", errorMessage = "You must choose a workout type to continue."}));
             }
 
-
-            return RedirectToAction("DisplaySingleWorkout", new RouteValueDictionary( new { contoller = "Client", 
-                action = "DisplaySingleWorkout" }));
+            return RedirectToAction("GenerateSingleWorkout", new RouteValueDictionary( new { contoller = "Client", 
+                action = "GenerateSingleWorkout", singleWorkoutVM = singleWorkoutVM}));
         }
+
+       
+        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM singleWorkoutVM, [FromServices] ExerciseLibrary exerciseLibrary)
+        {
+
+
+            return RedirectToAction("Index");
+        }
+
 
         public async Task<ActionResult> DisplaySingleWorkout(SingleWorkoutVM singleWorkoutVM)//this parameter subject to change. May be differe VM.
         {
             return RedirectToAction("Index");
         }
+
+
+
+
+        //---------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------
+
+
 
 
         public async Task<ActionResult> Equipment()
