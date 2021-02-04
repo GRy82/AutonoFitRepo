@@ -7,7 +7,27 @@ using System.Threading.Tasks;
 namespace AutonoFit.StaticClasses
 {
     public static class SharedUtility
-    { 
+    {
+        public static int repTime = 3;
+
+        public static List<ExerciseLibrary> RandomizeExercises(List<ExerciseLibrary> exerciseLibrary)
+        {
+            
+        }
+
+        public static int DetermineVolume(List<int> goalIds, List<ExerciseLibrary> exerciseLibrary, FitnessDictionary fitnessMetrics, int workoutMinutes)
+        {
+            if (!goalIds.Contains(4) && !goalIds.Contains(5))//if cardio is involved, cut minutes in half to have half the time for cardio.
+            {
+                workoutMinutes /= 2;
+            }
+
+            double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;
+            int exerciseQuantity = (int)(workoutMinutes / singleExerciseTime);
+
+            return exerciseQuantity;
+        }
+
         public static List<ExerciseLibrary> RepackageResults(List<ExerciseLibrary> exerciseLibrary, ExerciseLibrary singleExerciseLibrary)
         {
             for (int i = 0; i < singleExerciseLibrary.results.Length; i++)

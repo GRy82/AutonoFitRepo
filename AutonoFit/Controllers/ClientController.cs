@@ -132,8 +132,10 @@ namespace AutonoFit.Controllers
             FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MilePace);
 
             //Decide number of exercises based on time constraints 
+            int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, exerciseLibrary, fitnessMetrics, workoutVM.Minutes);
 
-            //Randomly select N number of exercises from total collection thus far.  
+            //Randomly select N number of exercises from total collection thus far. 
+            List<ExerciseLibrary> todaysExercises = SharedUtility.RandomizeExercises(exerciseLibrary);
 
             //Convert ExerciseLibrary objects to ClientExercises
 
