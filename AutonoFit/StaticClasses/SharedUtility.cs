@@ -1,4 +1,6 @@
-﻿using AutonoFit.Services;
+﻿using AutonoFit.Models;
+using AutonoFit.Services;
+using AutonoFit.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,23 @@ namespace AutonoFit.StaticClasses
     public static class SharedUtility
     {
         public static int repTime = 3;
+
+        public static List<ClientExercise> CopyAsClientExercises(List<ExerciseLibrary> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
+        {
+            List<ClientExercise> workoutExercises = new List<ClientExercise> { };
+            foreach (ExerciseLibrary library in randomlyChosenExercises)
+            {
+                ClientExercise exercise = new ClientExercise();
+                exercise.ClientId = workoutVM.Client.ClientId;
+                exercise.ExerciseId = library.results[0].id;
+                exercise.Reps = fitnessMetrics.reps;
+                exercise.RestSeconds = fitnessMetrics.rest;
+                
+                workoutExercises.Add(exercise);
+            }
+
+            return workoutExercises;
+        }
 
         public static List<ExerciseLibrary> RandomizeExercises(List<ExerciseLibrary> exerciseLibrary, int exerciseQuantity)
         {
