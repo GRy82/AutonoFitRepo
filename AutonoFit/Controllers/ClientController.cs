@@ -1,6 +1,7 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Models;
 using AutonoFit.Services;
+using AutonoFit.StaticClasses;
 using AutonoFit.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -107,15 +108,15 @@ namespace AutonoFit.Controllers
             List<ExerciseLibrary> exerciseLibrary = new List<ExerciseLibrary> { };
             ExerciseLibrary singleExerciseLibrary;
             //Get exercises by category and repackage neatly.
-            int[] categories = GetCategories(workoutVM.BodySection);
+            int[] categories = SharedUtility.GetCategories(workoutVM.BodySection);
             for (int i = 0; i < categories.Length; i++)
             {
                 string urlCategoryString = BuildEquipmentUrlString(workoutVM.Equipment) + "&category=" + categories[i];
                 singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
-                exerciseLibrary = RepackageResults(exerciseLibrary, singleExerciseLibrary);
+                exerciseLibrary = SharedUtility.RepackageResults(exerciseLibrary, singleExerciseLibrary);
             }
             //Get exercises by muslces and repackage neatly.
-            int[] muscles = GetMuscles(workoutVM.BodySection);
+            int[] muscles = SharedUtility.GetMuscles(workoutVM.BodySection);
             string urlMusclesString = null;
             for (int j = 0; j < muscles.Length; j++)
             {
@@ -123,12 +124,12 @@ namespace AutonoFit.Controllers
             }
             urlMusclesString = BuildEquipmentUrlString(workoutVM.Equipment) + urlMusclesString;
             singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
-            exerciseLibrary = RepackageResults(exerciseLibrary, singleExerciseLibrary);
+            exerciseLibrary = SharedUtility.RepackageResults(exerciseLibrary, singleExerciseLibrary);
             //Get rid of repeats
-            exerciseLibrary = RemoveRepeats(exerciseLibrary);
+            exerciseLibrary = SharedUtility.RemoveRepeats(exerciseLibrary);
 
             //Calculate sets/reps, rest time to exercises.
-            Dictionary<string, int> SetsRepsRest = CalculateSetsRepsRest(workoutVM.GoalIds);
+            Dictionary<string, int> SetsRepsRest = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds);
 
             //Decide number of exercises based on time constraints 
 
@@ -148,32 +149,6 @@ namespace AutonoFit.Controllers
 
         //-----------------------------------Helper Methods----------------------------------------------------
 
-
-        private List<ExerciseLibrary> RemoveRepeats(List<ExerciseLibrary> exerciseLibrary) {
-            List<ExerciseLibrary> revisedLibrary = new List<ExerciseLibrary> { };
-            foreach (ExerciseLibrary exercise in exerciseLibrary)
-            {
-                if (!revisedLibrary.Contains(exercise) && exercise.results[0].id != 393)//exercise 393 is trash. It's a full workout.
-                {
-                    revisedLibrary.Add(exercise);
-                }
-            }
-            return revisedLibrary;
-        }
-        private List<ExerciseLibrary> RepackageResults(List<ExerciseLibrary> exerciseLibrary, ExerciseLibrary singleExerciseLibrary)
-        {
-            for (int i = 0; i < singleExerciseLibrary.results.Length; i++)
-            {
-                Result[] tempResult = new Result[1];
-                tempResult[0] = singleExerciseLibrary.results[i];
-                ExerciseLibrary tempExerciseLibrary = new ExerciseLibrary();
-                tempExerciseLibrary.results = tempResult;
-                exerciseLibrary.Add(tempExerciseLibrary);
-            }
-
-            return exerciseLibrary;
-        }
-
         private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
             string urlString = "https://wger.de/api/v2/exercise?language=2";
@@ -182,48 +157,6 @@ namespace AutonoFit.Controllers
             }
 
             return urlString;
-        }
-
-        private int[] GetCategories(string bodySection)
-        {
-            int[] categories;
-            switch (bodySection)
-            {
-                case "Upper Body":
-                    categories = new int[] { 8, 10, 11, 12, 13 };
-                    break;
-                case "Lower Body":
-                    categories = new int[] { 9, 10, 14 };
-                    break;
-                default:
-                    categories = new int[] { 8, 9, 10, 11, 12, 13, 14 };
-                    break;
-            }
-            return categories;
-        }
-
-        private int[] GetMuscles(string bodySection)
-        {
-            int[] muscles;
-            switch (bodySection)
-            {
-                case "Upper Body":
-                    muscles = new int[] { 1, 2, 3, 4, 5, 6, 9, 12, 13, 14};
-                    break;
-                case "Lower Body":
-                    muscles = new int[] { 6, 7, 8, 10, 11, 14, 15 };
-                    break;
-                default:
-                    muscles = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-                    break;
-            }
-            return muscles;
-        }
-
-        private Dictionary<string, int> CalculateSetsRepsRest(List<int> goalIds)
-        {
-            if(goalIds)
-            return new Dictionary<string, int> { };
         }
 
 
