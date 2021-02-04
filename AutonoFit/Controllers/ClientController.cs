@@ -90,34 +90,42 @@ namespace AutonoFit.Controllers
             }
             if(singleWorkoutVM.BodySection == null)
             {
-                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
-                {
-                    controller = "Client", action = "SingleWorkoutSetup", errorMessage = "You must choose a workout type to continue."}));
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new {controller = "Client", 
+                    action = "SingleWorkoutSetup", errorMessage = "You must choose a workout type to continue."}));
             }
 
-            return RedirectToAction("GenerateSingleWorkout", singleWorkoutVM);
+            return RedirectToAction("GatherEligibleExercises", singleWorkoutVM);
         }
 
        
-        public async Task<ActionResult> GenerateSingleWorkout(SingleWorkoutVM workoutVM)
+        public async Task<ActionResult> GatherEligibleExercises(SingleWorkoutVM workoutVM)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
 
             List<ExerciseLibrary> exerciseLibrary = new List<ExerciseLibrary> { };
-
-            //Attain full list of exercises eligible based on lang=2, equipment, category, and muscles
-            //Search by category and equipment, one category at a time.
-            //Search by muscles and equipment, one piece of equipment at a time.
-            //Remove repeat exercises by ID repetition.
-            //category is json key. BodyPart is the ExerciseLibrary equivalent.
-
-            string urlCategoryString = BuildUrl(workoutVM.BodySection, workoutVM.Equipment, "category");
-            exerciseLibrary.Add(await _exerciseLibraryService.GetExercises(urlCategoryString));
-            string urlMusclesString = BuildUrl(workoutVM.BodySection, workoutVM.Equipment, "muscles");
-            exerciseLibrary.Add(await _exerciseLibraryService.GetExercises(urlMusclesString));
-
+            ExerciseLibrary singleExerciseLibrary;
+            //Get exercises by category and repackage neatly.
+            int[] categories = GetCategories(workoutVM.BodySection);
+            for (int i = 0; i < categories.Length; i++)
+            {
+                string urlCategoryString = BuildEquipmentUrlString(workoutVM.Equipment) + "&category=" + categories[i];
+                singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
+                exerciseLibrary = RepackageResults(exerciseLibrary, singleExerciseLibrary);
+            }
+            //Get exercises by muslces and repackage neatly.
+            int[] muscles = GetMuscles(workoutVM.BodySection);
+            string urlMusclesString = null;
+            for (int j = 0; j < muscles.Length; j++)
+            {
+                urlMusclesString += "&muscles=" + muscles[j];
+            }
+            urlMusclesString = BuildEquipmentUrlString(workoutVM.Equipment) + urlMusclesString;
+            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
+            exerciseLibrary = RepackageResults(exerciseLibrary, singleExerciseLibrary);
+            //Get rid of repeats
+            exerciseLibrary = RemoveRepeats(exerciseLibrary);
 
             //Calculate sets/reps, rest time to exercises.
             Dictionary<string, int> SetsRepsRest = CalculateSetsRepsRest(workoutVM.GoalIds);
@@ -140,41 +148,43 @@ namespace AutonoFit.Controllers
 
         //-----------------------------------Helper Methods----------------------------------------------------
 
+
+        private List<ExerciseLibrary> RemoveRepeats(List<ExerciseLibrary> exerciseLibrary) {
+            List<ExerciseLibrary> revisedLibrary = new List<ExerciseLibrary> { };
+            foreach (ExerciseLibrary exercise in exerciseLibrary)
+            {
+                if (!revisedLibrary.Contains(exercise) && exercise.results[0].id != 393)//exercise 393 is trash. It's a full workout.
+                {
+                    revisedLibrary.Add(exercise);
+                }
+            }
+            return revisedLibrary;
+        }
+        private List<ExerciseLibrary> RepackageResults(List<ExerciseLibrary> exerciseLibrary, ExerciseLibrary singleExerciseLibrary)
+        {
+            for (int i = 0; i < singleExerciseLibrary.results.Length; i++)
+            {
+                Result[] tempResult = new Result[1];
+                tempResult[0] = singleExerciseLibrary.results[i];
+                ExerciseLibrary tempExerciseLibrary = new ExerciseLibrary();
+                tempExerciseLibrary.results = tempResult;
+                exerciseLibrary.Add(tempExerciseLibrary);
+            }
+
+            return exerciseLibrary;
+        }
+
         private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
             string urlString = "https://wger.de/api/v2/exercise?language=2";
-            foreach (ClientEquipment piece in equipmentList)
-            {
+            foreach (ClientEquipment piece in equipmentList){
                 urlString += "&equipment=" + piece.EquipmentId;
             }
 
             return urlString;
         }
 
-        private string BuildUrl(string bodySection, List<ClientEquipment> equipment, string searchType)
-        {
-            int[] bodyPartsArray;
-            
-            if (searchType == "category")
-            {
-                bodyPartsArray = CategoryUrl(bodySection);
-            }
-            else
-            {
-                bodyPartsArray = MusclesUrl(bodySection);
-            }
-
-            string urlString = null;
-            for (int i = 0; i < bodyPartsArray.Length; i++)
-            {
-                urlString += "&" + searchType + "=" + Convert.ToString(bodyPartsArray[i]);
-            }
-            urlString = BuildEquipmentUrlString(equipment) + urlString;
-
-            return urlString;
-        }
-
-        private int[] CategoryUrl(string bodySection)
+        private int[] GetCategories(string bodySection)
         {
             int[] categories;
             switch (bodySection)
@@ -192,7 +202,7 @@ namespace AutonoFit.Controllers
             return categories;
         }
 
-        private int[] MusclesUrl(string bodySection)
+        private int[] GetMuscles(string bodySection)
         {
             int[] muscles;
             switch (bodySection)
@@ -212,7 +222,7 @@ namespace AutonoFit.Controllers
 
         private Dictionary<string, int> CalculateSetsRepsRest(List<int> goalIds)
         {
-
+            return new Dictionary<string, int> { };
         }
 
 
