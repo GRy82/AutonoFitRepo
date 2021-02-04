@@ -222,6 +222,7 @@ namespace AutonoFit.Controllers
 
         private Dictionary<string, int> CalculateSetsRepsRest(List<int> goalIds)
         {
+            if(goalIds)
             return new Dictionary<string, int> { };
         }
 
