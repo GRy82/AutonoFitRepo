@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Workout Setup";
     ViewData["ErrorMessage"] = Model.ErrorMessage;
+    ViewData["ShowMilePace"] = false;
 }
 
 <div class="row">
@@ -38,7 +39,7 @@
                     <div>
                         <p><b>Select 1-2 fitness goals for the session</b></p>
                         <label asp-for="@Model.GoalIds[0]" style="margin-right: 15px;">Goal One: </label>
-                        <select asp-for="@Model.GoalIds[0]" style="margin-bottom: 10px;">
+                        <select asp-for="@Model.GoalIds[0]" id="goal-one" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
                             <option value="0">Select below</option>
                             @foreach (var goal in Model.AvailableGoals)
                             {
@@ -49,16 +50,23 @@
                     <br />
                     <div>
                         <label asp-for="@Model.GoalIds[1]" style="margin-right: 15px;">Goal Two: </label>
-                        <select asp-for="@Model.GoalIds[1]">
+                        <select asp-for="@Model.GoalIds[1]" id="goal-two" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
                             <option value="0">Select below</option>
                             @foreach (var goal in Model.AvailableGoals)
                             {
-                                <option>@goal.Name</option>
+                                <option value="@goal.GoalId">@goal.Name</option>
                             }
                         </select>
                     </div>
                     <br />
+                    <div style="display: none;" id="mile-pace">
+                        <p><b>Enter typical mile time</b></p>
+                        <label asp-for="@Model.MilePace" style="margin-right: 15px;">Mile Time: </label>
+                        <input asp-for="@Model.MilePace" value="9.00" style="display: inline-block; margin-right: 10px;" />
+                        <p style="display: inline-block;">minutes</p>
+                    </div>
                     <div>
+                        <p><b>Are you wanting to work upper body, lower, or both?</b></p>
                         <label asp-for="@Model.BodySection" style="margin-right: 15px;">Workout Type: </label>
                         <select asp-for="@Model.BodySection">
                             <option value="">Select below</option>
@@ -67,6 +75,7 @@
                             <option value="Both">Both</option>
                         </select>
                     </div>
+
                     <br />
                     <br />
                     <input type="submit" class="btn btn-primary" />
@@ -75,3 +84,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function checkCardio(goalOneValue, goalTwoValue) {
+        var milePace = document.getElementById("mile-pace");
+
+        if (goalOneValue == 4 || goalOneValue == 5 || goalTwoValue == 4 || goalTwoValue == 5) {
+            milePace.style.display = "inline";
+        }
+        else {
+            milePace.style.display = "none";
+        }
+    }
+</script>

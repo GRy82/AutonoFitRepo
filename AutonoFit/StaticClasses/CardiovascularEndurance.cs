@@ -10,7 +10,7 @@ namespace AutonoFit.StaticClasses
         public float distance;
         public float duration;
         public float milePace;
-        public CardiovascularEndurance()
+        public CardiovascularEndurance()//These mimic muscular endurance to also promote endurance in other muscle groups/fiber types.
         {
             this.minReps = 12;
             this.maxReps = 20;

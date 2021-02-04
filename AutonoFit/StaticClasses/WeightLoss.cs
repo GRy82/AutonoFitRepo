@@ -11,7 +11,7 @@ namespace AutonoFit.StaticClasses
         public float duration;
         public float milePace;
 
-        public WeightLoss()
+        public WeightLoss()//these mimic hypertrophy to increase muscle mass/use to increase metabolism
         {
             this.minReps = 7;
             this.maxReps = 10;

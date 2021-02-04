@@ -10,7 +10,7 @@ namespace AutonoFit.StaticClasses
     {
         private static readonly IRepositoryWrapper _repo;
 
-        public static FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, double milePace = 12)
+        public static FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, double milePace)
         {
             List<TrainingStimulus> trainingStimuli = DefineTrainingStimuli(goalIds);
             FitnessDictionary fitnessMetrics = DefineDict(trainingStimuli);

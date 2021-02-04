@@ -22,6 +22,7 @@ namespace AutonoFit.ViewModels
 
         public int Minutes { get; set; }
 
+        public double MilePace { get; set; }
 
         public string ErrorMessage { get; set; }
 

@@ -129,7 +129,7 @@ namespace AutonoFit.Controllers
             exerciseLibrary = SharedUtility.RemoveRepeats(exerciseLibrary);
 
             //Calculate sets/reps, rest time to exercises.
-            Dictionary<string, int> SetsRepsRest = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds);
+            FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MilePace);
 
             //Decide number of exercises based on time constraints 
 
