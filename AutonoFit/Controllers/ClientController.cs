@@ -139,16 +139,19 @@ namespace AutonoFit.Controllers
 
             //Convert ExerciseLibrary objects to ClientExercises
             List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);
+            foreach(ClientExercise exercise in workoutExercises)
+            {
+                
+            }
 
-
-            return RedirectToAction("DisplaySingleWorkout");      
+            return RedirectToAction("DisplaySingleWorkout", randomlyChosenExercises);      
         }
 
 
 
-        public async Task<ActionResult> DisplaySingleWorkout(SingleWorkoutVM singleWorkoutVM)//this parameter subject to change. May be differe VM.
+        public ActionResult DisplaySingleWorkout(List<ExerciseLibrary> exercises)//this parameter subject to change. May be differe VM.
         {
-            return RedirectToAction("Index");
+            return View(exercises);
         }
 
         //-----------------------------------Helper Methods----------------------------------------------------

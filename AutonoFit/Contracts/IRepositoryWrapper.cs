@@ -12,6 +12,7 @@ namespace AutonoFit.Contracts
         IClientEquipmentRepository ClientEquipment { get; }
         IEquipmentRepository Equipment { get; }
         IGoalsRepository Goals { get; }
+        IClientExerciseRepository ClientExercise { get; }
     
         Task SaveAsync();
     }
