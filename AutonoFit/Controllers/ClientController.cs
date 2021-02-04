@@ -135,7 +135,7 @@ namespace AutonoFit.Controllers
             int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, exerciseLibrary, fitnessMetrics, workoutVM.Minutes);
 
             //Randomly select N number of exercises from total collection thus far. 
-            List<ExerciseLibrary> todaysExercises = SharedUtility.RandomizeExercises(exerciseLibrary);
+            List<ExerciseLibrary> todaysExercises = SharedUtility.RandomizeExercises(exerciseLibrary, numberOfExercises);
 
             //Convert ExerciseLibrary objects to ClientExercises
 

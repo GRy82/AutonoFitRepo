@@ -10,9 +10,22 @@ namespace AutonoFit.StaticClasses
     {
         public static int repTime = 3;
 
-        public static List<ExerciseLibrary> RandomizeExercises(List<ExerciseLibrary> exerciseLibrary)
+        public static List<ExerciseLibrary> RandomizeExercises(List<ExerciseLibrary> exerciseLibrary, int exerciseQuantity)
         {
-            
+            List<ExerciseLibrary> selectedExercises = new List<ExerciseLibrary> { };
+            Random rand = new Random();
+            int index;
+            while (selectedExercises.Count < exerciseQuantity)
+            {
+                do
+                {
+                    index = rand.Next(0, exerciseLibrary.Count);
+                } while (selectedExercises.Contains(exerciseLibrary.ElementAt(index)));
+
+                selectedExercises.Add(exerciseLibrary.ElementAt(index));
+            }
+
+            return selectedExercises;
         }
 
         public static int DetermineVolume(List<int> goalIds, List<ExerciseLibrary> exerciseLibrary, FitnessDictionary fitnessMetrics, int workoutMinutes)
