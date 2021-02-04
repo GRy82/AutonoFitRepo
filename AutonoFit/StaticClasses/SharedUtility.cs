@@ -70,5 +70,18 @@ namespace AutonoFit.StaticClasses
             }
             return muscles;
         }
+
+        public static List<int> CountGoals(List<int> goalIds)
+        {
+            List<int> revisedGoals = new List<int> { };
+            foreach (int goalId in goalIds)
+            {
+                if (goalId != 0)
+                {
+                    revisedGoals.Add(goalId);
+                }
+            }
+            return revisedGoals;
+        }
     }
 }
