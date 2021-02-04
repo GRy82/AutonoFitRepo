@@ -10,12 +10,15 @@ namespace AutonoFit.StaticClasses
     {
         private static readonly IRepositoryWrapper _repo;
 
-        public static Dictionary<string, int> CalculateSetsRepsRest(List<int> goalIds)
+        public static FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, double milePace = 12)
         {
-            Dictionary<string, int> setsRepsRest = new Dictionary<string, int> { };
             List<TrainingStimulus> trainingStimuli = DefineTrainingStimuli(goalIds);
-            setsRepsRest["reps"] = DefineReps(trainingStimuli);
-            return setsRepsRest;
+            FitnessDictionary fitnessMetrics = DefineDict(trainingStimuli);
+            if (CheckCardio(trainingStimuli))
+            {
+                FitnessDictionary cardioMetrics = CalculateCardio(fitnessMetrics, milePace, sessionDuration);
+            }
+            return fitnessMetrics;
         }
 
        
@@ -36,19 +39,59 @@ namespace AutonoFit.StaticClasses
                         trainingStimuli.Add(new MuscularEndurance());
                         break;
                     case 4:
+                        trainingStimuli.Add(new CardiovascularEndurance());
                         break;
                     case 5:
+                        trainingStimuli.Add(new WeightLoss());
                         break;
                 }
             }
             return trainingStimuli;
         }
 
-        private static int RepsOneGoal(List<TrainingStimulus> trainingStimuli)
-        {
-            int sum;
 
-            return 3;
+
+        private static FitnessDictionary DefineDict(List<TrainingStimulus> trainingStimuli)
+        {
+            FitnessDictionary fitnessMetrics = new FitnessDictionary();
+            int repsSum = 0;
+            int restSum = 0;
+            int setsSum = 0;
+            foreach(TrainingStimulus stimuli in trainingStimuli)
+            {
+                int middleGroundReps = (stimuli.maxReps + stimuli.minReps) / 2;
+                repsSum += middleGroundReps;
+                int middleGroundRest = (stimuli.maxRestSeconds + stimuli.minRestSeconds) / 2;
+                restSum += middleGroundRest;
+                setsSum += stimuli.sets;
+            }
+
+            fitnessMetrics.reps = (int)(repsSum / trainingStimuli.Count);
+            fitnessMetrics.rest = (int)restSum / trainingStimuli.Count;
+            fitnessMetrics.sets = (int)setsSum / trainingStimuli.Count;
+            return fitnessMetrics;
+        }
+
+        public static FitnessDictionary CalculateCardio(FitnessDictionary cardioMetrics, double milePace, int sessionDuration)
+        {
+            sessionDuration /= 2;
+            cardioMetrics.runDuration = sessionDuration;
+            cardioMetrics.milePace = milePace;
+            cardioMetrics.distanceMiles = sessionDuration / milePace;
+
+            return cardioMetrics;
+        }
+
+        public static bool CheckCardio(List<TrainingStimulus> trainingStimuli)
+        {
+            foreach(TrainingStimulus stimuli in trainingStimuli)
+            {
+                Type type = stimuli.GetType();
+                if (type.Equals(new WeightLoss().GetType()) || type.Equals(new CardiovascularEndurance().GetType())) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
