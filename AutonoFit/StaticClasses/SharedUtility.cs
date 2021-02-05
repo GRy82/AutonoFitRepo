@@ -135,5 +135,12 @@ namespace AutonoFit.StaticClasses
             }
             return revisedGoals;
         }
+
+        public static int RoundToNearestFifteen(int seconds)
+        {
+            int remainder = seconds % 15;
+            int newSeconds = remainder < 8 ? seconds - remainder : seconds - remainder + 15;
+            return newSeconds;
+        }
     }
 }
