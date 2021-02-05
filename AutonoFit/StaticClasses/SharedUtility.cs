@@ -136,11 +136,29 @@ namespace AutonoFit.StaticClasses
             return revisedGoals;
         }
 
-        public static int RoundToNearestFifteen(int seconds)
+        public static string ConvertToMinSecString(int input)//input in seconds
         {
-            int remainder = seconds % 15;
-            int newSeconds = remainder < 8 ? seconds - remainder : seconds - remainder + 15;
-            return newSeconds;
+            int remainder = input % 15;
+            int newSeconds = remainder < 8 ? input - remainder : input - remainder + 15;
+            int minutes = newSeconds / 60;
+            int seconds = newSeconds % 60;
+            string newString = null;
+            if (minutes != 0)
+            {
+                newString += minutes + "mins ";
+            }
+            if (seconds != 0)
+            {
+                newString += seconds + "secs";
+            }
+            return newString;
+        }
+
+        public static FitnessDictionary ConvertFitnessDictCardioValues(FitnessDictionary fitDict)
+        {
+            fitDict.durationString = ConvertToMinSecString((int)(fitDict.runDuration * 60));
+            fitDict.paceString = ConvertToMinSecString((int)(fitDict.milePace * 60));
+            return fitDict;
         }
     }
 }

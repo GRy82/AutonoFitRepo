@@ -129,7 +129,7 @@ namespace AutonoFit.Controllers
             exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
 
             //Calculate sets/reps, rest time to exercises.
-            FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MilePace);
+            FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds);
 
             //Decide number of exercises based on time constraints 
             int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, fitnessMetrics, workoutVM.Minutes);
@@ -139,17 +139,15 @@ namespace AutonoFit.Controllers
 
             //Convert ExerciseLibrary objects to ClientExercises
             List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);
-            ClientWorkout workout = new ClientWorkout();
-            workout.ClientId = workoutVM.Client.ClientId;
+            workoutVM.fitnessDictionary = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
+            
+            //Create new workout to contain exercises and other stored data.
+            ClientWorkout workout = ClientWorkoutPseudoConstructor(workoutVM);
             _repo.ClientWorkout.CreateClientWorkout(workout);
             await _repo.SaveAsync();
 
-            foreach(ClientExercise exercise in workoutExercises)
-            {
-                exercise.WorkoutId = workout.Id;
-                _repo.ClientExercise.CreateClientExercise(exercise);
-            }
-            await _repo.SaveAsync();
+            //assign all ClientExercises the workout Id
+            await LoadExercisesInWorkout(workoutExercises, workout);
 
             workoutVM.Exercises = randomlyChosenExercises;
 
@@ -175,6 +173,24 @@ namespace AutonoFit.Controllers
             return urlString;
         }
 
+        public ClientWorkout ClientWorkoutPseudoConstructor(SingleWorkoutVM workoutVM)
+        {
+            ClientWorkout workout = new ClientWorkout();
+            workout.ClientId = workoutVM.Client.ClientId;
+            workout.mileDistance = workoutVM.fitnessDictionary.distanceMiles;
+            workout.milePaceSeconds = (int)(workoutVM.fitnessDictionary.milePace * 60);
+            return workout;
+        }
+
+        public async Task LoadExercisesInWorkout(List<ClientExercise> workoutExercises, ClientWorkout workout)
+        {
+            foreach (ClientExercise exercise in workoutExercises)
+            {
+                exercise.WorkoutId = workout.Id;
+                _repo.ClientExercise.CreateClientExercise(exercise);
+            }
+            await _repo.SaveAsync();
+        }
 
         //---------------------------------------------------------------------------------------------------
         //---------------------------------------------------------------------------------------------------

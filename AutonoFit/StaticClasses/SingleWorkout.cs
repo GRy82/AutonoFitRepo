@@ -10,13 +10,16 @@ namespace AutonoFit.StaticClasses
     {
         private static readonly IRepositoryWrapper _repo;
 
-        public static FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, double milePace)
+        public static FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, int mileMinutes, int mileSeconds)
         {
+
             List<TrainingStimulus> trainingStimuli = DefineTrainingStimuli(goalIds);
             FitnessDictionary fitnessMetrics = DefineDict(trainingStimuli);
-            if (CheckCardio(trainingStimuli))
+            if (CheckCardio(goalIds))
             {
+                double milePace = mileMinutes + (mileSeconds / 60);
                 FitnessDictionary cardioMetrics = CalculateCardio(fitnessMetrics, milePace, sessionDuration);
+                cardioMetrics.cardio = true;
             }
             return fitnessMetrics;
         }
@@ -69,6 +72,8 @@ namespace AutonoFit.StaticClasses
             fitnessMetrics.reps = (int)(repsSum / trainingStimuli.Count);
             fitnessMetrics.rest = (int)restSum / trainingStimuli.Count;
             fitnessMetrics.sets = (int)setsSum / trainingStimuli.Count;
+            fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
+
             return fitnessMetrics;
         }
 
@@ -79,17 +84,15 @@ namespace AutonoFit.StaticClasses
             cardioMetrics.milePace = milePace;
             cardioMetrics.distanceMiles = sessionDuration / milePace;
 
+
             return cardioMetrics;
         }
 
-        public static bool CheckCardio(List<TrainingStimulus> trainingStimuli)
+        public static bool CheckCardio(List<int> goalIds)
         {
-            foreach(TrainingStimulus stimuli in trainingStimuli)
+            if (goalIds.Contains(4) || goalIds.Contains(5))
             {
-                Type type = stimuli.GetType();
-                if (type.Equals(new WeightLoss().GetType()) || type.Equals(new CardiovascularEndurance().GetType())) {
-                    return true;
-                }
+                return true;
             }
             return false;
         }

@@ -1,5 +1,54 @@
-﻿@model AutonoFit.ViewModels.ClientEquipmentVM
+﻿@model AutonoFit.ViewModels.SingleWorkoutVM
 
 @{
     ViewData["Title"] = "Equipment";
 }
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<hr />
+<div class="container">
+    <table>
+        <tr>
+            <th>Exercise Name</th>
+            <th>Description</th>
+            <th>Sets</th>
+            <th>Repetitions</th>
+            <th>Rest Time</th>
+        </tr>
+        <tbody>
+            @foreach (var exercise in Model.Exercises)
+            {
+                <tr>
+                    <td>@exercise.name</td>
+                    <td>@exercise.description</td>
+                    <td>@Model.fitnessDictionary.sets</td>
+                    <td>@Model.fitnessDictionary.reps</td>
+                    <td>@Model.fitnessDictionary.restString</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+
+    @if (Model.fitnessDictionary.cardio == true)
+    {
+        <h3>Today's Cardio</h3>
+        <dl class="row">
+            <dt class="col-md-2">Target Distance: </dt>
+            <dd class="col-md-10">@Model.fitnessDictionary.distanceMiles</dd>
+            <dt class="col-md-2">Target Duration: </dt>
+            <dd class="col-md-10">@Model.fitnessDictionary.durationString</dd>
+            <dt class="col-md-2">Target Pace: </dt>
+            <dd class="col-md-10">@Model.fitnessDictionary.paceString</dd>
+        </dl>
+    }
+
+</div>
+
+

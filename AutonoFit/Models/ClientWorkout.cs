@@ -21,6 +21,10 @@ namespace AutonoFit.Models
         public int? WeekId { get; set; }
         public ClientWeek ClientWeek { get; set; }
 
+        public int? milePaceSeconds { get; set; }
+
+        public double? mileDistance { get; set; }
+
         public bool Completed { get; set; }
 
         public DateTime? DatePerformed { get; set; }
