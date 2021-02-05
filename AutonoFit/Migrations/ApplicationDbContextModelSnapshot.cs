@@ -167,6 +167,9 @@ namespace AutonoFit.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Completed")
                         .HasColumnType("bit");
 
@@ -183,6 +186,8 @@ namespace AutonoFit.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("WeekId");
 
@@ -347,8 +352,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ca3d8195-f0f0-4844-bf39-31fb7ff3ce6a",
-                            ConcurrencyStamp = "af18363d-9715-41b6-865c-cda3dc6b47ab",
+                            Id = "835a0277-9362-48eb-8792-5a06709e695e",
+                            ConcurrencyStamp = "da0a2aa8-01ef-40f8-925b-47f17188292e",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -569,6 +574,12 @@ namespace AutonoFit.Migrations
 
             modelBuilder.Entity("AutonoFit.Models.ClientWorkout", b =>
                 {
+                    b.HasOne("AutonoFit.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AutonoFit.Models.ClientWeek", "ClientWeek")
                         .WithMany()
                         .HasForeignKey("WeekId");

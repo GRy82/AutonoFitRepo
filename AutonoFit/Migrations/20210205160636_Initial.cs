@@ -289,6 +289,7 @@ namespace AutonoFit.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<int>(nullable: false),
                     WeekId = table.Column<int>(nullable: true),
                     Completed = table.Column<bool>(nullable: false),
                     DatePerformed = table.Column<DateTime>(nullable: true),
@@ -298,6 +299,12 @@ namespace AutonoFit.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClientWorkout", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientWorkout_Client_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Client",
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ClientWorkout_ClientWeek_WeekId",
                         column: x => x.WeekId,
@@ -336,7 +343,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "ca3d8195-f0f0-4844-bf39-31fb7ff3ce6a", "af18363d-9715-41b6-865c-cda3dc6b47ab", "Client", "CLIENT" });
+                values: new object[] { "835a0277-9362-48eb-8792-5a06709e695e", "da0a2aa8-01ef-40f8-925b-47f17188292e", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",
@@ -436,6 +443,11 @@ namespace AutonoFit.Migrations
                 column: "MostRecentWorkoutId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClientWorkout_ClientId",
+                table: "ClientWorkout",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClientWorkout_WeekId",
                 table: "ClientWorkout",
                 column: "WeekId");
@@ -468,6 +480,10 @@ namespace AutonoFit.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_ClientWeek_Client_ClientId",
                 table: "ClientWeek");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_ClientWorkout_Client_ClientId",
+                table: "ClientWorkout");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ClientWeek_ClientWorkout_MostRecentWorkoutId",

@@ -12,14 +12,14 @@ namespace AutonoFit.StaticClasses
     {
         public static int repTime = 3;
 
-        public static List<ClientExercise> CopyAsClientExercises(List<ExerciseLibrary> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
+        public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
         {
             List<ClientExercise> workoutExercises = new List<ClientExercise> { };
-            foreach (ExerciseLibrary library in randomlyChosenExercises)
+            foreach (Result result in randomlyChosenExercises)
             {
                 ClientExercise exercise = new ClientExercise();
                 exercise.ClientId = workoutVM.Client.ClientId;
-                exercise.ExerciseId = library.results[0].id;
+                exercise.ExerciseId = result.id;
                 exercise.Reps = fitnessMetrics.reps;
                 exercise.RestSeconds = fitnessMetrics.rest;
                 
@@ -29,62 +29,62 @@ namespace AutonoFit.StaticClasses
             return workoutExercises;
         }
 
-        public static List<ExerciseLibrary> RandomizeExercises(List<ExerciseLibrary> exerciseLibrary, int exerciseQuantity)
+        public static List<Result> RandomizeExercises(List<Result> exerciseResults, int exerciseQuantity)
         {
-            List<ExerciseLibrary> selectedExercises = new List<ExerciseLibrary> { };
+            List<Result> selectedExercises = new List<Result> { };
             Random rand = new Random();
             int index;
             while (selectedExercises.Count < exerciseQuantity)
             {
                 do
                 {
-                    index = rand.Next(0, exerciseLibrary.Count);
-                } while (selectedExercises.Contains(exerciseLibrary.ElementAt(index)));
+                    index = rand.Next(0, exerciseResults.Count);
+                } while (selectedExercises.Contains(exerciseResults.ElementAt(index)));
 
-                selectedExercises.Add(exerciseLibrary.ElementAt(index));
+                selectedExercises.Add(exerciseResults.ElementAt(index));
             }
 
             return selectedExercises;
         }
 
-        public static int DetermineVolume(List<int> goalIds, List<ExerciseLibrary> exerciseLibrary, FitnessDictionary fitnessMetrics, int workoutMinutes)
+        public static int DetermineVolume(List<int> goalIds, FitnessDictionary fitnessMetrics, int workoutMinutes)
         {
-            if (!goalIds.Contains(4) && !goalIds.Contains(5))//if cardio is involved, cut minutes in half to have half the time for cardio.
+            if (goalIds.Contains(4) || goalIds.Contains(5))//if cardio is involved, cut minutes in half to have half the time for cardio.
             {
                 workoutMinutes /= 2;
             }
 
             double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;
-            int exerciseQuantity = (int)(workoutMinutes / singleExerciseTime);
+            int exerciseQuantity = (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
 
             return exerciseQuantity;
         }
 
-        public static List<ExerciseLibrary> RepackageResults(List<ExerciseLibrary> exerciseLibrary, ExerciseLibrary singleExerciseLibrary)
+        public static List<Result> RepackageResults(List<Result> exerciseResults, ExerciseLibrary singleExerciseLibrary)
         {
             for (int i = 0; i < singleExerciseLibrary.results.Length; i++)
             {
                 Result[] tempResult = new Result[1];
                 tempResult[0] = singleExerciseLibrary.results[i];
-                ExerciseLibrary tempExerciseLibrary = new ExerciseLibrary();
-                tempExerciseLibrary.results = tempResult;
-                exerciseLibrary.Add(tempExerciseLibrary);
+                exerciseResults.Add(tempResult[0]);
             }
 
-            return exerciseLibrary;
+            return exerciseResults;
         }
 
-        public static List<ExerciseLibrary> RemoveRepeats(List<ExerciseLibrary> exerciseLibrary)
+        public static List<Result> RemoveRepeats(List<Result> exerciseResults)
         {
-            List<ExerciseLibrary> revisedLibrary = new List<ExerciseLibrary> { };
-            foreach (ExerciseLibrary exercise in exerciseLibrary)
+            List<Result> revisedResults = new List<Result> { };
+            List<int> addedExerciseIds = new List<int> { };
+            foreach (Result exercise in exerciseResults)
             {
-                if (!revisedLibrary.Contains(exercise) && exercise.results[0].id != 393)//exercise 393 is trash. It's a full workout.
+                if (!addedExerciseIds.Contains(exercise.id) && exercise.id != 393)//exercise 393 is trash. It's a full workout.
                 {
-                    revisedLibrary.Add(exercise);
+                    revisedResults.Add(exercise);
+                    addedExerciseIds.Add(exercise.id);
                 }
             }
-            return revisedLibrary;
+            return revisedResults;
         }
 
         public static int[] GetCategories(string bodySection)

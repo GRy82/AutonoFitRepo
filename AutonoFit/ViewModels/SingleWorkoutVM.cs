@@ -1,4 +1,5 @@
 ﻿using AutonoFit.Models;
+using AutonoFit.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace AutonoFit.ViewModels
         public ClientWorkout Workout { get; set; }
 
         public List<ClientEquipment> Equipment { get; set; }
+
+        public List<Result> Exercises { get; set; }
 
         public List<Goals> AvailableGoals { get; set; }
 

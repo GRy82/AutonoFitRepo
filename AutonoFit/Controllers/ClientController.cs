@@ -82,7 +82,7 @@ namespace AutonoFit.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
+        public  ActionResult CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
         {
             if(singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
             {
@@ -105,7 +105,7 @@ namespace AutonoFit.Controllers
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
 
-            List<ExerciseLibrary> exerciseLibrary = new List<ExerciseLibrary> { };
+            List<Result> exerciseResults = new List<Result> { };
             ExerciseLibrary singleExerciseLibrary;
             //Get exercises by category and repackage neatly.
             int[] categories = SharedUtility.GetCategories(workoutVM.BodySection);
@@ -113,7 +113,7 @@ namespace AutonoFit.Controllers
             {
                 string urlCategoryString = BuildEquipmentUrlString(workoutVM.Equipment) + "&category=" + categories[i];
                 singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
-                exerciseLibrary = SharedUtility.RepackageResults(exerciseLibrary, singleExerciseLibrary);
+                exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
             }
             //Get exercises by muslces and repackage neatly.
             int[] muscles = SharedUtility.GetMuscles(workoutVM.BodySection);
@@ -124,24 +124,25 @@ namespace AutonoFit.Controllers
             }
             urlMusclesString = BuildEquipmentUrlString(workoutVM.Equipment) + urlMusclesString;
             singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
-            exerciseLibrary = SharedUtility.RepackageResults(exerciseLibrary, singleExerciseLibrary);
+            exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
             //Get rid of repeats
-            exerciseLibrary = SharedUtility.RemoveRepeats(exerciseLibrary);
+            exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
 
             //Calculate sets/reps, rest time to exercises.
             FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MilePace);
 
             //Decide number of exercises based on time constraints 
-            int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, exerciseLibrary, fitnessMetrics, workoutVM.Minutes);
+            int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, fitnessMetrics, workoutVM.Minutes);
 
             //Randomly select N number of exercises from total collection thus far. 
-            List<ExerciseLibrary> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseLibrary, numberOfExercises);
+            List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises);
 
             //Convert ExerciseLibrary objects to ClientExercises
             List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);
             ClientWorkout workout = new ClientWorkout();
             workout.ClientId = workoutVM.Client.ClientId;
             _repo.ClientWorkout.CreateClientWorkout(workout);
+            await _repo.SaveAsync();
 
             foreach(ClientExercise exercise in workoutExercises)
             {
@@ -150,21 +151,23 @@ namespace AutonoFit.Controllers
             }
             await _repo.SaveAsync();
 
-            return RedirectToAction("DisplaySingleWorkout", randomlyChosenExercises);      
+            workoutVM.Exercises = randomlyChosenExercises;
+
+            return RedirectToAction("DisplaySingleWorkout", workoutVM);      
         }
 
 
 
-        public ActionResult DisplaySingleWorkout(List<ExerciseLibrary> exercises)//this parameter subject to change. May be differe VM.
+        public ActionResult DisplaySingleWorkout(SingleWorkoutVM singleWorkoutVM)//this parameter subject to change. May be differe VM.
         {
-            return View(exercises);
+            return View(singleWorkoutVM);
         }
 
         //-----------------------------------Helper Methods----------------------------------------------------
 
         private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
-            string urlString = "https://wger.de/api/v2/exercise?language=2";
+            string urlString = "https://wger.de/api/v2/exercise?language=2&equipment=7";
             foreach (ClientEquipment piece in equipmentList){
                 urlString += "&equipment=" + piece.EquipmentId;
             }
