@@ -13,7 +13,7 @@
 
 <hr />
 <div class="container">
-    <table>
+    <table class="table table-dark table-hover">
         <tr>
             <th>Exercise Name</th>
             <th>Description</th>
@@ -26,7 +26,7 @@
             {
                 <tr>
                     <td>@exercise.name</td>
-                    <td><details><summary>Instructions</summary>@exercise.description</details></td>
+                    <td><details style="max-width: 60%;"><summary>Instructions</summary>@exercise.description</details></td>
                     <td>@Model.fitnessDictionary.sets</td>
                     <td>@Model.fitnessDictionary.reps</td>
                     <td>@Model.fitnessDictionary.restString</td>
@@ -39,10 +39,10 @@
     @if (Model.fitnessDictionary.cardio == true)
     {
     <div>
-        <h3>Today's Cardio</h3>
+        <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
         <dl class="row">
             <dt class="col-md-2">Target Distance: </dt>
-            <dd class="col-md-10">@Model.fitnessDictionary.distanceMiles</dd>
+            <dd class="col-md-10">@Model.fitnessDictionary.distanceMiles miles</dd>
             <dt class="col-md-2">Target Duration: </dt>
             <dd class="col-md-10">@Model.fitnessDictionary.durationString</dd>
             <dt class="col-md-2">Target Pace: </dt>
