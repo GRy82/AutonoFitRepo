@@ -49,12 +49,12 @@ namespace AutonoFit.StaticClasses
 
         public static int DetermineVolume(List<int> goalIds, FitnessDictionary fitnessMetrics, int workoutMinutes)
         {
-            if (goalIds.Contains(4) || goalIds.Contains(5))//if cardio is involved, cut minutes in half to have half the time for cardio.
+            if (fitnessMetrics.cardio == true)//if cardio is involved, cut minutes in half to have half the time for cardio.
             {
                 workoutMinutes /= 2;
             }
 
-            double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;
+            double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;//in seconds
             int exerciseQuantity = (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
 
             return exerciseQuantity;
@@ -145,11 +145,11 @@ namespace AutonoFit.StaticClasses
             string newString = null;
             if (minutes != 0)
             {
-                newString += minutes + "mins ";
+                newString += minutes + " min ";
             }
             if (seconds != 0)
             {
-                newString += seconds + "secs";
+                newString += seconds + " sec";
             }
             return newString;
         }

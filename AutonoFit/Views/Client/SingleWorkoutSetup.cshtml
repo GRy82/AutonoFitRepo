@@ -59,18 +59,18 @@
                         </select>
                     </div>
                     <br />
-                    <div style="display: none;" class="mile-min">
+                    <div style="display: none;" id="mile-min">
                         <p><b>Enter typical mile time</b></p>
                         <label asp-for="@Model.MileMinutes" style="margin-right: 15px;">Mile Time: </label>
-                        <input asp-for="@Model.MileMinutes" value="9" style="display: inline-block; margin-right: 10px;" />
+                        <input asp-for="@Model.MileMinutes" value="9" min="0" style="display: inline-block; margin-right: 10px;" />
                         <p style="display: inline-block; margin-right: 10px;">minutes</p>
                     </div>
-                    <div style="display: none;" class="mile-sec">
-                        <p><b>Enter typical mile time</b></p>
-                        <label asp-for="@Model.MileSeconds" style="margin-right: 15px;">Mile Time: </label>
-                        <input asp-for="@Model.MileSeconds" value="00" style="display: inline-block; margin-right: 10px;" />
+                    <div style="display: none;" id="mile-sec">
+                        <input asp-for="@Model.MileSeconds" value="00" min="0" max="59" style="display: inline-block; margin-right: 10px;" />
                         <p style="display: inline-block;">seconds</p>
                     </div>
+
+                    <br />
                     <br />
                     <div>
                         <p><b>Are you wanting to work upper body, lower, or both?</b></p>
@@ -94,16 +94,13 @@
 
 <script>
     function checkCardio(goalOneValue, goalTwoValue) {
-        var mileMinutes = document.getElementsById("mile-min");
-        var mileSeconds = document.getElementsById("mile-sec");
-
         if (goalOneValue == 4 || goalOneValue == 5 || goalTwoValue == 4 || goalTwoValue == 5) {
-            mileMinutes.style.display = "inline";
-            mileSeconds.style.display = "inline-block";
+            document.getElementById("mile-min").style.display = "inline";
+            document.getElementById("mile-sec").style.display = "inline-block";
         }
         else {
-            mileMinutes.style.display = "none";
-            mileSeconds.style.display = "none";
+            document.getElementById("mile-min").style.display = "none";
+            document.getElementById("mile-sec").style.display = "none";
         }
     }
 </script>

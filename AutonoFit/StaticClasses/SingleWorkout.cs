@@ -17,9 +17,13 @@ namespace AutonoFit.StaticClasses
             FitnessDictionary fitnessMetrics = DefineDict(trainingStimuli);
             if (CheckCardio(goalIds))
             {
-                double milePace = mileMinutes + (mileSeconds / 60);
-                FitnessDictionary cardioMetrics = CalculateCardio(fitnessMetrics, milePace, sessionDuration);
-                cardioMetrics.cardio = true;
+                double milePace = mileMinutes + ((double)mileSeconds / 60);
+                fitnessMetrics = CalculateCardio(fitnessMetrics, milePace, sessionDuration);
+                fitnessMetrics.cardio = true;
+            }
+            else
+            {
+                fitnessMetrics.cardio = false;
             }
             return fitnessMetrics;
         }

@@ -26,7 +26,7 @@
             {
                 <tr>
                     <td>@exercise.name</td>
-                    <td>@exercise.description</td>
+                    <td><details><summary>Instructions</summary>@exercise.description</details></td>
                     <td>@Model.fitnessDictionary.sets</td>
                     <td>@Model.fitnessDictionary.reps</td>
                     <td>@Model.fitnessDictionary.restString</td>
@@ -38,6 +38,7 @@
 
     @if (Model.fitnessDictionary.cardio == true)
     {
+    <div>
         <h3>Today's Cardio</h3>
         <dl class="row">
             <dt class="col-md-2">Target Distance: </dt>
@@ -47,6 +48,7 @@
             <dt class="col-md-2">Target Pace: </dt>
             <dd class="col-md-10">@Model.fitnessDictionary.paceString</dd>
         </dl>
+    </div>
     }
 
 </div>

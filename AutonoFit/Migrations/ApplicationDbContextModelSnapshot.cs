@@ -185,6 +185,12 @@ namespace AutonoFit.Migrations
                     b.Property<int?>("WeekId")
                         .HasColumnType("int");
 
+                    b.Property<double?>("mileDistance")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("milePaceSeconds")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -352,8 +358,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "835a0277-9362-48eb-8792-5a06709e695e",
-                            ConcurrencyStamp = "da0a2aa8-01ef-40f8-925b-47f17188292e",
+                            Id = "2fd5069e-d21e-4365-ab9d-d1a2b2f222eb",
+                            ConcurrencyStamp = "63ca362c-46d4-420e-8ba5-fc1dfc0e4c67",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

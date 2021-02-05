@@ -127,39 +127,28 @@ namespace AutonoFit.Controllers
             exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
             //Get rid of repeats
             exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
-
             //Calculate sets/reps, rest time to exercises.
             FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds);
-
             //Decide number of exercises based on time constraints 
             int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, fitnessMetrics, workoutVM.Minutes);
-
             //Randomly select N number of exercises from total collection thus far. 
             List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises);
-
             //Convert ExerciseLibrary objects to ClientExercises
             List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);
-            workoutVM.fitnessDictionary = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
-            
+            workoutVM.fitnessDictionary = fitnessMetrics.cardio == true ? SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics) : fitnessMetrics;
             //Create new workout to contain exercises and other stored data.
             ClientWorkout workout = ClientWorkoutPseudoConstructor(workoutVM);
             _repo.ClientWorkout.CreateClientWorkout(workout);
             await _repo.SaveAsync();
-
             //assign all ClientExercises the workout Id
             await LoadExercisesInWorkout(workoutExercises, workout);
-
+            //Place exercises in ViewModel
             workoutVM.Exercises = randomlyChosenExercises;
 
-            return RedirectToAction("DisplaySingleWorkout", workoutVM);      
+            return View("DisplaySingleWorkout", workoutVM);
         }
 
 
-
-        public ActionResult DisplaySingleWorkout(SingleWorkoutVM singleWorkoutVM)//this parameter subject to change. May be differe VM.
-        {
-            return View(singleWorkoutVM);
-        }
 
         //-----------------------------------Helper Methods----------------------------------------------------
 
