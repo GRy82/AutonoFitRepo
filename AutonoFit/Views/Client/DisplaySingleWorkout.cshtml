@@ -4,6 +4,8 @@
     ViewData["Title"] = "Equipment";
 }
 
+<link rel="stylesheet" href="~/css/SingleWorkout.css" />
+
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-10">
@@ -13,7 +15,7 @@
 
 <hr />
 <div class="container">
-    <table class="table table-dark table-hover">
+    <table class="table table-dark table-hover lift-table">
         <tr>
             <th>Exercise Name</th>
             <th>Description</th>
@@ -38,15 +40,15 @@
 
     @if (Model.fitnessDictionary.cardio == true)
     {
-    <div>
+    <div class="cardio-zone col-md-6">
         <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
         <dl class="row">
-            <dt class="col-md-2">Target Distance: </dt>
-            <dd class="col-md-10">@Model.fitnessDictionary.distanceMiles miles</dd>
-            <dt class="col-md-2">Target Duration: </dt>
-            <dd class="col-md-10">@Model.fitnessDictionary.durationString</dd>
-            <dt class="col-md-2">Target Pace: </dt>
-            <dd class="col-md-10">@Model.fitnessDictionary.paceString</dd>
+            <dt class="col-md-6">Target Distance: </dt>
+            <dd class="col-md-6">@Model.fitnessDictionary.distanceMiles.ToString("#.##") miles</dd>
+            <dt class="col-md-6">Target Duration: </dt>
+            <dd class="col-md-6">@Model.fitnessDictionary.durationString</dd>
+            <dt class="col-md-6">Target Pace: </dt>
+            <dd class="col-md-6">@Model.fitnessDictionary.paceString</dd>
         </dl>
     </div>
     }

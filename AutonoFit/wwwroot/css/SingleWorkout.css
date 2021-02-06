@@ -1,0 +1,23 @@
+﻿dt, dd, h3, dl {
+    padding-left: 20px;
+    color: white;
+}
+
+h3 {
+    padding-bottom: 30px;
+    border-bottom: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: lightgray;
+}
+
+.cardio-zone {
+    background-color: rgba(30, 90, 255, .9);
+    box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+    padding-bottom: 30px;
+    padding-top: 20px;
+}
+
+.lift-table {
+    background-color: rgba(250, 30, 90, .9);
+    box-shadow: rgba(163, 20, 60, .8) 0px 10px 7px;
+}
