@@ -145,6 +145,8 @@ namespace AutonoFit.Controllers
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
             //Place exercises in ViewModel
             workoutVM.Exercises = randomlyChosenExercises;
+            //Run this regular garbage collection function for CLientExercises and ClientWorkouts that are more than a day old and not tied to a week/program.
+            await CleanExerciseWorkoutDatabase();
 
             return View("DisplaySingleWorkout", workoutVM);
         }
@@ -152,6 +154,22 @@ namespace AutonoFit.Controllers
 
 
         //-----------------------------------Helper Methods----------------------------------------------------
+
+        private async Task CleanExerciseWorkoutDatabase()
+        {
+            List<ClientWorkout> oldWorkouts = await _repo.ClientWorkout.GetOldWorkoutsAsync();
+            foreach (ClientWorkout workout in oldWorkouts)
+            {
+                List<ClientExercise> oldExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id);
+                foreach (ClientExercise exercise in oldExercises)
+                {
+                    _repo.ClientExercise.DeleteClientExercise(exercise);
+                }
+                _repo.ClientWorkout.DeleteClientWorkout(workout);
+            }
+
+            await _repo.SaveAsync();
+        }
 
         private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
