@@ -92,6 +92,11 @@ namespace AutonoFit.Controllers
             return View(singleWorkoutVM);
         }
 
+        //public async Task<ActionResult> ProgramSetup()
+        //{
+
+        //}
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -104,7 +104,10 @@ namespace AutonoFit.Migrations
                     b.Property<int>("RestSeconds")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan>("TimeSinceLast")
+                    b.Property<int>("Sets")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("TimeSinceLast")
                         .HasColumnType("time");
 
                     b.Property<int?>("WeekId")
@@ -120,15 +123,35 @@ namespace AutonoFit.Migrations
                     b.ToTable("ClientExercise");
                 });
 
-            modelBuilder.Entity("AutonoFit.Models.ClientWeek", b =>
+            modelBuilder.Entity("AutonoFit.Models.ClientProgram", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ProgramId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
+
+                    b.Property<int>("GoalOneId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GoalTwoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProgramId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("ClientProgram");
+                });
+
+            modelBuilder.Entity("AutonoFit.Models.ClientWeek", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Completed")
                         .HasColumnType("bit");
@@ -137,6 +160,9 @@ namespace AutonoFit.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("MostRecentWorkoutId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProgramId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("WeekEnd")
@@ -153,9 +179,9 @@ namespace AutonoFit.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
-
                     b.HasIndex("MostRecentWorkoutId");
+
+                    b.HasIndex("ProgramId");
 
                     b.ToTable("ClientWeek");
                 });
@@ -358,8 +384,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2fd5069e-d21e-4365-ab9d-d1a2b2f222eb",
-                            ConcurrencyStamp = "63ca362c-46d4-420e-8ba5-fc1dfc0e4c67",
+                            Id = "c2da45c9-0df7-457a-aea0-5589fcd293cf",
+                            ConcurrencyStamp = "77fa7989-7f68-46bb-a20c-12432888fabe",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -565,17 +591,26 @@ namespace AutonoFit.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AutonoFit.Models.ClientWeek", b =>
+            modelBuilder.Entity("AutonoFit.Models.ClientProgram", b =>
                 {
                     b.HasOne("AutonoFit.Models.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
+            modelBuilder.Entity("AutonoFit.Models.ClientWeek", b =>
+                {
                     b.HasOne("AutonoFit.Models.ClientWorkout", "ClientWorkout")
                         .WithMany()
                         .HasForeignKey("MostRecentWorkoutId");
+
+                    b.HasOne("AutonoFit.Models.ClientProgram", "ClientProgram")
+                        .WithMany()
+                        .HasForeignKey("ProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AutonoFit.Models.ClientWorkout", b =>

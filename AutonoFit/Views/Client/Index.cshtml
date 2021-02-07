@@ -21,7 +21,8 @@
 <div class="row">
     <div class="col-lg-3"></div>
     <div class="col-lg-6">
-        <button class="btn-lg btn-FitZone" id="new-program">New Program</button><button class="btn-lg btn-FitZone" id="continue-program">Continue</button>
+        <form asp-action="ProgramSetup"><input type="submit" class="btn-lg btn-FitZone" id="new-program" value="New Program"/></form>
+        <form asp-action="ProgramContinue"><input type="submit" class="btn-lg btn-FitZone" id="continue-program" value="Continue"/></form>
     </div>
     <div class="col-lg-3"></div>
 </div>

@@ -12,9 +12,9 @@ namespace AutonoFit.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Client")]
-        public int ClientId { get; set; }
-        public Client Client { get; set; }
+        [ForeignKey("ClientProgram")]
+        public int ProgramId { get; set; }
+        public ClientProgram ClientProgram { get; set; }
 
         public DateTime WeekStart { get; set; }
 

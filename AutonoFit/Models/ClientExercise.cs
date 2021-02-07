@@ -23,6 +23,8 @@ namespace AutonoFit.Models
 
         public int Reps { get; set; }
 
+        public int Sets { get; set; }
+
         public int RestSeconds { get; set; }
 
         //These are used for gauging progression
@@ -30,6 +32,6 @@ namespace AutonoFit.Models
 
         public int? LastPerformed { get; set; } //Id of the exercise the last time it was performed
 
-        public TimeSpan TimeSinceLast { get; set; } //Time since this exercise(a ClientExercise with same ExerciseId) was last performed.
+        public TimeSpan? TimeSinceLast { get; set; } //Time since this exercise(a ClientExercise with same ExerciseId) was last performed.
     }
 }

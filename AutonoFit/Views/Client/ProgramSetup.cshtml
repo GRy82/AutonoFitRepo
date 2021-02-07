@@ -1,7 +1,7 @@
 ﻿@model AutonoFit.ViewModels.SingleWorkoutVM
 
 @{
-    ViewData["Title"] = "Workout Setup";
+    ViewData["Title"] = "Program Setup";
     ViewData["ErrorMessage"] = Model.ErrorMessage;
 }
 
@@ -29,14 +29,21 @@
                 <div>
                     <br />
                     <div>
-                        <p><b>Select session duration</b></p>
+                        <p><b>How many days are you available to workout each week?</b></p>
                         <label asp-for="@Model.Minutes" style="margin-right: 15px;">Session Length: </label>
                         <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block; margin-right: 10px;" />
                         <p style="display: inline-block;">minutes</p>
                     </div>
                     <br />
                     <div>
-                        <p><b>Select 1-2 fitness goals for the session</b></p>
+                        <p><b>How much time do you have for each session?</b></p>
+                        <label asp-for="@Model.Minutes" style="margin-right: 15px;">Session Length: </label>
+                        <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block; margin-right: 10px;" />
+                        <p style="display: inline-block;">minutes</p>
+                    </div>
+                    <br />
+                    <div>
+                        <p><b>Select 1-2 fitness goals</b></p>
                         <label asp-for="@Model.GoalIds[0]" style="margin-right: 15px;">Goal One: </label>
                         <select asp-for="@Model.GoalIds[0]" id="goal-one" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
                             <option value="0">Select below</option>
@@ -67,19 +74,6 @@
                     <div style="display: none;" id="mile-sec">
                         <input asp-for="@Model.MileSeconds" value="00" min="0" max="59" style="display: inline-block; margin-right: 10px;" />
                         <p style="display: inline-block;">seconds</p>
-                    </div>
-
-                    <br />
-                    <br />
-                    <div>
-                        <p><b>Are you wanting to work upper body, lower, or both?</b></p>
-                        <label asp-for="@Model.BodySection" style="margin-right: 15px;">Workout Type: </label>
-                        <select asp-for="@Model.BodySection">
-                            <option value="">Select below</option>
-                            <option value="Upper Body">Upper Body</option>
-                            <option value="Lower Body">Lower Body</option>
-                            <option value="Both">Both</option>
-                        </select>
                     </div>
 
                     <br />
