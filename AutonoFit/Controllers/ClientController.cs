@@ -48,6 +48,16 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
+        public async Task<ActionResult> CompleteSingleWorkout(int workoutId)
+        {
+            ClientWorkout clientWorkout = await _repo.ClientWorkout.GetClientWorkoutAsync(workoutId);
+            clientWorkout.Completed = true;
+            _repo.ClientWorkout.EditClientWorkout(clientWorkout);
+            await _repo.SaveAsync();
+
+            return RedirectToAction("Index");
+        }
+
         public async Task<ActionResult> AccountOverview()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
