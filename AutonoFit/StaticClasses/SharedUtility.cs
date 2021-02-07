@@ -160,5 +160,18 @@ namespace AutonoFit.StaticClasses
             fitDict.paceString = ConvertToMinSecString((int)(fitDict.milePace * 60));
             return fitDict;
         }
+
+        public static string RemoveTags(string stringWithTags)
+        {
+            string[] tagsArray = new string[] { "<p>", "<strong>" };
+            for(int i = 0; i < tagsArray.Length; i++)
+            {
+                stringWithTags = stringWithTags.Replace(tagsArray[i], "");
+                string tempstring = "<" + tagsArray[i].Replace('<', '/');
+                stringWithTags = stringWithTags.Replace(tempstring, "");
+            }
+
+            return stringWithTags;
+        }
     }
 }
