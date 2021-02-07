@@ -53,9 +53,8 @@
         </div>
     }
 
-    <form asp-action="Index">
-        <input type="hidden" name="clientId" asp-for="@Model.Client.ClientId"/>
-        <input type="hidden" name="workoutId" asp-for="@Model.Workout.Id"/>
+    <form asp-action="CompleteSingleWorkout" style="top: 30px;">
+        <input type="hidden" name="workoutId" id=""workoutId" asp-for="@Model.Workout.Id"/>
         <input type="submit" class="btn btn-primary" value="Workout Completed" />
     </form>
    

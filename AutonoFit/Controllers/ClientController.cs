@@ -48,6 +48,9 @@ namespace AutonoFit.Controllers
             return View(client);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> CompleteSingleWorkout(int workoutId)
         {
             ClientWorkout clientWorkout = await _repo.ClientWorkout.GetClientWorkoutAsync(workoutId);
@@ -152,6 +155,7 @@ namespace AutonoFit.Controllers
             await _repo.SaveAsync();
             //assign all ClientExercises the workout Id
             await LoadExercisesInWorkout(workoutExercises, workout);
+            workoutVM.Workout = workout;
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
             //Place exercises in ViewModel
             workoutVM.Exercises = randomlyChosenExercises;
@@ -167,7 +171,10 @@ namespace AutonoFit.Controllers
 
         private async Task CleanExerciseWorkoutDatabase()
         {
-            List<ClientWorkout> oldWorkouts = await _repo.ClientWorkout.GetOldWorkoutsAsync();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Client client = await _repo.Client.GetClientAsync(userId);
+
+            List<ClientWorkout> oldWorkouts = await _repo.ClientWorkout.GetOldWorkoutsAsync(client.ClientId);
             foreach (ClientWorkout workout in oldWorkouts)
             {
                 List<ClientExercise> oldExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id);

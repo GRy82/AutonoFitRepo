@@ -11,7 +11,7 @@ namespace AutonoFit.Contracts
         void CreateClientWorkout(ClientWorkout clientWorkout);
         Task<List<ClientWorkout>> GetAllClientWorkoutsAsync(int clientId);
         Task<ClientWorkout> GetClientWorkoutAsync(int workoutId);
-        Task<List<ClientWorkout>> GetOldWorkoutsAsync();
+        Task<List<ClientWorkout>> GetOldWorkoutsAsync(int clientId);
         void EditClientWorkout(ClientWorkout clientWorkout);
         void DeleteClientWorkout(ClientWorkout clientWorkout);
     }
