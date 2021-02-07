@@ -142,6 +142,7 @@ namespace AutonoFit.Controllers
             await _repo.SaveAsync();
             //assign all ClientExercises the workout Id
             await LoadExercisesInWorkout(workoutExercises, workout);
+            randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
             //Place exercises in ViewModel
             workoutVM.Exercises = randomlyChosenExercises;
 
@@ -179,6 +180,16 @@ namespace AutonoFit.Controllers
                 _repo.ClientExercise.CreateClientExercise(exercise);
             }
             await _repo.SaveAsync();
+        }
+
+        private List<Result> CleanExerciseDescriptions(List<Result> exercises)
+        {
+            foreach (Result exercise in exercises)
+            {
+                exercise.description = SharedUtility.RemoveTags(exercise.description);
+            }
+
+            return exercises;
         }
 
         //---------------------------------------------------------------------------------------------------
