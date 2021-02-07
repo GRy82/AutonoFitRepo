@@ -169,6 +169,7 @@ namespace AutonoFit.Controllers
             workout.ClientId = workoutVM.Client.ClientId;
             workout.mileDistance = workoutVM.fitnessDictionary.distanceMiles;
             workout.milePaceSeconds = (int)(workoutVM.fitnessDictionary.milePace * 60);
+            workout.DatePerformed = DateTime.Now;
             return workout;
         }
 
