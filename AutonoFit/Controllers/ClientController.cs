@@ -92,10 +92,17 @@ namespace AutonoFit.Controllers
             return View(singleWorkoutVM);
         }
 
-        //public async Task<ActionResult> ProgramSetup()
-        //{
+        public async Task<ActionResult> ProgramSetup(string errorMessage = null)
+        {
+            ProgramSetupVM programSetupVM = new ProgramSetupVM()
+            {
+                AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
+                GoalIds = new List<int> { 0, 0 },
+                ErrorMessage = errorMessage
+            };
 
-        //}
+            return View(programSetupVM);
+        }
 
 
         [HttpPost]
@@ -116,6 +123,18 @@ namespace AutonoFit.Controllers
             return RedirectToAction("GatherEligibleExercises", singleWorkoutVM);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
+        {
+            if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
+            {
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new { controller = "Client", action = "SingleWorkoutSetup",
+                    errorMessage = "You must choose at least one exercise goal to continue." }));
+            }
+
+            return RedirectToAction("ProgramOverview", programSetuptVM);
+        }
        
         public async Task<ActionResult> GatherEligibleExercises(SingleWorkoutVM workoutVM)
         {

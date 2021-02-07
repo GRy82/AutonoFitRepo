@@ -17,6 +17,8 @@ namespace AutonoFit.ViewModels
 
         public int Minutes { get; set; }
 
+        public int Days { get; set; }
+
         public int MileMinutes { get; set; }
 
         public int MileSeconds { get; set; }

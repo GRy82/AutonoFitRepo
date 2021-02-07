@@ -1,4 +1,4 @@
-﻿@model AutonoFit.ViewModels.SingleWorkoutVM
+﻿@model AutonoFit.ViewModels.ProgramSetupVM
 
 @{
     ViewData["Title"] = "Program Setup";
@@ -25,13 +25,13 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-10">
-            <form asp-action="CheckSingleWorkoutFormValidity" method="post">
+            <form asp-action="CheckProgramFormValidity" method="post">
                 <div>
                     <br />
                     <div>
                         <p><b>How many days are you available to workout each week?</b></p>
-                        <label asp-for="@Model.Minutes" style="margin-right: 15px;">Session Length: </label>
-                        <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block; margin-right: 10px;" />
+                        <label asp-for="@Model.Days" style="margin-right: 15px;">Session Length: </label>
+                        <input asp-for="@Model.Days" min="2" max="6" value="4" style="display: inline-block; margin-right: 10px;" />
                         <p style="display: inline-block;">minutes</p>
                     </div>
                     <br />
