@@ -13,7 +13,16 @@ namespace AutonoFit.StaticClasses
 
         public static async Task<bool> ProgramNameTaken(string programName, int clientId)
         {
-            List<ClientProgram> programs = await _repo.ClientProgram.GetAllClientProgramsAsync(clientId);
+            List<ClientProgram> programs;
+            try
+            {
+                programs = await _repo.ClientProgram.GetAllClientProgramsAsync(clientId);
+            }
+            catch(NullReferenceException)
+            {
+                programs = new List<ClientProgram> { };
+            }
+
             foreach (ClientProgram program in programs)
             {
                 if (program.ProgramName == programName)

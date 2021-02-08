@@ -452,13 +452,20 @@ namespace AutonoFit.Controllers
             try
             {
                 ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(id);
-                List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(clientProgram.ProgramId);
+                List<ClientWeek> clientWeeks;
+                try { clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(clientProgram.ProgramId); }
+                catch(NullReferenceException) { clientWeeks = new List<ClientWeek>() { }; }
                 foreach (ClientWeek week in clientWeeks)
                 {
-                    List<ClientWorkout> clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);
+                    List<ClientWorkout> clientWorkouts;
+                    try
+                    { clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);  }
+                    catch (NullReferenceException)  { clientWorkouts = new List<ClientWorkout>() { }; }
                     foreach (ClientWorkout workout in clientWorkouts)
                     {
-                        List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id);
+                        List<ClientExercise> clientExercises;
+                        try { clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id); }
+                        catch (NullReferenceException) { clientExercises = new List<ClientExercise>() { }; }
                         foreach (ClientExercise exercise in clientExercises)
                         {
                             _repo.ClientExercise.DeleteClientExercise(exercise);
