@@ -26,11 +26,6 @@ namespace AutonoFit.Models
 
         public bool Completed { get; set; }
 
-
-        [ForeignKey("ClientWorkout")]
-        public int? MostRecentWorkoutId { get; set; }
-        public ClientWorkout ClientWorkout { get; set; }
-
         public int? LastWeekId { get; set; }
     }
 }

@@ -237,12 +237,13 @@ namespace AutonoFit.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<int>(nullable: false),
                     ExerciseId = table.Column<int>(nullable: false),
-                    WeekId = table.Column<int>(nullable: true),
                     WorkoutId = table.Column<int>(nullable: false),
                     RPE = table.Column<int>(nullable: false),
+                    NumberRM = table.Column<int>(nullable: false),
                     Reps = table.Column<int>(nullable: false),
                     Sets = table.Column<int>(nullable: false),
                     RestSeconds = table.Column<int>(nullable: false),
+                    LastAdjusted = table.Column<string>(nullable: true),
                     DeltaRPECount = table.Column<int>(nullable: false),
                     LastPerformed = table.Column<int>(nullable: true),
                     TimeSinceLast = table.Column<TimeSpan>(nullable: true)
@@ -265,40 +266,19 @@ namespace AutonoFit.Migrations
                     ProgramId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<int>(nullable: false),
+                    MostRecentWorkoutId = table.Column<int>(nullable: true),
+                    MinutesPerSession = table.Column<int>(nullable: false),
+                    DaysPerWeek = table.Column<int>(nullable: false),
+                    ProgramName = table.Column<string>(nullable: true),
                     GoalOneId = table.Column<int>(nullable: false),
-                    GoalTwoId = table.Column<int>(nullable: true)
+                    GoalTwoId = table.Column<int>(nullable: true),
+                    ProgramStart = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClientProgram", x => x.ProgramId);
                     table.ForeignKey(
                         name: "FK_ClientProgram_Client_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Client",
-                        principalColumn: "ClientId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClientWorkout",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClientId = table.Column<int>(nullable: false),
-                    WeekId = table.Column<int>(nullable: true),
-                    milePaceSeconds = table.Column<int>(nullable: true),
-                    mileDistance = table.Column<double>(nullable: true),
-                    Completed = table.Column<bool>(nullable: false),
-                    DatePerformed = table.Column<DateTime>(nullable: true),
-                    OverallDifficultyRating = table.Column<int>(nullable: true),
-                    LastWorkoutId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClientWorkout", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ClientWorkout_Client_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Client",
                         principalColumn: "ClientId",
@@ -317,24 +297,48 @@ namespace AutonoFit.Migrations
                     WorkoutsExpected = table.Column<int>(nullable: false),
                     WorkoutsCompleted = table.Column<int>(nullable: false),
                     Completed = table.Column<bool>(nullable: false),
-                    MostRecentWorkoutId = table.Column<int>(nullable: true),
                     LastWeekId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClientWeek", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClientWeek_ClientWorkout_MostRecentWorkoutId",
-                        column: x => x.MostRecentWorkoutId,
-                        principalTable: "ClientWorkout",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_ClientWeek_ClientProgram_ProgramId",
                         column: x => x.ProgramId,
                         principalTable: "ClientProgram",
                         principalColumn: "ProgramId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClientWorkout",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<int>(nullable: false),
+                    WeekId = table.Column<int>(nullable: true),
+                    milePaceSeconds = table.Column<int>(nullable: true),
+                    mileDistance = table.Column<double>(nullable: true),
+                    Completed = table.Column<bool>(nullable: false),
+                    DatePerformed = table.Column<DateTime>(nullable: true),
+                    OverallDifficultyRating = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientWorkout", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientWorkout_Client_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Client",
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClientWorkout_ClientWeek_WeekId",
+                        column: x => x.WeekId,
+                        principalTable: "ClientWeek",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -367,7 +371,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "c2da45c9-0df7-457a-aea0-5589fcd293cf", "77fa7989-7f68-46bb-a20c-12432888fabe", "Client", "CLIENT" });
+                values: new object[] { "0d957c06-d35c-4145-b04e-b18cf0620afb", "ca1e30df-a045-4b1b-89cc-38ba9f90da79", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",
@@ -462,8 +466,8 @@ namespace AutonoFit.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientWeek_MostRecentWorkoutId",
-                table: "ClientWeek",
+                name: "IX_ClientProgram_MostRecentWorkoutId",
+                table: "ClientProgram",
                 column: "MostRecentWorkoutId");
 
             migrationBuilder.CreateIndex(
@@ -492,10 +496,10 @@ namespace AutonoFit.Migrations
                 column: "WorkoutId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ClientWorkout_ClientWeek_WeekId",
-                table: "ClientWorkout",
-                column: "WeekId",
-                principalTable: "ClientWeek",
+                name: "FK_ClientProgram_ClientWorkout_MostRecentWorkoutId",
+                table: "ClientProgram",
+                column: "MostRecentWorkoutId",
+                principalTable: "ClientWorkout",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -515,8 +519,8 @@ namespace AutonoFit.Migrations
                 table: "ClientWorkout");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_ClientWeek_ClientWorkout_MostRecentWorkoutId",
-                table: "ClientWeek");
+                name: "FK_ClientProgram_ClientWorkout_MostRecentWorkoutId",
+                table: "ClientProgram");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");

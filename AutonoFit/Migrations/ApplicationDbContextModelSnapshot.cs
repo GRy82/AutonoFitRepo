@@ -92,7 +92,13 @@ namespace AutonoFit.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
+                    b.Property<string>("LastAdjusted")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("LastPerformed")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberRM")
                         .HasColumnType("int");
 
                     b.Property<int>("RPE")
@@ -109,9 +115,6 @@ namespace AutonoFit.Migrations
 
                     b.Property<TimeSpan?>("TimeSinceLast")
                         .HasColumnType("time");
-
-                    b.Property<int?>("WeekId")
-                        .HasColumnType("int");
 
                     b.Property<int>("WorkoutId")
                         .HasColumnType("int");
@@ -133,18 +136,32 @@ namespace AutonoFit.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
+                    b.Property<int>("DaysPerWeek")
+                        .HasColumnType("int");
+
                     b.Property<int>("GoalOneId")
                         .HasColumnType("int");
 
                     b.Property<int?>("GoalTwoId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("programStart")
+                    b.Property<int>("MinutesPerSession")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MostRecentWorkoutId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProgramName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ProgramStart")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ProgramId");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("MostRecentWorkoutId");
 
                     b.ToTable("ClientProgram");
                 });
@@ -160,9 +177,6 @@ namespace AutonoFit.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int?>("LastWeekId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MostRecentWorkoutId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProgramId")
@@ -181,8 +195,6 @@ namespace AutonoFit.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MostRecentWorkoutId");
 
                     b.HasIndex("ProgramId");
 
@@ -204,9 +216,6 @@ namespace AutonoFit.Migrations
 
                     b.Property<DateTime?>("DatePerformed")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("LastWorkoutId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("OverallDifficultyRating")
                         .HasColumnType("int");
@@ -387,8 +396,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fa0b38a2-f53d-44af-b19c-5fbbeca5424f",
-                            ConcurrencyStamp = "b7f5d7e2-9f6e-45a8-8455-28ea27834615",
+                            Id = "0d957c06-d35c-4145-b04e-b18cf0620afb",
+                            ConcurrencyStamp = "ca1e30df-a045-4b1b-89cc-38ba9f90da79",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -601,14 +610,14 @@ namespace AutonoFit.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AutonoFit.Models.ClientWorkout", "ClientWorkout")
+                        .WithMany()
+                        .HasForeignKey("MostRecentWorkoutId");
                 });
 
             modelBuilder.Entity("AutonoFit.Models.ClientWeek", b =>
                 {
-                    b.HasOne("AutonoFit.Models.ClientWorkout", "ClientWorkout")
-                        .WithMany()
-                        .HasForeignKey("MostRecentWorkoutId");
-
                     b.HasOne("AutonoFit.Models.ClientProgram", "ClientProgram")
                         .WithMany()
                         .HasForeignKey("ProgramId")

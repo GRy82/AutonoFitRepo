@@ -7,16 +7,16 @@
 <h1>Select Program To Continue</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Index">Back</a>
 </p>
 <table class="table">
     <thead>
         <tr>     
             <th>
-                @Html.DisplayNameFor(model => model.ProgramName)
+                Program Name
             </th>       
             <th>
-                @Html.DisplayNameFor(model => model.ProgramStart.Date.ToString("MM/dd/yy"))
+                Date Created
             </th>
             <th></th>
         </tr>
@@ -28,7 +28,7 @@
                 @Html.DisplayFor(modelItem => item.ProgramName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProgramStart)
+                @Html.DisplayFor(modelItem => item.ProgramStart.Date.ToString("MM/dd/yy"))
             </td>
             <td>
                 <a class="btn btn-primary" asp-action="ProgramOverview" asp-route-id="@item.ProgramId">Select</a>

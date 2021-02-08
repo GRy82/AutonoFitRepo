@@ -31,7 +31,6 @@ namespace AutonoFit.Models
 
         public int? OverallDifficultyRating { get; set; }
 
-        public int? LastWorkoutId { get; set; }
 
 
 

@@ -16,6 +16,10 @@ namespace AutonoFit.Models
         public int ClientId { get; set; }
         public Client Client { get; set; }
 
+        [ForeignKey("ClientWorkout")]
+        public int? MostRecentWorkoutId { get; set; }
+        public ClientWorkout ClientWorkout { get; set; }
+
         public int MinutesPerSession { get; set; }
 
         public int DaysPerWeek { get; set; }
@@ -27,6 +31,8 @@ namespace AutonoFit.Models
         public int? GoalTwoId { get; set; }
 
         public DateTime ProgramStart { get; set; }
+
+
 
     }
 }

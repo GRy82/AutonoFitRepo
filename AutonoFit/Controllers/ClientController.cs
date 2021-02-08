@@ -452,8 +452,25 @@ namespace AutonoFit.Controllers
             try
             {
                 ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(id);
+                List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(clientProgram.ProgramId);
+                foreach (ClientWeek week in clientWeeks)
+                {
+                    List<ClientWorkout> clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);
+                    foreach (ClientWorkout workout in clientWorkouts)
+                    {
+                        List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id);
+                        foreach (ClientExercise exercise in clientExercises)
+                        {
+                            _repo.ClientExercise.DeleteClientExercise(exercise);
+                        }
+
+                        _repo.ClientWorkout.DeleteClientWorkout(workout);
+                    }
+                    _repo.ClientWeek.DeleteClientWeek(week);
+                }
                 _repo.ClientProgram.DeleteClientProgram(clientProgram);
                 await _repo.SaveAsync();
+
                 return RedirectToAction("ProgramsList");
             }
             catch
