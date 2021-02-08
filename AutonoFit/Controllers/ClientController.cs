@@ -1,4 +1,5 @@
-﻿using AutonoFit.Contracts;
+﻿using AutonoFit.Classes;
+using AutonoFit.Contracts;
 using AutonoFit.Models;
 using AutonoFit.Services;
 using AutonoFit.StaticClasses;
@@ -21,9 +22,11 @@ namespace AutonoFit.Controllers
     {
         private IRepositoryWrapper _repo;
         private ExerciseLibraryService _exerciseLibraryService;
+        private ProgramModule programModule;
         public ClientController(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
+            programModule = new ProgramModule(_repo);
             _exerciseLibraryService = exerciseLibraryService;
         }
 
@@ -195,13 +198,13 @@ namespace AutonoFit.Controllers
 
             if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
             {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new {controller = "Client", action = "ProgramSetup",
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
                     errorMessage = "You must choose at least one exercise goal to continue." }));
             }
 
-            if (await ProgramModule.ProgramNameTaken(programSetuptVM.ProgramName, client.ClientId))
+            if (await programModule.ProgramNameTaken(programSetuptVM.ProgramName, client.ClientId))
             {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new{ controller = "Client", action = "ProgramSetup",
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
                     errorMessage = "That name is already taken." }));
             }
 
@@ -218,7 +221,7 @@ namespace AutonoFit.Controllers
             _repo.ClientProgram.CreateClientProgram(clientProgram);
             await _repo.SaveAsync();
 
-            return RedirectToAction("ProgramOverview", clientProgram.ProgramId);
+            return RedirectToAction("ProgramOverview", new { programId = clientProgram.ProgramId });
         }
 
         public async Task<ActionResult> ProgramsList(int clientId)
@@ -233,16 +236,17 @@ namespace AutonoFit.Controllers
         {
             ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             Client client = await _repo.Client.GetClientAsync(clientProgram.ClientId);
-            int workoutsCompleted = await ProgramModule.GetWorkoutsCompletedByProgram(programId);
+            int workoutsCompleted = await programModule.GetWorkoutsCompletedByProgram(programId);
+            string goalTwoName = clientProgram.GoalTwoId == 0 ? null : (await _repo.Goals.GetGoalsAsync(Convert.ToInt32(clientProgram.GoalTwoId))).Name;
             ProgramOverviewVM programOverviewVM = new ProgramOverviewVM()
             {
                 WorkoutsCompleted = workoutsCompleted,
-                AttendanceRating = await ProgramModule.CalculateAttendanceRating(programId, workoutsCompleted),
                 ClientProgram = clientProgram,
                 ClientName = client.FirstName + " " + client.LastName,
                 GoalOneName = (await _repo.Goals.GetGoalsAsync(clientProgram.GoalOneId)).Name,
-                GoalTwoName = (await _repo.Goals?.GetGoalsAsync(Convert.ToInt32(clientProgram.GoalTwoId))).Name, // May have to do two separate lines for this... Check back here when testing/debugging.
-                ProgramStart = clientProgram.ProgramStart.Date.ToString("MM/dd/yy")
+                GoalTwoName = goalTwoName,
+                ProgramStart = clientProgram.ProgramStart.Date.ToString("MM/dd/yy"),
+                AttendanceRating = await programModule.CalculateAttendanceRating(programId, workoutsCompleted)
             };
 
             return View(programOverviewVM);
@@ -452,25 +456,17 @@ namespace AutonoFit.Controllers
             try
             {
                 ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(id);
-                List<ClientWeek> clientWeeks;
-                try { clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(clientProgram.ProgramId); }
-                catch(NullReferenceException) { clientWeeks = new List<ClientWeek>() { }; }
+                List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(clientProgram.ProgramId); 
                 foreach (ClientWeek week in clientWeeks)
                 {
-                    List<ClientWorkout> clientWorkouts;
-                    try
-                    { clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);  }
-                    catch (NullReferenceException)  { clientWorkouts = new List<ClientWorkout>() { }; }
+                    List<ClientWorkout> clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);
                     foreach (ClientWorkout workout in clientWorkouts)
                     {
-                        List<ClientExercise> clientExercises;
-                        try { clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id); }
-                        catch (NullReferenceException) { clientExercises = new List<ClientExercise>() { }; }
+                        List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id); 
                         foreach (ClientExercise exercise in clientExercises)
                         {
                             _repo.ClientExercise.DeleteClientExercise(exercise);
                         }
-
                         _repo.ClientWorkout.DeleteClientWorkout(workout);
                     }
                     _repo.ClientWeek.DeleteClientWeek(week);

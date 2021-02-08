@@ -25,14 +25,20 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ProgramName)
+                @item.ProgramName
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProgramStart.Date.ToString("MM/dd/yy"))
+                @item.ProgramStart.Date.ToString("MM/dd/yy")
             </td>
             <td>
-                <a class="btn btn-primary" asp-action="ProgramOverview" asp-route-id="@item.ProgramId">Select</a>
-                <a lass="btn btn-primary" asp-action="DeleteProgram" asp-route-id="@item.ProgramId">Delete</a>
+                <form asp-action="ProgramOverview">
+                    <input type="hidden" asp-for="@item.ProgramId" name="programId" />
+                    <input type="submit" class="btn btn-primary" value="Select" />
+                </form>
+                <form asp-action="DeleteProgram">
+                    <input type="hidden" asp-for="@item.ProgramId" name="id"/>
+                    <input type="submit" class="btn btn-primary" value="Delete" style="display: inline-block" />
+                </form>
             </td>
         </tr>
 }

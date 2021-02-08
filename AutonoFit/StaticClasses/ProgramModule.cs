@@ -5,23 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AutonoFit.StaticClasses
+namespace AutonoFit.Classes
 {
-    public static class ProgramModule
+    public class ProgramModule
     {
-        private static readonly IRepositoryWrapper _repo;
+        private readonly IRepositoryWrapper _repo;
 
-        public static async Task<bool> ProgramNameTaken(string programName, int clientId)
+        public ProgramModule(IRepositoryWrapper repo)
         {
-            List<ClientProgram> programs;
-            try
-            {
-                programs = await _repo.ClientProgram.GetAllClientProgramsAsync(clientId);
-            }
-            catch(NullReferenceException)
-            {
-                programs = new List<ClientProgram> { };
-            }
+            _repo = repo;
+        }
+
+        public async Task<bool> ProgramNameTaken(string programName, int clientId)
+        {
+            List<ClientProgram> programs = await _repo.ClientProgram.GetAllClientProgramsAsync(clientId); 
 
             foreach (ClientProgram program in programs)
             {
@@ -34,10 +31,11 @@ namespace AutonoFit.StaticClasses
             return false;
         }
 
-        public static async Task<int> GetWorkoutsCompletedByProgram(int programId)
+        public async Task<int> GetWorkoutsCompletedByProgram(int programId)
         {
             int totalWorkoutCount = 0;
-            List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(programId);
+            List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(programId); 
+
             foreach(ClientWeek week in clientWeeks)
             {
                 List<ClientWorkout> workouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);
@@ -53,14 +51,16 @@ namespace AutonoFit.StaticClasses
             return totalWorkoutCount;
         }
 
-        public static async Task<double> CalculateAttendanceRating(int programId, int workoutsCompleted)
+        public async Task<double> CalculateAttendanceRating(int programId, int workoutsCompleted)
         {
-            int totalExpectedSessions = 0;
+            double attendanceRating = 0;
             ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             TimeSpan timeSinceProgramStart = DateTime.Now - clientProgram.ProgramStart;
-            totalExpectedSessions = workoutsCompleted / (clientProgram.DaysPerWeek * (timeSinceProgramStart.Days / 7));
+            int programLengthDays = timeSinceProgramStart.Days < 1 ? 1 : timeSinceProgramStart.Days;
+            double weeks = programLengthDays / 7 < 1 ? 1 : programLengthDays / 7;
+            attendanceRating = workoutsCompleted / (clientProgram.DaysPerWeek * Math.Round(weeks));
 
-            return totalExpectedSessions;
+            return attendanceRating * 100;
         }
 
     }

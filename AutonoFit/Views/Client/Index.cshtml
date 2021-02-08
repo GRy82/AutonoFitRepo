@@ -21,8 +21,13 @@
 <div class="row">
     <div class="col-lg-3"></div>
     <div class="col-lg-6">
-        <form asp-action="ProgramSetup"><input type="submit" class="btn-lg btn-FitZone" id="new-program" value="New Program"/></form>
-        <form asp-action="ProgramsList"><input type="submit" asp-for="@Model.ClientId" name="clientId" class="btn-lg btn-FitZone" id="continue-program" value="Continue"/></form>
+        <form asp-action="ProgramSetup">
+            <input type="submit" class="btn-lg btn-FitZone" id="new-program" value="New Program"/>
+        </form>
+        <form asp-action="ProgramsList">
+            <input type="hidden" asp-for="@Model.ClientId" name="clientId"/>
+            <input type="submit" class="btn-lg btn-FitZone" id="continue-program" value="Continue"/>
+        </form>
     </div>
     <div class="col-lg-3"></div>
 </div>
