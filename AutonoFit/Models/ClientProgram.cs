@@ -16,13 +16,17 @@ namespace AutonoFit.Models
         public int ClientId { get; set; }
         public Client Client { get; set; }
 
+        public int MinutesPerSession { get; set; }
+
+        public int DaysPerWeek { get; set; }
+
         public string ProgramName { get; set; }
 
         public int GoalOneId { get; set; }
 
         public int? GoalTwoId { get; set; }
 
-        public DateTime programStart { get; set; }
+        public DateTime ProgramStart { get; set; }
 
     }
 }

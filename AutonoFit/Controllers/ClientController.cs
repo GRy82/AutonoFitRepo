@@ -210,7 +210,9 @@ namespace AutonoFit.Controllers
                 ClientId = client.ClientId,
                 GoalOneId = programSetuptVM.GoalIds[0],
                 GoalTwoId = programSetuptVM.GoalIds[1], //Will be 0 if not set to a goal. Maybe change to a null conditional in the future.
-                programStart = DateTime.Now
+                MinutesPerSession = programSetuptVM.Minutes,
+                DaysPerWeek = programSetuptVM.Days,
+                ProgramStart = DateTime.Now
             };
 
             _repo.ClientProgram.CreateClientProgram(clientProgram);
@@ -231,13 +233,16 @@ namespace AutonoFit.Controllers
         {
             ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             Client client = await _repo.Client.GetClientAsync(clientProgram.ClientId);
+            int workoutsCompleted = await ProgramModule.GetWorkoutsCompletedByProgram(programId);
             ProgramOverviewVM programOverviewVM = new ProgramOverviewVM()
             {
+                WorkoutsCompleted = workoutsCompleted,
+                AttendanceRating = await ProgramModule.CalculateAttendanceRating(programId, workoutsCompleted),
                 ClientProgram = clientProgram,
                 ClientName = client.FirstName + " " + client.LastName,
                 GoalOneName = (await _repo.Goals.GetGoalsAsync(clientProgram.GoalOneId)).Name,
                 GoalTwoName = (await _repo.Goals?.GetGoalsAsync(Convert.ToInt32(clientProgram.GoalTwoId))).Name, // May have to do two separate lines for this... Check back here when testing/debugging.
-                ProgramStart = clientProgram.programStart.Date.ToString("MM/dd/yy")
+                ProgramStart = clientProgram.ProgramStart.Date.ToString("MM/dd/yy")
             };
 
             return View(programOverviewVM);

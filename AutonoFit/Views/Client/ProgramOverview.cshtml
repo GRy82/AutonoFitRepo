@@ -11,12 +11,64 @@
     </div>
     <div class="col-md-2"></div>
     <div class="col-md-10">
-        <h1>@Model.ClientProgram.ProgramName</h1>
+        <h2>@Model.ClientProgram.ProgramName</h2>
+    </div>
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+        <h2>@Model.ClientName</h2>
     </div>
 </div>
 
 <div class="container">
     <div class="row">
-
+        <div class="col-md-2">
+            <strong>Program Start Date:  </strong>
+        </div>
+        <div class="col-md-10">
+            @Model.ProgramStart
+        </div>
+        <div class="col-md-2">
+            <strong>Goal One: </strong>
+        </div>
+        <div class="col-md-10">
+            @Model.GoalOneName
+        </div>
+        @if (Model.GoalTwoName != null)
+        {
+            <div class="col-md-2">
+                <strong>Goal Two: </strong>
+            </div>
+            <div class="col-md-10">
+                @Model.GoalTwoName
+            </div>
+        }
+        <div class="col-md-2">
+            <strong>Days Per Week: </strong>
+        </div>
+        <div class="col-md-10">
+            @Model.ClientProgram.DaysPerWeek
+        </div>
+        <div class="col-md-2">
+            <strong>Minutes Per Session: </strong>
+        </div>
+        <div class="col-md-10">
+            @Model.ClientProgram.MinutesPerSession
+        </div>
+        <div class="col-md-2">
+            <strong>Workouts Completed: </strong>
+        </div>
+        <div class="col-md-10">
+            @Model.WorkoutsCompleted
+        </div>
+        <div class="col-md-2">
+            <strong>Workout Completion %: </strong>
+        </div>
+        <div class="col-md-10">
+            @Model.AttendanceRating
+        </div>
+        <form asp-action="GenerateProgramWorkout">
+            <input class="btn btn-primary" type="submit" value="Generate Next Workout" />
+        </form>
+        
     </div>
 </div>

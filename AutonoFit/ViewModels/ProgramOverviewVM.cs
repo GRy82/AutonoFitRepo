@@ -18,6 +18,9 @@ namespace AutonoFit.ViewModels
 
         public string ClientName { get; set; }
 
+        public int WorkoutsCompleted { get; set; }
+
+        public double AttendanceRating { get; set; }
 
     }
 }
