@@ -173,6 +173,19 @@ namespace AutonoFit.Controllers
         //---------------------------------------------------------------------------------------------------
         //-------------------------------------Program Workouts----------------------------------------------
 
+        public async Task<ActionResult> ProgramSetup(string errorMessage = null)
+        {
+            ProgramSetupVM programSetupVM = new ProgramSetupVM()
+            {
+                AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
+                GoalIds = new List<int> { 0, 0 },
+                ErrorMessage = errorMessage
+            };
+
+            return View(programSetupVM);
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
@@ -197,28 +210,26 @@ namespace AutonoFit.Controllers
                 programStart = DateTime.Now
             };
 
-
+            _repo.ClientProgram.CreateClientProgram(clientProgram);
+            await _repo.SaveAsync();
 
             return RedirectToAction("ProgramOverview", clientProgram);
         }
 
-        public async Task<ActionResult> ProgramSetup(string errorMessage = null)
+
+        public async Task<ActionResult> ProgramOverview(ClientProgram clientProgram)
         {
-            ProgramSetupVM programSetupVM = new ProgramSetupVM()
+            Client client = await _repo.Client.GetClientAsync(clientProgram.ClientId);
+            ProgramOverviewVM programOverviewVM = new ProgramOverviewVM()
             {
-                AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
-                GoalIds = new List<int> { 0, 0 },
-                ErrorMessage = errorMessage
+                ClientProgram = clientProgram,
+                ClientName = client.FirstName + " " + client.LastName,
+                GoalOneName = (await _repo.Goals.GetGoalsAsync(clientProgram.GoalOneId)).Name,
+                GoalTwoName = (await _repo.Goals?.GetGoalsAsync(Convert.ToInt32(clientProgram.GoalTwoId))).Name, // May have to do two separate lines for this... Check back here when testing/debugging.
+                ProgramStart = clientProgram.programStart.Date.ToString("MM/dd/yy")
             };
 
-            return View(programSetupVM);
-        }
-
-        public ActionResult ProgramOverview(ClientProgram clientProgram)
-        {
-
-
-            return View(clientProgram);
+            return View(programOverviewVM);
         }
 
         //-------------------------------------------------------------------------------------------------------
