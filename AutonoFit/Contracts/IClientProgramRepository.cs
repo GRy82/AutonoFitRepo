@@ -9,7 +9,7 @@ namespace AutonoFit.Contracts
     public interface IClientProgramRepository : IRepositoryBase<ClientProgram>
     {
         void CreateClientProgram(ClientProgram clientProgram);
-        Task<List<ClientProgram>> GetAllClientProgramsAsync();
+        Task<List<ClientProgram>> GetAllClientProgramsAsync(int clientId);
         Task<ClientProgram> GetClientProgramAsync(int clientProgramId);
         void EditClientProgram(ClientProgram clientProgram);
         void DeleteClientProgram(ClientProgram clientProgram);

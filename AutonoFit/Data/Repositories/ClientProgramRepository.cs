@@ -19,8 +19,8 @@ namespace AutonoFit.Data.Repositories
         }
         public void CreateClientProgram(ClientProgram clientProgram) => Create(clientProgram);
 
-        public async Task<List<ClientProgram>> GetAllClientProgramsAsync() =>
-            await FindAll().ToListAsync();
+        public async Task<List<ClientProgram>> GetAllClientProgramsAsync(int clientId) =>
+            await FindByCondition(c => c.ClientId.Equals(clientId)).ToListAsync();
 
         public async Task<ClientProgram> GetClientProgramAsync(int clientProgramId) =>
             await FindByCondition(c => c.ProgramId.Equals(clientProgramId)).FirstOrDefaultAsync();

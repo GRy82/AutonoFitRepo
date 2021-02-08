@@ -14,6 +14,7 @@ namespace AutonoFit.ViewModels
 
         public List<int> GoalIds { get; set; }
 
+        public string ProgramName { get; set; }
 
         public int Minutes { get; set; }
 

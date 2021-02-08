@@ -190,20 +190,23 @@ namespace AutonoFit.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
         {
-            if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
-            {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new
-                {
-                    controller = "Client",
-                    action = "ProgramSetup",
-                    errorMessage = "You must choose at least one exercise goal to continue."
-                }));
-            }
-
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
 
+            if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
+            {
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new {controller = "Client", action = "ProgramSetup",
+                    errorMessage = "You must choose at least one exercise goal to continue." }));
+            }
+
+            if (await ProgramModule.ProgramNameTaken(programSetuptVM.ProgramName, client.ClientId))
+            {
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new{ controller = "Client", action = "ProgramSetup",
+                    errorMessage = "That name is already taken." }));
+            }
+
             ClientProgram clientProgram = new ClientProgram() {
+                ProgramName = programSetuptVM.ProgramName,
                 ClientId = client.ClientId,
                 GoalOneId = programSetuptVM.GoalIds[0],
                 GoalTwoId = programSetuptVM.GoalIds[1], //Will be 0 if not set to a goal. Maybe change to a null conditional in the future.
@@ -213,12 +216,20 @@ namespace AutonoFit.Controllers
             _repo.ClientProgram.CreateClientProgram(clientProgram);
             await _repo.SaveAsync();
 
-            return RedirectToAction("ProgramOverview", clientProgram);
+            return RedirectToAction("ProgramOverview", clientProgram.ProgramId);
+        }
+
+        public async Task<ActionResult> ProgramsList(int clientId)
+        {
+            List<ClientProgram> programs = await _repo.ClientProgram.GetAllClientProgramsAsync(clientId);
+
+            return View(programs);
         }
 
 
-        public async Task<ActionResult> ProgramOverview(ClientProgram clientProgram)
+        public async Task<ActionResult> ProgramOverview(int programId)
         {
+            ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             Client client = await _repo.Client.GetClientAsync(clientProgram.ClientId);
             ProgramOverviewVM programOverviewVM = new ProgramOverviewVM()
             {
@@ -427,24 +438,22 @@ namespace AutonoFit.Controllers
             }
         }
 
-        // GET: Client/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: Client/Delete/5
+        // POST: Client/Delete Program/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteProgram(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(id);
+                _repo.ClientProgram.DeleteClientProgram(clientProgram);
+                await _repo.SaveAsync();
+                return RedirectToAction("ProgramsList");
             }
             catch
             {
-                return View();
+                return RedirectToAction("Index");
             }
         }
     }

@@ -1,0 +1,40 @@
+﻿@model IEnumerable<AutonoFit.Models.ClientProgram>
+
+@{
+    ViewData["Title"] = "Programs List";
+}
+
+<h1>Select Program To Continue</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>     
+            <th>
+                @Html.DisplayNameFor(model => model.ProgramName)
+            </th>       
+            <th>
+                @Html.DisplayNameFor(model => model.programStart.Date.ToString("MM/dd/yy"))
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProgramName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.programStart)
+            </td>
+            <td>
+                <a class="btn btn-primary" asp-action="ProgramOverview" asp-route-id="@item.ProgramId">Select</a>
+                <a lass="btn btn-primary" asp-action="DeleteProgram" asp-route-id="@item.ProgramId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

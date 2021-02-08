@@ -125,5 +125,7 @@ namespace AutonoFit.Data
         }
 
         public DbSet<AutonoFit.Models.Client> Client { get; set; }
+
+        public DbSet<AutonoFit.Models.ClientProgram> ClientProgram { get; set; }
     }
 }

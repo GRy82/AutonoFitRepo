@@ -16,6 +16,8 @@ namespace AutonoFit.Models
         public int ClientId { get; set; }
         public Client Client { get; set; }
 
+        public string ProgramName { get; set; }
+
         public int GoalOneId { get; set; }
 
         public int? GoalTwoId { get; set; }
