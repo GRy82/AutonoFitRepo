@@ -175,11 +175,11 @@ namespace AutonoFit.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
+        public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
         {
             if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
             {
-                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new
                 {
                     controller = "Client",
                     action = "ProgramSetup",
@@ -187,7 +187,19 @@ namespace AutonoFit.Controllers
                 }));
             }
 
-            return RedirectToAction("ProgramOverview", programSetuptVM);
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await _repo.Client.GetClientAsync(userId);
+
+            ClientProgram clientProgram = new ClientProgram() {
+                ClientId = client.ClientId,
+                GoalOneId = programSetuptVM.GoalIds[0],
+                GoalTwoId = programSetuptVM.GoalIds[1], //Will be 0 if not set to a goal. Maybe change to a null conditional in the future.
+                programStart = DateTime.Now
+            };
+
+
+
+            return RedirectToAction("ProgramOverview", clientProgram);
         }
 
         public async Task<ActionResult> ProgramSetup(string errorMessage = null)
@@ -202,11 +214,11 @@ namespace AutonoFit.Controllers
             return View(programSetupVM);
         }
 
-        public ActionResult ProgramOverview(ProgramSetupVM programSetupVM)
+        public ActionResult ProgramOverview(ClientProgram clientProgram)
         {
 
 
-            return View(programSetupVM);
+            return View(clientProgram);
         }
 
         //-------------------------------------------------------------------------------------------------------
