@@ -49,18 +49,6 @@ namespace AutonoFit.Controllers
         }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CompleteSingleWorkout(int workoutId)
-        {
-            ClientWorkout clientWorkout = await _repo.ClientWorkout.GetClientWorkoutAsync(workoutId);
-            clientWorkout.Completed = true;
-            _repo.ClientWorkout.EditClientWorkout(clientWorkout);
-            await _repo.SaveAsync();
-
-            return RedirectToAction("Index");
-        }
-
         public async Task<ActionResult> AccountOverview()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -72,8 +60,6 @@ namespace AutonoFit.Controllers
 
         //---------------------------------------------------------------------------------------------------
         //-------------------------------------Single Workout------------------------------------------------
-
-
 
         public async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
         {
@@ -92,50 +78,33 @@ namespace AutonoFit.Controllers
             return View(singleWorkoutVM);
         }
 
-        public async Task<ActionResult> ProgramSetup(string errorMessage = null)
-        {
-            ProgramSetupVM programSetupVM = new ProgramSetupVM()
-            {
-                AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
-                GoalIds = new List<int> { 0, 0 },
-                ErrorMessage = errorMessage
-            };
-
-            return View(programSetupVM);
-        }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public  ActionResult CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
+        public ActionResult CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
         {
-            if(singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
+            if (singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
             {
-                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary( new { controller = "Client", 
-                    action = "SingleWorkoutSetup", errorMessage = "You must choose at least one exercise goal to continue." }));
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
+                {
+                    controller = "Client",
+                    action = "SingleWorkoutSetup",
+                    errorMessage = "You must choose at least one exercise goal to continue."
+                }));
             }
-            if(singleWorkoutVM.BodySection == null)
+            if (singleWorkoutVM.BodySection == null)
             {
-                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new {controller = "Client", 
-                    action = "SingleWorkoutSetup", errorMessage = "You must choose a workout type to continue."}));
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
+                {
+                    controller = "Client",
+                    action = "SingleWorkoutSetup",
+                    errorMessage = "You must choose a workout type to continue."
+                }));
             }
 
             return RedirectToAction("GatherEligibleExercises", singleWorkoutVM);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
-        {
-            if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
-            {
-                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new { controller = "Client", action = "SingleWorkoutSetup",
-                    errorMessage = "You must choose at least one exercise goal to continue." }));
-            }
 
-            return RedirectToAction("ProgramOverview", programSetuptVM);
-        }
-       
         public async Task<ActionResult> GatherEligibleExercises(SingleWorkoutVM workoutVM)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -189,8 +158,58 @@ namespace AutonoFit.Controllers
             return View("DisplaySingleWorkout", workoutVM);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CompleteSingleWorkout(int workoutId)
+        {
+            ClientWorkout clientWorkout = await _repo.ClientWorkout.GetClientWorkoutAsync(workoutId);
+            clientWorkout.Completed = true;
+            _repo.ClientWorkout.EditClientWorkout(clientWorkout);
+            await _repo.SaveAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        //---------------------------------------------------------------------------------------------------
+        //-------------------------------------Program Workouts----------------------------------------------
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
+        {
+            if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
+            {
+                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
+                {
+                    controller = "Client",
+                    action = "ProgramSetup",
+                    errorMessage = "You must choose at least one exercise goal to continue."
+                }));
+            }
+
+            return RedirectToAction("ProgramOverview", programSetuptVM);
+        }
+
+        public async Task<ActionResult> ProgramSetup(string errorMessage = null)
+        {
+            ProgramSetupVM programSetupVM = new ProgramSetupVM()
+            {
+                AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
+                GoalIds = new List<int> { 0, 0 },
+                ErrorMessage = errorMessage
+            };
+
+            return View(programSetupVM);
+        }
+
+        public ActionResult ProgramOverview(ProgramSetupVM programSetupVM)
+        {
 
 
+            return View(programSetupVM);
+        }
+
+        //-------------------------------------------------------------------------------------------------------
         //-----------------------------------Helper Methods----------------------------------------------------
 
         private async Task CleanExerciseWorkoutDatabase()

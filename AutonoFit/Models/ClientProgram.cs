@@ -20,5 +20,7 @@ namespace AutonoFit.Models
 
         public int? GoalTwoId { get; set; }
 
+        public DateTime programStart { get; set; }
+
     }
 }
