@@ -47,13 +47,8 @@ namespace AutonoFit.StaticClasses
             return selectedExercises;
         }
 
-        public static int DetermineVolume(List<int> goalIds, FitnessDictionary fitnessMetrics, int workoutMinutes)
+        public static int DetermineVolume(FitnessDictionary fitnessMetrics, int workoutMinutes)
         {
-            if (fitnessMetrics.cardio == true)//if cardio is involved, cut minutes in half to have half the time for cardio.
-            {
-                workoutMinutes /= 2;
-            }
-
             double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;//in seconds
             int exerciseQuantity = (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
 
@@ -181,6 +176,56 @@ namespace AutonoFit.StaticClasses
                 return true;
             }
             return false;
+        }
+
+        public static List<TrainingStimulus> DefineTrainingStimuli(List<int> goalIds)
+        {
+            List<TrainingStimulus> trainingStimuli = new List<TrainingStimulus> { };
+            foreach (int goalId in goalIds)
+            {
+                switch (goalId)
+                {
+                    case 1:
+                        trainingStimuli.Add(new Strength());
+                        break;
+                    case 2:
+                        trainingStimuli.Add(new Hypertrophy());
+                        break;
+                    case 3:
+                        trainingStimuli.Add(new MuscularEndurance());
+                        break;
+                    case 4:
+                        trainingStimuli.Add(new CardiovascularEndurance());
+                        break;
+                    case 5:
+                        trainingStimuli.Add(new WeightLoss());
+                        break;
+                }
+            }
+            return trainingStimuli;
+        }
+
+        public static FitnessDictionary DefineDict(List<TrainingStimulus> trainingStimuli)
+        {
+            FitnessDictionary fitnessMetrics = new FitnessDictionary();
+            int repsSum = 0;
+            int restSum = 0;
+            int setsSum = 0;
+            foreach (TrainingStimulus stimuli in trainingStimuli)
+            {
+                int middleGroundReps = (stimuli.maxReps + stimuli.minReps) / 2;
+                repsSum += middleGroundReps;
+                int middleGroundRest = (stimuli.maxRestSeconds + stimuli.minRestSeconds) / 2;
+                restSum += middleGroundRest;
+                setsSum += stimuli.sets;
+            }
+
+            fitnessMetrics.reps = (int)(repsSum / trainingStimuli.Count);
+            fitnessMetrics.rest = (int)restSum / trainingStimuli.Count;
+            fitnessMetrics.sets = (int)setsSum / trainingStimuli.Count;
+            fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
+
+            return fitnessMetrics;
         }
     }
 }

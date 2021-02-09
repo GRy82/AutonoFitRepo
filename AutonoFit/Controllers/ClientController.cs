@@ -138,8 +138,10 @@ namespace AutonoFit.Controllers
             exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
             //Calculate sets/reps, rest time to exercises.
             FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds);
+            //if cardio is involved, cut minutes in half to have half the time for cardio.
+            workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes ;
             //Decide number of exercises based on time constraints 
-            int numberOfExercises = SharedUtility.DetermineVolume(workoutVM.GoalIds, fitnessMetrics, workoutVM.Minutes);
+            int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, workoutVM.Minutes);
             //Randomly select N number of exercises from total collection thus far. 
             List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises);
             //Convert ExerciseLibrary objects to ClientExercises
@@ -265,28 +267,37 @@ namespace AutonoFit.Controllers
             fitnessMetrics.cardio = goalIds.Contains(4) || goalIds.Contains(5) ? true : false;
 
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
+            if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
+            
+            }
+
+
             if (currentProgram.GoalCount == 1)//don't alternate goals, there's only one.
             {
                 if (fitnessMetrics.cardio)//it is cardio. alternate the distance 
                 {
-                    fitnessMetrics = programModule.GetTodaysCardio(fitnessMetrics, recentWorkoutCycle, todaysGoalNumber, currentProgram);
+                    fitnessMetrics = await programModule.GetTodaysCardio(fitnessMetrics, recentWorkoutCycle, todaysGoalNumber, currentProgram);
                 }
                 else // not cardio, just alternate lower/upperbody, //then alternate sets/reps
                 {
                     string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount, fitnessMetrics.cardio);
+                    fitnessMetrics = programModule.GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, todaysGoalNumber);
                 }
             }
             else//alternate goals for workout
             {
                 if (fitnessMetrics.cardio && todaysGoalNumber == 4 || todaysGoalNumber == 5) //If today is a cardio day.
                 {
-                    fitnessMetrics = programModule.GetTodaysCardio(fitnessMetrics, recentWorkoutCycle, todaysGoalNumber, currentProgram);
+                    fitnessMetrics = await programModule.GetTodaysCardio(fitnessMetrics, recentWorkoutCycle, todaysGoalNumber, currentProgram);
                 }
                 else//not cardio, alternate upper/lower body, //then alternate sets/reps
                 {
                     string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount, fitnessMetrics.cardio);
+                    fitnessMetrics = programModule.GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, todaysGoalNumber);
                 }
             }
+            int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, currentProgram.MinutesPerSession);
+           
             ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
             {
             };

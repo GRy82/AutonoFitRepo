@@ -11,6 +11,7 @@ namespace AutonoFit.Classes
     public class ProgramModule
     {
         private readonly IRepositoryWrapper _repo;
+        public static int repTime = 3;
 
         public ProgramModule(IRepositoryWrapper repo)
         {
@@ -71,15 +72,28 @@ namespace AutonoFit.Classes
             {
                 return goalIds[1] == 0 ? goalIds[0] : goalIds[1];
             }
-            else //Program has two goals. Whatever the last workout's goal was, alternate the goal for today's workout.
+            else //Program has two goals. 
             {
                 if(recentWorkoutCycle.Count == 0)//if no past workouts to go off of...
                 {
                     return goalIds[0]; //arbitrarily start with first listed goal.  
                 }
-                else
+                else//past workouts available to check
                 {
-                    return recentWorkoutCycle[0].GoalId == goalIds[0] ? goalIds[1] : goalIds[0];
+                    if(!goalIds.Contains(4) && !goalIds.Contains(5))//if only lifting goals, only alternate goals once you have two consecutive lifts of same goal, one UB, one LB.
+                    {
+                        if (recentWorkoutCycle.Count == 1 || recentWorkoutCycle[0].GoalId != recentWorkoutCycle[1].GoalId)
+                        {
+                            return Convert.ToInt32(recentWorkoutCycle[0].GoalId); //return same goal as last workout.
+                        }
+                        else if(recentWorkoutCycle[0].GoalId == recentWorkoutCycle[1].GoalId)
+                        {
+                            return goalIds[0] == recentWorkoutCycle[0].GoalId ? goalIds[1] : goalIds[0]; //return the other goal.
+                        }
+                    }
+                    // else cardio goals are present
+                    
+                    return recentWorkoutCycle[0].GoalId == goalIds[0] ? goalIds[1] : goalIds[0]; //return the goal that is not that of the last workout.        
                 }
             }
         }
@@ -110,13 +124,13 @@ namespace AutonoFit.Classes
             }
         }
     
-        public FitnessDictionary GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
+        public async Task<FitnessDictionary> GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
             List<string> alternationArray = new List<string> { };
             int index;
             if (recentWorkoutCycle.Count == 0 || (recentWorkoutCycle.Count == 1 && currentProgram.GoalCount == 2))//if it's the first run of the program
             {
-                fitnessMetrics = GetArbitraryStart(currentProgram, fitnessMetrics);
+                fitnessMetrics = await GetArbitraryStart(currentProgram, fitnessMetrics, recentWorkoutCycle);
             }
             else // not the first run, alternate/periodize workouts
             {
@@ -158,36 +172,37 @@ namespace AutonoFit.Classes
                     index = alternationArray.IndexOf(recentWorkoutCycle[0].RunType); // check last run, which will be first indexed, ie. [0].
                 }
 
-                fitnessMetrics = index == (alternationArray.Count - 1) ? GenerateRun(currentProgram, alternationArray[0], fitnessMetrics) : GenerateRun(currentProgram, alternationArray[index + 1], fitnessMetrics);
+                fitnessMetrics = index == (alternationArray.Count - 1) ? await GenerateRun(currentProgram, alternationArray[0], fitnessMetrics, recentWorkoutCycle) : await GenerateRun(currentProgram, alternationArray[index + 1], fitnessMetrics, recentWorkoutCycle);
             }
 
             return fitnessMetrics;
         }
 
-        private FitnessDictionary GetArbitraryStart(ClientProgram currentProgram, FitnessDictionary fitnessMetrics)
+        private async Task<FitnessDictionary> GetArbitraryStart(ClientProgram currentProgram, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
         {
             if(currentProgram.GoalCount == 1)
             {
-                fitnessMetrics = GenerateRun(currentProgram, "Easy", fitnessMetrics);
+                fitnessMetrics = await GenerateRun(currentProgram, "Easy", fitnessMetrics, recentWorkoutCycle);
             }
             else
             {
                 if(currentProgram.DaysPerWeek < 4)
                 {
-                    fitnessMetrics = GenerateRun(currentProgram, "Moderate", fitnessMetrics);
+                    fitnessMetrics = await GenerateRun(currentProgram, "Moderate", fitnessMetrics, recentWorkoutCycle);
                 }
                 else
                 {
-                    fitnessMetrics = GenerateRun(currentProgram, "Easy", fitnessMetrics);
+                    fitnessMetrics = await GenerateRun(currentProgram, "Easy", fitnessMetrics, recentWorkoutCycle);
                 }
             }
-            fitnessMetrics = GenerateLift(currentProgram, fitnessMetrics);
+            int goal = GetTodaysGoal(recentWorkoutCycle, new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) }, currentProgram.GoalCount);
+            fitnessMetrics = GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, goal);
 
             return new FitnessDictionary();
         }
 
 
-        private FitnessDictionary GenerateRun(ClientProgram currentProgram, string runType, FitnessDictionary fitnessMetrics)
+        private async Task<FitnessDictionary> GenerateRun(ClientProgram currentProgram, string runType, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
         {
             double paceCoefficient = 0;
             switch (runType)
@@ -214,6 +229,7 @@ namespace AutonoFit.Classes
             if (runType == "Easy")
             {
                 fitnessMetrics.runDuration = currentProgram.MinutesPerSession / 2;
+                currentProgram.MinutesPerSession /= 2;
             }
             if (currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6 && fitnessMetrics.runType == "Easy")
             {
@@ -221,8 +237,11 @@ namespace AutonoFit.Classes
             }
             if (runType == "Moderate" && currentProgram.DaysPerWeek < 4)
             {
-                fitnessMetrics.runDuration = currentProgram.MinutesPerSession * .66;
+                fitnessMetrics.runDuration = currentProgram.MinutesPerSession * .67;
+                currentProgram.MinutesPerSession = (int)Math.Round(Convert.ToDouble(currentProgram.MinutesPerSession) / 3);
             }
+            _repo.ClientProgram.EditClientProgram(currentProgram);
+            await _repo.SaveAsync();
 
             fitnessMetrics.runType = "Easy";
             fitnessMetrics.distanceMiles = fitnessMetrics.runDuration / fitnessMetrics.milePace;
@@ -230,5 +249,15 @@ namespace AutonoFit.Classes
 
             return fitnessMetrics;
         }
+
+        public FitnessDictionary GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal)
+        {
+            List<TrainingStimulus> trainingStimulus = SharedUtility.DefineTrainingStimuli(new List<int> { todaysGoal });
+            fitnessMetrics = SharedUtility.DefineDict(trainingStimulus);
+
+            return fitnessMetrics;
+        }
+
+
     }
 }
