@@ -109,6 +109,7 @@
         <div class="col-md-2"></div>
         <div class="col-md-10">
             <form asp-action="GenerateProgramWorkout">
+                <input type="hidden" asp-for="@Model.ClientProgram.ProgramId" name="programId"/>
                 <input class="btn btn-primary" type="submit" value="Generate Next Workout" />
             </form>
         </div>

@@ -173,5 +173,14 @@ namespace AutonoFit.StaticClasses
 
             return stringWithTags;
         }
+
+        public static bool CheckCardio(List<int> goalIds)
+        {
+            if (goalIds.Contains(4) || goalIds.Contains(5))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

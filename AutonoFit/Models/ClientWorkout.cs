@@ -21,6 +21,8 @@ namespace AutonoFit.Models
         public int? WeekId { get; set; }
         public ClientWeek ClientWeek { get; set; }
 
+        public string BodyParts { get; set; } //"Upper Body" or "Lower Body"
+
         public int? milePaceSeconds { get; set; }
 
         public double? mileDistance { get; set; }

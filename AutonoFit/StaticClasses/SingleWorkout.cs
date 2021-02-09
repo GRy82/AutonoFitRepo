@@ -15,7 +15,7 @@ namespace AutonoFit.StaticClasses
 
             List<TrainingStimulus> trainingStimuli = DefineTrainingStimuli(goalIds);
             FitnessDictionary fitnessMetrics = DefineDict(trainingStimuli);
-            if (CheckCardio(goalIds))
+            if (SharedUtility.CheckCardio(goalIds))
             {
                 double milePace = mileMinutes + ((double)mileSeconds / 60);
                 fitnessMetrics = CalculateCardio(fitnessMetrics, milePace, sessionDuration);
@@ -90,15 +90,6 @@ namespace AutonoFit.StaticClasses
 
 
             return cardioMetrics;
-        }
-
-        public static bool CheckCardio(List<int> goalIds)
-        {
-            if (goalIds.Contains(4) || goalIds.Contains(5))
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

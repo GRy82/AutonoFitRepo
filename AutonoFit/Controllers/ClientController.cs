@@ -188,7 +188,6 @@ namespace AutonoFit.Controllers
             return View(programSetupVM);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
@@ -211,6 +210,7 @@ namespace AutonoFit.Controllers
             ClientProgram clientProgram = new ClientProgram() {
                 ProgramName = programSetuptVM.ProgramName,
                 ClientId = client.ClientId,
+                GoalCount = programSetuptVM.GoalIds.Count,
                 GoalOneId = programSetuptVM.GoalIds[0],
                 GoalTwoId = programSetuptVM.GoalIds[1], //Will be 0 if not set to a goal. Maybe change to a null conditional in the future.
                 MinutesPerSession = programSetuptVM.Minutes,
@@ -252,8 +252,70 @@ namespace AutonoFit.Controllers
             return View(programOverviewVM);
         }
 
+        public async Task<ActionResult> GenerateProgramWorkout(int programId)
+        {
+            ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
+            FitnessDictionary fitnessMetrics = new FitnessDictionary();
+            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
+            fitnessMetrics.cardio = goalIds.Contains(4) || goalIds.Contains(5) ? true : false;
+            TrainingStimulus workoutType = await DetermineWorkoutType(currentProgram);
+
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Client client = await _repo.Client.GetClientAsync(userId);
+            ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
+            {
+            };
+
+            //1. Consider days/week. Consider 2 aspects about them 1.) even/odd 2.) actual number. 2 is the minumum, 6 is the max.
+
+            //2. Consider Number of goals.  1 goal: Cardio? yes => alternate cardio and lifting.  No => between lower reps/higher sets and higher reps/lower sets.
+            //                              2 goals: Cardio? yes => alternate cardio and lifting.
+
+            return View("DisplayProgramWorkout", programWorkoutVM);
+        }
+
         //-------------------------------------------------------------------------------------------------------
         //-----------------------------------Helper Methods----------------------------------------------------
+
+        public async Task<TrainingStimulus> DetermineWorkoutType(ClientProgram currentProgram)
+        {
+            List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllClientWorkoutsAsync(currentProgram.ClientId);
+            recentWorkouts = (List<ClientWorkout>)recentWorkouts.OrderByDescending(c => c.DatePerformed);
+            List<ClientWorkout> lastWorkoutCycle = new List<ClientWorkout>() { };
+            for(int i = 0; i < currentProgram.DaysPerWeek; i++) 
+            {
+                lastWorkoutCycle.Add(recentWorkouts[i]);
+            }
+
+            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
+
+            if (goalIds.Contains(0))//don't alternate goals, there's only one.
+            {
+                if(SharedUtility.CheckCardio(goalIds))//it is cardio. alternate the distance 
+                {
+                    GetTodaysCardio(lastWorkoutCycle);
+                }
+                else // not cardio, just alternate lower/upperbody
+                {
+
+                }
+            }
+            else//alternate goals for workout
+            {
+                GetTodaysGoal(lastWorkoutCycle);
+                if (SharedUtility.CheckCardio(goalIds))
+                {
+                    GetTodaysCardio(lastWorkoutCycle);
+                }
+                else//not cardio, alternate upper/lower body 
+                {
+
+                }
+            }
+
+            return new Strength();
+        }
+
 
         private async Task CleanExerciseWorkoutDatabase()
         {

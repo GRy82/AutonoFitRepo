@@ -25,6 +25,8 @@ namespace AutonoFit.Models
         public int DaysPerWeek { get; set; }
 
         public string ProgramName { get; set; }
+        
+        public int GoalCount { get; set; }
 
         public int GoalOneId { get; set; }
 
