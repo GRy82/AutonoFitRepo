@@ -270,6 +270,10 @@ namespace AutonoFit.Controllers
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
             
             }
+            else
+            {
+                string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
+            }
 
 
             if (currentProgram.GoalCount == 1)//don't alternate goals, there's only one.

@@ -100,28 +100,11 @@ namespace AutonoFit.Classes
 
         public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, int goalCount, bool cardio = false)
         {
-            if (goalCount == 1)//one goal of program
+            if(recentWorkoutCycle.Count == 0)
             {
-                if (recentWorkoutCycle.Count > 0)
-                {
-                    return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body";
-                }
-                else
-                {
-                    return "Upper Body"; // No past workouts to go off of, return "Upper Body arbitrarily"
-                }
+                return "Upper Body"; // this is the first workout of the program. Arbitrarily start with upper body.
             }
-            else //two goals of program.
-            { 
-                if(recentWorkoutCycle.Count <= 1) //meaning this workout is either the first one, or the first of its kind
-                {
-                    return "Upper Body"; // No past workouts to go off of, return "Upper Body arbitrarily"
-                }
-                else // alternate body parts with the second last workout, which would be the last workout of the same type.
-                {
-                    return recentWorkoutCycle[1].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body";
-                }
-            }
+            return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }
     
         public async Task<FitnessDictionary> GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
