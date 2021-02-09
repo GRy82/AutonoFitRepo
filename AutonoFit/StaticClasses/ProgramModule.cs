@@ -63,5 +63,50 @@ namespace AutonoFit.Classes
             return attendanceRating * 100;
         }
 
+
+        public int GetTodaysGoal(List<ClientWorkout> recentWorkoutCycle, List<int> goalIds, int goalCount)
+        {
+            if (goalCount == 1)//If program has one goal, then return the only goal in the list that isn't 0.
+            {
+                return goalIds[1] == 0 ? goalIds[0] : goalIds[1];
+            }
+            else //Program has two goals. Whatever the last workout's goal was, alternate the goal for today's workout.
+            {
+                if(recentWorkoutCycle.Count == 0)//if no past workouts to go off of...
+                {
+                    return goalIds[0]; //arbitrarily start with first listed goal.  
+                }
+                else
+                {
+                    return recentWorkoutCycle[0].GoalId == goalIds[0] ? goalIds[1] : goalIds[0];
+                }
+            }
+        }
+
+        public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, int goalCount, bool cardio = false)
+        {
+            if (goalCount == 1)//one goal of program
+            {
+                if (recentWorkoutCycle.Count > 0)
+                {
+                    return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body";
+                }
+                else
+                {
+                    return "Upper Body"; // No past workouts to go off of, return "Upper Body arbitrarily"
+                }
+            }
+            else //two goals of program.
+            { 
+                if(recentWorkoutCycle.Count <= 1) //meaning this workout is either the first one, or the first of its kind
+                {
+                    return "Upper Body"; // No past workouts to go off of, return "Upper Body arbitrarily"
+                }
+                else // alternate body parts with the second last workout, which would be the last workout of the same type.
+                {
+                    return recentWorkoutCycle[1].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body";
+                }
+            }
+        }
     }
 }

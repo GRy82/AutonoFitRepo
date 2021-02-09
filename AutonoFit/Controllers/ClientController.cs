@@ -254,14 +254,37 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> GenerateProgramWorkout(int programId)
         {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Client client = await _repo.Client.GetClientAsync(userId);
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
+            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             FitnessDictionary fitnessMetrics = new FitnessDictionary();
             List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
             fitnessMetrics.cardio = goalIds.Contains(4) || goalIds.Contains(5) ? true : false;
-            TrainingStimulus workoutType = await DetermineWorkoutType(currentProgram);
 
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Client client = await _repo.Client.GetClientAsync(userId);
+            int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
+            if (currentProgram.GoalCount == 1)//don't alternate goals, there's only one.
+            {
+                if (fitnessMetrics.cardio)//it is cardio. alternate the distance 
+                {
+                    fitnessMetrics = GetTodaysCardio(recentWorkoutCycle, todaysGoalNumber);
+                }
+                else // not cardio, just alternate lower/upperbody, //then alternate sets/reps
+                {
+                    string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount, fitnessMetrics.cardio);
+                }
+            }
+            else//alternate goals for workout
+            {
+                if (fitnessMetrics.cardio && todaysGoalNumber == 4 || todaysGoalNumber == 5) //If today is a cardio day.
+                {
+                    fitnessMetrics = GetTodaysCardio(recentWorkoutCycle, todaysGoalNumber);
+                }
+                else//not cardio, alternate upper/lower body, //then alternate sets/reps
+                {
+                    string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount, fitnessMetrics.cardio);
+                }
+            }
             ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
             {
             };
@@ -277,7 +300,7 @@ namespace AutonoFit.Controllers
         //-------------------------------------------------------------------------------------------------------
         //-----------------------------------Helper Methods----------------------------------------------------
 
-        public async Task<TrainingStimulus> DetermineWorkoutType(ClientProgram currentProgram)
+        public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllClientWorkoutsAsync(currentProgram.ClientId);
             recentWorkouts = (List<ClientWorkout>)recentWorkouts.OrderByDescending(c => c.DatePerformed);
@@ -287,33 +310,7 @@ namespace AutonoFit.Controllers
                 lastWorkoutCycle.Add(recentWorkouts[i]);
             }
 
-            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
-
-            if (goalIds.Contains(0))//don't alternate goals, there's only one.
-            {
-                if(SharedUtility.CheckCardio(goalIds))//it is cardio. alternate the distance 
-                {
-                    GetTodaysCardio(lastWorkoutCycle);
-                }
-                else // not cardio, just alternate lower/upperbody
-                {
-
-                }
-            }
-            else//alternate goals for workout
-            {
-                GetTodaysGoal(lastWorkoutCycle);
-                if (SharedUtility.CheckCardio(goalIds))
-                {
-                    GetTodaysCardio(lastWorkoutCycle);
-                }
-                else//not cardio, alternate upper/lower body 
-                {
-
-                }
-            }
-
-            return new Strength();
+            return lastWorkoutCycle;
         }
 
 

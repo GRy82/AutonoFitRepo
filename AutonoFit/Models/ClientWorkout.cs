@@ -23,6 +23,8 @@ namespace AutonoFit.Models
 
         public string BodyParts { get; set; } //"Upper Body" or "Lower Body"
 
+        public int? GoalId { get; set; }
+
         public int? milePaceSeconds { get; set; }
 
         public double? mileDistance { get; set; }
