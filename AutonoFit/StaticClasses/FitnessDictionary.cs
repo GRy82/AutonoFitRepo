@@ -13,6 +13,7 @@ namespace AutonoFit.StaticClasses
         public string restString;
         public int sets;
         public bool cardio;
+        public string runType;
         public double milePace;
         public string paceString;
         public double distanceMiles;

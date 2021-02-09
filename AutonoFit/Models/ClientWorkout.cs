@@ -25,6 +25,8 @@ namespace AutonoFit.Models
 
         public int? GoalId { get; set; }
 
+        public string RunType { get; set; }
+
         public int? milePaceSeconds { get; set; }
 
         public double? mileDistance { get; set; }

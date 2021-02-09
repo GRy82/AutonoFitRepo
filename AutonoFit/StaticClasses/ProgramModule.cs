@@ -1,5 +1,6 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Models;
+using AutonoFit.StaticClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,5 +109,70 @@ namespace AutonoFit.Classes
                 }
             }
         }
+    
+        public FitnessDictionary GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
+        {
+            if (recentWorkoutCycle.Count == 0 || (recentWorkoutCycle.Count == 1 && currentProgram.GoalCount == 2))
+            {
+                fitnessMetrics = GetArbitraryStart(currentProgram);
+            }
+            else
+            {
+
+            }
+
+            return fitnessMetrics;
+        }
+
+        private FitnessDictionary GetArbitraryStart(ClientProgram currentProgram)
+        {
+            if(currentProgram.GoalCount == 1)
+            {
+                if(currentProgram.DaysPerWeek == 6)
+                {
+
+                }
+                else if(currentProgram.DaysPerWeek > 3 && currentProgram.DaysPerWeek < 6)
+                {
+
+                }
+                else if(currentProgram.DaysPerWeek == 3)
+                {
+
+                }
+                else// == 2
+                { 
+
+                }
+            }
+            else
+            {
+
+            }
+
+            return new FitnessDictionary();
+        }
+
+        private FitnessDictionary GenerateShortRun()
+        {
+
+        }
+
+        private FitnessDictionary GenerateModerateRun()
+        {
+
+        }
+
+        private FitnessDictionary GenerateLongRun()
+        {
+
+        }
+
+        private FitnessDictionary GenerateSpeedRun()
+        {
+
+        }
+
+
     }
 }

@@ -215,7 +215,9 @@ namespace AutonoFit.Controllers
                 GoalTwoId = programSetuptVM.GoalIds[1], //Will be 0 if not set to a goal. Maybe change to a null conditional in the future.
                 MinutesPerSession = programSetuptVM.Minutes,
                 DaysPerWeek = programSetuptVM.Days,
-                ProgramStart = DateTime.Now
+                MileMinutes = programSetuptVM?.MileMinutes,
+                MileSeconds = programSetuptVM?.MileSeconds,
+                ProgramStart = DateTime.Now,
             };
 
             _repo.ClientProgram.CreateClientProgram(clientProgram);
@@ -267,7 +269,7 @@ namespace AutonoFit.Controllers
             {
                 if (fitnessMetrics.cardio)//it is cardio. alternate the distance 
                 {
-                    fitnessMetrics = GetTodaysCardio(recentWorkoutCycle, todaysGoalNumber);
+                    fitnessMetrics = programModule.GetTodaysCardio(fitnessMetrics, recentWorkoutCycle, todaysGoalNumber, currentProgram);
                 }
                 else // not cardio, just alternate lower/upperbody, //then alternate sets/reps
                 {
@@ -278,7 +280,7 @@ namespace AutonoFit.Controllers
             {
                 if (fitnessMetrics.cardio && todaysGoalNumber == 4 || todaysGoalNumber == 5) //If today is a cardio day.
                 {
-                    fitnessMetrics = GetTodaysCardio(recentWorkoutCycle, todaysGoalNumber);
+                    fitnessMetrics = programModule.GetTodaysCardio(fitnessMetrics, recentWorkoutCycle, todaysGoalNumber, currentProgram);
                 }
                 else//not cardio, alternate upper/lower body, //then alternate sets/reps
                 {

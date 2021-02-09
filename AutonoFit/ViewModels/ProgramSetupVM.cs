@@ -20,9 +20,9 @@ namespace AutonoFit.ViewModels
 
         public int Days { get; set; }
 
-        public int MileMinutes { get; set; }
+        public int? MileMinutes { get; set; }
 
-        public int MileSeconds { get; set; }
+        public int? MileSeconds { get; set; }
 
         public string ErrorMessage { get; set; }
     }

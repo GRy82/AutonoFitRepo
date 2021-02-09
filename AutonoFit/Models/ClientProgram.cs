@@ -32,6 +32,10 @@ namespace AutonoFit.Models
 
         public int? GoalTwoId { get; set; }
 
+        public int? MileMinutes { get; set; }
+
+        public int? MileSeconds { get; set; }
+
         public DateTime ProgramStart { get; set; }
 
 
