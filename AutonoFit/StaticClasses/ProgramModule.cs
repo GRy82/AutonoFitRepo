@@ -112,67 +112,123 @@ namespace AutonoFit.Classes
     
         public FitnessDictionary GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
-            if (recentWorkoutCycle.Count == 0 || (recentWorkoutCycle.Count == 1 && currentProgram.GoalCount == 2))
+            List<string> alternationArray = new List<string> { };
+            int index;
+            if (recentWorkoutCycle.Count == 0 || (recentWorkoutCycle.Count == 1 && currentProgram.GoalCount == 2))//if it's the first run of the program
             {
-                fitnessMetrics = GetArbitraryStart(currentProgram);
+                fitnessMetrics = GetArbitraryStart(currentProgram, fitnessMetrics);
             }
-            else
+            else // not the first run, alternate/periodize workouts
             {
+                if (currentProgram.GoalCount == 2)
+                {
+                    if (currentProgram.DaysPerWeek == 6)
+                    {
+                        alternationArray = new List<string> { "Easy", "Long", "Speed" };
+                    }
+                    else if (currentProgram.DaysPerWeek > 3 && currentProgram.DaysPerWeek < 6)
+                    {
+                        alternationArray = new List<string> { "Easy", "Long"};
+                    }
+                    else
+                    {
+                        alternationArray = new List<string> { "Moderate" };
+                    }
+                    index = alternationArray.IndexOf(recentWorkoutCycle[1].RunType);//check second last workout for same goal type
+                }
+                else
+                {
+                    if (currentProgram.DaysPerWeek == 6)
+                    {
+                        alternationArray = new List<string> { "Easy", "Long", "Speed" };//Don't let them run 6 times a week. Have muscular endurance workout
+                    }
+                    else if (currentProgram.DaysPerWeek > 3 && currentProgram.DaysPerWeek < 6) 
+                    {
+                        alternationArray = new List<string> { "Easy", "Long", "Speed" };
+                    }
+                    else if (currentProgram.DaysPerWeek == 3)
+                    {
+                        alternationArray = new List<string> { "Easy", "Moderate", "Long" };
+                    }
+                    else
+                    {
+                        alternationArray = new List<string> { "Easy", "Long" };
+                    }
 
+                    index = alternationArray.IndexOf(recentWorkoutCycle[0].RunType); // check last run, which will be first indexed, ie. [0].
+                }
+
+                fitnessMetrics = index == (alternationArray.Count - 1) ? GenerateRun(currentProgram, alternationArray[0], fitnessMetrics) : GenerateRun(currentProgram, alternationArray[index + 1], fitnessMetrics);
             }
 
             return fitnessMetrics;
         }
 
-        private FitnessDictionary GetArbitraryStart(ClientProgram currentProgram)
+        private FitnessDictionary GetArbitraryStart(ClientProgram currentProgram, FitnessDictionary fitnessMetrics)
         {
             if(currentProgram.GoalCount == 1)
             {
-                if(currentProgram.DaysPerWeek == 6)
-                {
-
-                }
-                else if(currentProgram.DaysPerWeek > 3 && currentProgram.DaysPerWeek < 6)
-                {
-
-                }
-                else if(currentProgram.DaysPerWeek == 3)
-                {
-
-                }
-                else// == 2
-                { 
-
-                }
+                fitnessMetrics = GenerateRun(currentProgram, "Easy", fitnessMetrics);
             }
             else
             {
-
+                if(currentProgram.DaysPerWeek < 4)
+                {
+                    fitnessMetrics = GenerateRun(currentProgram, "Moderate", fitnessMetrics);
+                }
+                else
+                {
+                    fitnessMetrics = GenerateRun(currentProgram, "Easy", fitnessMetrics);
+                }
             }
+            fitnessMetrics = GenerateLift(currentProgram, fitnessMetrics);
 
             return new FitnessDictionary();
         }
 
-        private FitnessDictionary GenerateShortRun()
+
+        private FitnessDictionary GenerateRun(ClientProgram currentProgram, string runType, FitnessDictionary fitnessMetrics)
         {
+            double paceCoefficient = 0;
+            switch (runType)
+            {
+                case "Easy":
+                    paceCoefficient = 1.5;
+                    break;
+                case "Moderate":
+                    paceCoefficient = 1.43;
+                    break;
+                case "Long":
+                    paceCoefficient = 1.39;
+                    break;
+                case "Speed":
+                    paceCoefficient = 1.1;
+                    break;
+            }
 
+            fitnessMetrics.milePace = (double)currentProgram.MileMinutes + (Convert.ToDouble(currentProgram.MileSeconds) / 60);
+            fitnessMetrics.milePace *= paceCoefficient;
+            fitnessMetrics.runDuration = currentProgram.MinutesPerSession;
+            
+            //corner cases where runs share time with lifts in the same day.
+            if (runType == "Easy")
+            {
+                fitnessMetrics.runDuration = currentProgram.MinutesPerSession / 2;
+            }
+            if (currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6 && fitnessMetrics.runType == "Easy")
+            {
+                fitnessMetrics.runDuration = currentProgram.MinutesPerSession;
+            }
+            if (runType == "Moderate" && currentProgram.DaysPerWeek < 4)
+            {
+                fitnessMetrics.runDuration = currentProgram.MinutesPerSession * .66;
+            }
+
+            fitnessMetrics.runType = "Easy";
+            fitnessMetrics.distanceMiles = fitnessMetrics.runDuration / fitnessMetrics.milePace;
+            fitnessMetrics = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
+
+            return fitnessMetrics;
         }
-
-        private FitnessDictionary GenerateModerateRun()
-        {
-
-        }
-
-        private FitnessDictionary GenerateLongRun()
-        {
-
-        }
-
-        private FitnessDictionary GenerateSpeedRun()
-        {
-
-        }
-
-
     }
 }
