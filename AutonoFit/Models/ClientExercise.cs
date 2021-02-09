@@ -21,8 +21,6 @@ namespace AutonoFit.Models
         public int WorkoutId { get; set; }
         public int RPE { get; set; }
 
-        public int NumberRM { get; set;} //Rep-MAx, ie. 3-RM, 10-RM, etc.
-
         public int Reps { get; set; }
 
         public int Sets { get; set; }
@@ -31,7 +29,6 @@ namespace AutonoFit.Models
 
         //These are used for gauging progression
 
-        public string LastAdjusted { get; set; } //could be sets, reps, or rest. Alternate which is progressed.
         public int DeltaRPECount { get; set; }
 
         public int? LastPerformed { get; set; } //Id of the exercise the last time it was performed

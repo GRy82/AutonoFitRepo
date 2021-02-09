@@ -98,11 +98,11 @@ namespace AutonoFit.Classes
             }
         }
 
-        public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, int goalCount, bool cardio = false)
+        public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, int goalCount)
         {
-            if(recentWorkoutCycle.Count == 0)
+            if(recentWorkoutCycle.Count == 0 || (goalCount == 2 && recentWorkoutCycle.Count == 1))
             {
-                return "Upper Body"; // this is the first workout of the program. Arbitrarily start with upper body.
+                return "Upper Body"; // this is the first workout of the program, or the first of its kind. Arbitrarily start with upper body.
             }
             return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }

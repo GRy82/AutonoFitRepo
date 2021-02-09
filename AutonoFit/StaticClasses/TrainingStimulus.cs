@@ -11,6 +11,7 @@ namespace AutonoFit.StaticClasses
         public int maxReps;
         public int minRestSeconds;
         public int maxRestSeconds;
+        public int restInterval;
         public int sets;
     }
 }

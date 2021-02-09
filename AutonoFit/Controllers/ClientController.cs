@@ -268,11 +268,12 @@ namespace AutonoFit.Controllers
 
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
-            
+                
             }
             else
             {
                 string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
+                
             }
 
 
@@ -284,7 +285,7 @@ namespace AutonoFit.Controllers
                 }
                 else // not cardio, just alternate lower/upperbody, //then alternate sets/reps
                 {
-                    string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount, fitnessMetrics.cardio);
+                    string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
                     fitnessMetrics = programModule.GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, todaysGoalNumber);
                 }
             }
@@ -296,7 +297,7 @@ namespace AutonoFit.Controllers
                 }
                 else//not cardio, alternate upper/lower body, //then alternate sets/reps
                 {
-                    string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount, fitnessMetrics.cardio);
+                    string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
                     fitnessMetrics = programModule.GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, todaysGoalNumber);
                 }
             }
