@@ -1,4 +1,5 @@
-﻿using AutonoFit.StaticClasses;
+﻿using AutonoFit.Models;
+using AutonoFit.StaticClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace AutonoFit.ViewModels
     {
         public FitnessDictionary FitnessDictionary { get; set; }
 
+        public List<ClientExercise> ClientExercises { get; set; }
 
 
     }

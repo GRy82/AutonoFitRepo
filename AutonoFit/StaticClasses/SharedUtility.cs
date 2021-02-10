@@ -29,6 +29,17 @@ namespace AutonoFit.StaticClasses
             return workoutExercises;
         }
 
+        public static ClientExercise CopyAsClientExercises(Result randomlyChosenExercise, int clientId, FitnessDictionary fitnessMetrics)
+        {
+            ClientExercise exercise = new ClientExercise();
+            exercise.ClientId = clientId;
+            exercise.ExerciseId = randomlyChosenExercise.id;
+            exercise.Reps = fitnessMetrics.reps;
+            exercise.RestSeconds = fitnessMetrics.rest; 
+
+            return exercise;
+        }
+
         public static List<Result> RandomizeExercises(List<Result> exerciseResults, int exerciseQuantity)
         {
             List<Result> selectedExercises = new List<Result> { };
@@ -49,10 +60,16 @@ namespace AutonoFit.StaticClasses
 
         public static int DetermineVolume(FitnessDictionary fitnessMetrics, int workoutMinutes)
         {
-            double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;//in seconds
+            double singleExerciseTime = GetSingleExerciseTime(fitnessMetrics);
             int exerciseQuantity = (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
 
             return exerciseQuantity;
+        }
+
+        public static double GetSingleExerciseTime(FitnessDictionary fitnessMetrics)// return value is in seconds
+        {
+            double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;//in seconds
+            return singleExerciseTime;
         }
 
         public static List<Result> RepackageResults(List<Result> exerciseResults, ExerciseLibrary singleExerciseLibrary)

@@ -113,7 +113,7 @@ namespace AutonoFit.Classes
             int index;
             if (recentWorkoutCycle.Count == 0 || (recentWorkoutCycle.Count == 1 && currentProgram.GoalCount == 2))//if it's the first run of the program
             {
-                fitnessMetrics = await GetArbitraryStart(currentProgram, fitnessMetrics, recentWorkoutCycle);
+                //fitnessMetrics = await GetArbitraryStart(currentProgram, fitnessMetrics, recentWorkoutCycle);
             }
             else // not the first run, alternate/periodize workouts
             {
@@ -161,28 +161,28 @@ namespace AutonoFit.Classes
             return fitnessMetrics;
         }
 
-        private async Task<FitnessDictionary> GetArbitraryStart(ClientProgram currentProgram, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
-        {
-            if(currentProgram.GoalCount == 1)
-            {
-                fitnessMetrics = await GenerateRun(currentProgram, "Easy", fitnessMetrics, recentWorkoutCycle);
-            }
-            else
-            {
-                if(currentProgram.DaysPerWeek < 4)
-                {
-                    fitnessMetrics = await GenerateRun(currentProgram, "Moderate", fitnessMetrics, recentWorkoutCycle);
-                }
-                else
-                {
-                    fitnessMetrics = await GenerateRun(currentProgram, "Easy", fitnessMetrics, recentWorkoutCycle);
-                }
-            }
-            int goal = GetTodaysGoal(recentWorkoutCycle, new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) }, currentProgram.GoalCount);
-            fitnessMetrics = GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, goal);
+        //private async Task<FitnessDictionary> GetArbitraryStart(ClientProgram currentProgram, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
+        //{
+        //    if(currentProgram.GoalCount == 1)
+        //    {
+        //        fitnessMetrics = await GenerateRun(currentProgram, "Easy", fitnessMetrics, recentWorkoutCycle);
+        //    }
+        //    else
+        //    {
+        //        if(currentProgram.DaysPerWeek < 4)
+        //        {
+        //            fitnessMetrics = await GenerateRun(currentProgram, "Moderate", fitnessMetrics, recentWorkoutCycle);
+        //        }
+        //        else
+        //        {
+        //            fitnessMetrics = await GenerateRun(currentProgram, "Easy", fitnessMetrics, recentWorkoutCycle);
+        //        }
+        //    }
+        //    int goal = GetTodaysGoal(recentWorkoutCycle, new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) }, currentProgram.GoalCount);
+        //    fitnessMetrics = await GenerateLift(currentProgram, recentWorkoutCycle, fitnessMetrics, goal);
 
-            return new FitnessDictionary();
-        }
+        //    return new FitnessDictionary();
+        //}
 
 
         private async Task<FitnessDictionary> GenerateRun(ClientProgram currentProgram, string runType, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
@@ -233,10 +233,32 @@ namespace AutonoFit.Classes
             return fitnessMetrics;
         }
 
-        public FitnessDictionary GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal)
+        public async Task<FitnessDictionary> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal, int exerciseId)
         {
             List<TrainingStimulus> trainingStimulus = SharedUtility.DefineTrainingStimuli(new List<int> { todaysGoal });
-            fitnessMetrics = SharedUtility.DefineDict(trainingStimulus);
+            List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExerciseAsync(exerciseId);
+            
+            if(pastExercises.Count >= 2)
+            {
+                pastExercises = (List<ClientExercise>)pastExercises.OrderByDescending(c => c.WorkoutId); //use date to order this, if i ever use hash values instead.
+                if (pastExercises[0].RPE > pastExercises[1].RPE) 
+                {
+                    fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + 1;
+                    fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].maxRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
+                }
+            }
+            else if(pastExercises.Count <= 1)//start at min rep, max rest.
+            {
+                fitnessMetrics.reps = trainingStimulus[0].minReps;
+                fitnessMetrics.rest = trainingStimulus[0].maxRestSeconds;
+            }
+            else //use same reps, rest time.
+            {
+                fitnessMetrics.reps = pastExercises[0].Reps;
+                fitnessMetrics.rest = pastExercises[0].RestSeconds;
+            }
+            fitnessMetrics.sets = trainingStimulus[0].sets;
+            fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
 
             return fitnessMetrics;
         }
