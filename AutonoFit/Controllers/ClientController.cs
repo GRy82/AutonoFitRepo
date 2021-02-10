@@ -262,9 +262,8 @@ namespace AutonoFit.Controllers
             Client client = await _repo.Client.GetClientAsync(userId);
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
-            FitnessDictionary fitnessMetrics = new FitnessDictionary();
+            List<FitnessDictionary> fitnessMetrics = new List<FitnessDictionary> { };
             List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
-            fitnessMetrics.cardio = goalIds.Contains(4) || goalIds.Contains(5) ? true : false;
             List<ClientEquipment>  equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
             string url = BuildEquipmentUrlString(equipment);
             ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(url);
@@ -284,8 +283,10 @@ namespace AutonoFit.Controllers
                 while(totalExerciseTime < currentProgram.MinutesPerSession)
                 {
                     Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary);
+                    todaysExercises.Add(exercise);
                     FitnessDictionary tempFitDict = new FitnessDictionary();
                     tempFitDict = await programModule.GenerateLift(currentProgram, recentWorkoutCycle, tempFitDict, todaysGoalNumber, exercise.id);
+                    fitnessMetrics.Add(tempFitDict);
                     ClientExercise clienteExercise = SharedUtility.CopyAsClientExercises(exercise, client.ClientId, tempFitDict);
                     clientExercises.Add(clienteExercise);
                     totalExerciseTime += (int)(SharedUtility.GetSingleExerciseTime(tempFitDict) / 60);
@@ -295,6 +296,9 @@ namespace AutonoFit.Controllers
            
             ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
             {
+                ClientExercises = clientExercises,
+                Exercises = todaysExercises,
+                FitnessDictionary = fitnessMetrics
             };
 
             //1. Consider days/week. Consider 2 aspects about them 1.) even/odd 2.) actual number. 2 is the minumum, 6 is the max.

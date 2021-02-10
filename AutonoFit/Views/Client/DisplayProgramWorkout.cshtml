@@ -1,4 +1,4 @@
-﻿@model AutonoFit.ViewModels.SingleWorkoutVM
+﻿@model AutonoFit.ViewModels.ProgramWorkoutVM
 
 @{
     ViewData["Title"] = "Workout";
@@ -22,43 +22,43 @@
             <th>Sets</th>
             <th>Repetitions</th>
             <th>Rest Time</th>
+            <th>Completion</th>
         </tr>
         <tbody>
-            @foreach (var exercise in Model.Exercises)
+            @for(int i = 0; i < Model.ClientExercises.Count; i++)
             {
                 <tr>
-                    <td>@exercise.name</td>
-                    <td><details style="max-width: 60%;"><summary>Instructions</summary>@exercise.description</details></td>
-                    <td>@Model.fitnessDictionary.sets</td>
-                    <td>@Model.fitnessDictionary.reps</td>
-                    <td>@Model.fitnessDictionary.restString</td>
+                    <td>@Model.Exercises[i].name</td>
+                    <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.Exercises[i].description</details></td>
+                    <td>@Model.ClientExercises[i].Sets</td>
+                    <td>@Model.ClientExercises[i].Reps</td>
+                    <td>@Model.FitnessDictionary[i].restString</td>
+                    <td><input type="checkbox" /></td>
                 </tr>
             }
         </tbody>
     </table>
     <br />
 
-    @if (Model.fitnessDictionary.cardio == true)
+    @if (Model.FitnessDictionary[0].cardio == true)
     {
         <div class="cardio-zone col-md-6">
             <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
             <dl class="row">
                 <dt class="col-md-6">Target Distance: </dt>
-                <dd class="col-md-6">@Model.fitnessDictionary.distanceMiles.ToString("#.##") miles</dd>
+                <dd class="col-md-6">@Model.FitnessDictionary[0].distanceMiles.ToString("#.##") miles</dd>
                 <dt class="col-md-6">Target Duration: </dt>
-                <dd class="col-md-6">@Model.fitnessDictionary.durationString</dd>
+                <dd class="col-md-6">@Model.FitnessDictionary[0].durationString</dd>
                 <dt class="col-md-6">Target Pace: </dt>
-                <dd class="col-md-6">@Model.fitnessDictionary.paceString</dd>
+                <dd class="col-md-6">@Model.FitnessDictionary[0].paceString</dd>
             </dl>
         </div>
     }
 
     <form asp-action="CompleteSingleWorkout" style="top: 30px;">
-        <input type="hidden" name="workoutId" id=""workoutId" asp-for="@Model.Workout.Id"/>
+        <input type="hidden" name="workoutId" id="" />
         <input type="submit" class="btn btn-primary" value="Workout Completed" />
     </form>
-   
+
 
 </div>
-
-
