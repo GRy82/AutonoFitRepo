@@ -4,114 +4,142 @@
     ViewData["Title"] = "Program Overview";
 }
 
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-10">
-        <h1>@ViewData["Title"]</h1>
-    </div>
-    <div class="col-md-2"></div>
-    <div class="col-md-10">
-        <h2>@Model.ClientProgram.ProgramName</h2>
-    </div>
-    <div class="col-md-2"></div>
-    <div class="col-md-10">
-        <h2>@Model.ClientName</h2>
-    </div>
-</div>
-
-<hr />
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <strong>Program Start Date:  </strong>
-        </div>
-        <div class="col-md-6">
-            @Model.ProgramStart
-        </div>
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <strong>Goal One: </strong>
-        </div>
-        <div class="col-md-6">
-            @Model.GoalOneName
-        </div>
-    </div>
-    <br />
-    @if (Model.GoalTwoName != null)
-    {
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-4">
-                <strong>Goal Two: </strong>
-            </div>
-            <div class="col-md-6">
-                @Model.GoalTwoName
-            </div>
-        </div>
-        <br />
+<style>
+    h1, h2  {
+        color: white;
+        font-weight: 800;
+        text-shadow: 10px 2px 15px red;
     }
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <strong>Days Per Week: </strong>
-        </div>
-        <div class="col-md-6">
-            @Model.ClientProgram.DaysPerWeek
-        </div>
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <strong>Minutes Per Session: </strong>
-        </div>
-        <div class="col-md-6">
-            @Model.ClientProgram.MinutesPerSession
-        </div>
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <strong>Workouts Completed: </strong>
-        </div>
-        <div class="col-md-6">
-            @Model.WorkoutsCompleted
-        </div>
-    </div>
-    <br />
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <strong>Workout Completion %: </strong>
-        </div>
-        @if ((DateTime.Now - Model.ClientProgram.ProgramStart).Days >= 7)
-        {
-            <div class="col-md-6">
-                @Model.AttendanceRating
-            </div>
-        }
-        else
-        {
-            <div class="col-md-6">
-                This stat will be available after 1 week.
-            </div>
-        }
-    </div>
-    <br />
-    <br />
+    .panel {
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
+        color: white;
+        padding-left: 30px;
+        padding-top: 30px;
+    }
+    .btn-fun {
+        text-align: center;
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
+        border-radius: 3px;
+        border: none;
+        color: whitesmoke;
+        font-size: large;
+        padding: 5px 20px 5px 20px;
+        margin-top: 45px;
+    }
+</style>
+
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-10">
-            <form asp-action="GenerateProgramWorkout">
-                <input type="hidden" asp-for="@Model.ClientProgram.ProgramId" name="programId"/>
-                <input class="btn btn-primary" type="submit" value="Generate Next Workout" />
-            </form>
+            <h1>@ViewData["Title"]</h1>
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-10">
+            <h2>@Model.ClientProgram.ProgramName</h2>
         </div>
     </div>
-</div>
+
+    <hr />
+    <div>
+        <div class="container panel">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <strong>Program Start Date:  </strong>
+                </div>
+                <div class="col-md-6">
+                    @Model.ProgramStart
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <strong>Goal One: </strong>
+                </div>
+                <div class="col-md-6">
+                    @Model.GoalOneName
+                </div>
+            </div>
+            <br />
+            @if (Model.GoalTwoName != null)
+            {
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                        <strong>Goal Two: </strong>
+                    </div>
+                    <div class="col-md-6">
+                        @Model.GoalTwoName
+                    </div>
+                </div>
+                <br />
+            }
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <strong>Days Per Week: </strong>
+                </div>
+                <div class="col-md-6">
+                    @Model.ClientProgram.DaysPerWeek
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <strong>Minutes Per Session: </strong>
+                </div>
+                <div class="col-md-6">
+                    @Model.ClientProgram.MinutesPerSession
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <strong>Workouts Completed: </strong>
+                </div>
+                <div class="col-md-6">
+                    @Model.WorkoutsCompleted
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <strong>Workout Completion %: </strong>
+                </div>
+                @if ((DateTime.Now - Model.ClientProgram.ProgramStart).Days >= 7)
+                {
+                    <div class="col-md-6">
+                        @Model.AttendanceRating
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6">
+                        This stat will be available after 1 week.
+                    </div>
+                }
+            </div>
+            <br />
+            <br />
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-10">
+
+                </div>
+            </div>
+        </div>
+    </div>
+<form asp-action="GenerateProgramWorkout">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <input type="hidden" asp-for="@Model.ClientProgram.ProgramId" name="programId" />
+        <input class="btn-fun" type="submit" value="Generate Next Workout" />
+    </div>
+    
+</form>

@@ -11,7 +11,7 @@ namespace AutonoFit.Classes
     public class ProgramModule
     {
         private readonly IRepositoryWrapper _repo;
-        public static int repTime = 3;
+        public static int repTime = 5;
 
         public ProgramModule(IRepositoryWrapper repo)
         {

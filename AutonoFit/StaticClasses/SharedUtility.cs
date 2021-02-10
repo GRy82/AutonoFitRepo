@@ -10,7 +10,7 @@ namespace AutonoFit.StaticClasses
 {
     public static class SharedUtility
     {
-        public static int repTime = 3;
+        public static int repTime = 5;
 
         public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
         {

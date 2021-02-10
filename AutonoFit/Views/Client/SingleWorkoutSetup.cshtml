@@ -8,10 +8,37 @@
 <link rel="stylesheet" href="~/css/SingleWorkout.css" />
 <link rel="stylesheet" href="~/css/FitZone.css" />
 
+<style>
+    .box-thing {
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+        padding-left: 30px;
+        color: white;
+    }
+    h1 {
+        color: white;
+        font-weight: 800;
+        text-shadow: 10px 2px 15px blue;
+        margin-top: 8%;
+        margin-bottom: 20px;
+    }
+    .btn-fun {
+        text-align: center;
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
+        border-radius: 3px;
+        border: none;
+        color: whitesmoke;
+        font-size: large;
+        padding: 5px 20px 5px 20px;
+        margin-top: 30px;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-2"></div>
-    <div class="col-md-10">
-        <h1 class="heading">@ViewData["Title"]</h1>
+    <div class="col-md-6">
+        <h1>@ViewData["Title"]</h1>
     </div>
 </div>
 
@@ -24,77 +51,77 @@
     </script>
 }
 
-<link rel="stylesheet" href="~/css/FitZone.css" />
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-6 panel">
-            <form asp-action="CheckSingleWorkoutFormValidity" method="post">
+ 
+    <form asp-action="CheckSingleWorkoutFormValidity" method="post">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-7 box-thing">
+                <br />
                 <div>
-                    <br />
-                    <div>
-                        <p><b>Select session duration</b></p>
-                        <label asp-for="@Model.Minutes" style="margin-right: 15px;">Session Length: </label>
-                        <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block; margin-right: 10px;" />
-                        <p style="display: inline-block;">minutes</p>
-                    </div>
-                    <br />
-                    <div>
-                        <p><b>Select 1-2 fitness goals for the session</b></p>
-                        <label asp-for="@Model.GoalIds[0]" style="margin-right: 15px;">Goal One: </label>
-                        <select asp-for="@Model.GoalIds[0]" id="goal-one" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
-                            <option value="0">Select below</option>
-                            @foreach (var goal in Model.AvailableGoals)
-                            {
-                                <option value="@goal.GoalId">@goal.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <br />
-                    <div>
-                        <label asp-for="@Model.GoalIds[1]" style="margin-right: 15px;">Goal Two: </label>
-                        <select asp-for="@Model.GoalIds[1]" id="goal-two" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
-                            <option value="0">Select below</option>
-                            @foreach (var goal in Model.AvailableGoals)
-                            {
-                                <option value="@goal.GoalId">@goal.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <br />
-                    <div style="display: none;" id="mile-min">
-                        <p><b>Enter typical mile time</b></p>
-                        <label asp-for="@Model.MileMinutes" style="margin-right: 15px;">Mile Time: </label>
-                        <input asp-for="@Model.MileMinutes" value="9" min="0" style="display: inline-block; margin-right: 10px;" />
-                        <p style="display: inline-block; margin-right: 10px;">minutes</p>
-                    </div>
-                    <div style="display: none;" id="mile-sec">
-                        <input asp-for="@Model.MileSeconds" value="00" min="0" max="59" style="display: inline-block; margin-right: 10px;" />
-                        <p style="display: inline-block;">seconds</p>
-                    </div>
-
-                    <br />
-                    <br />
-                    <div>
-                        <p><b>Are you wanting to work upper body, lower, or both?</b></p>
-                        <label asp-for="@Model.BodySection" style="margin-right: 15px;">Workout Type: </label>
-                        <select asp-for="@Model.BodySection">
-                            <option value="">Select below</option>
-                            <option value="Upper Body">Upper Body</option>
-                            <option value="Lower Body">Lower Body</option>
-                            <option value="Both">Both</option>
-                        </select>
-                    </div>
-
-                    <br />
-                    <br />
-                    <input type="submit" class="btn btn-primary" />
+                    <p><b>Select session duration</b></p>
+                    <label asp-for="@Model.Minutes" style="margin-right: 15px;">Session Length: </label>
+                    <input asp-for="@Model.Minutes" min="20" max="90" value="45" style="display: inline-block; margin-right: 10px;" />
+                    <p style="display: inline-block;">minutes</p>
                 </div>
-            </form>
+                <br />
+                <div>
+                    <p><b>Select 1-2 fitness goals for the session</b></p>
+                    <label asp-for="@Model.GoalIds[0]" style="margin-right: 15px;">Goal One: </label>
+                    <select asp-for="@Model.GoalIds[0]" id="goal-one" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
+                        <option value="0">Select below</option>
+                        @foreach (var goal in Model.AvailableGoals)
+                        {
+                            <option value="@goal.GoalId">@goal.Name</option>
+                        }
+                    </select>
+                </div>
+                <br />
+                <div>
+                    <label asp-for="@Model.GoalIds[1]" style="margin-right: 15px;">Goal Two: </label>
+                    <select asp-for="@Model.GoalIds[1]" id="goal-two" onchange="checkCardio(document.getElementById('goal-one').value, document.getElementById('goal-two').value)">
+                        <option value="0">Select below</option>
+                        @foreach (var goal in Model.AvailableGoals)
+                        {
+                            <option value="@goal.GoalId">@goal.Name</option>
+                        }
+                    </select>
+                </div>
+                <br />
+                <div style="display: none;" id="mile-min">
+                    <p><b>Enter typical mile time</b></p>
+                    <label asp-for="@Model.MileMinutes" style="margin-right: 15px;">Mile Time: </label>
+                    <input asp-for="@Model.MileMinutes" value="9" min="0" style="display: inline-block; margin-right: 10px;" />
+                    <p style="display: inline-block; margin-right: 10px;">minutes</p>
+                </div>
+                <div style="display: none;" id="mile-sec">
+                    <input asp-for="@Model.MileSeconds" value="00" min="0" max="59" style="display: inline-block; margin-right: 10px;" />
+                    <p style="display: inline-block;">seconds</p>
+                </div>
+
+                <br />
+                <br />
+                <div>
+                    <p><b>Are you wanting to work upper body, lower, or both?</b></p>
+                    <label asp-for="@Model.BodySection" style="margin-right: 15px;">Workout Type: </label>
+                    <select asp-for="@Model.BodySection">
+                        <option value="">Select below</option>
+                        <option value="Upper Body">Upper Body</option>
+                        <option value="Lower Body">Lower Body</option>
+                        <option value="Both">Both</option>
+                    </select>
+                </div>
+                <br />
+            </div>
+                <br />
+                <br />
+        </div>    
+        <div class="row">
+            <div class="col-md-2"></div>
+            <input type="submit" class="btn-fun" />
         </div>
-        <div class="col-md-4"></div>
-    </div>
+    </form>
 </div>
 
 <script>

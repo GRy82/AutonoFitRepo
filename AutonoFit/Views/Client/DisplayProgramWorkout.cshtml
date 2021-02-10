@@ -7,6 +7,18 @@
 
 <link rel="stylesheet" href="~/css/SingleWorkout.css" />
 
+.btn-fun {
+        text-align: center;
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
+        border-radius: 3px;
+        border: none;
+        color: whitesmoke;
+        font-size: large;
+        padding: 5px 20px 5px 20px;
+        margin-top: 45px;
+    }
+
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-10">
@@ -68,7 +80,7 @@
         }
 
         <input type="hidden" asp-for="@Model.ClientWorkout.Id" />
-        <input type="submit" class="btn btn-primary" value="Workout Completed" />
+        <input type="submit" class="btn-fun" value="Workout Completed" />
     </form>
 
 

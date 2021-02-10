@@ -3,6 +3,37 @@
 @{
     ViewData["Title"] = "Equipment";
 }
+<style>
+    #panel {
+        background-color: rgba(49, 213, 207, 0.9);
+        box-shadow: rgba(16, 70, 70, .8) 0px 10px 7px;
+        color: white;
+        font-weight: bold;
+        padding: 30px;
+    }
+
+    .btn-fun {
+        text-align: center;
+        background-color: rgba(49, 213, 207, 0.9);
+        box-shadow: rgba(16, 70, 70, .8) 0px 10px 7px;
+        border-radius: 3px;
+        border: none;
+        color: whitesmoke;
+        font-size: large;
+        padding: 5px 20px 5px 20px;
+        margin-top: 30px;
+        float: left;
+    }
+
+    h1 {
+        color: white;
+        font-weight: 800;
+        text-shadow: 10px 2px 15px teal;
+        margin-top: 4%;
+        margin-bottom: 20px;
+    }
+</style>
+
 
 <div class="row">
     <div class="col-md-2"></div>
@@ -11,35 +42,38 @@
     </div>
 </div>
 
-<hr />
-<div class="container">
+
+<form asp-action="Equipment">
     <div class="row">
         <div class="col-md-2"></div>
-        <div class="col-md-10">
-            <form asp-action="Equipment">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                @for (int i = 0; i < Model.EquipmentList.Count; i++)
-                {
-                    string checkLabelId = "checkbox" + Model.EquipmentList[i].EquipmentId;
-                    <div>
-                        @if (Model.EquipmentChecks[i] == true)
-                        {
-                            <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" checked style="margin-right: 20px;" />
-                        }
-                        else
-                        {
-                            <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" style="margin-right: 20px;" />
-                        }
-                        <label for="@checkLabelId" style="display: inline-block">@Model.EquipmentList[i].Name</label>
-                        <br />
-                        <br />
-                    </div>
-                }
-                <input type="checkbox" id="checkbox7" checked disabled style="margin-right: 20px;" />
-                <label for="checkbox7" style="display: inline-block">Bodyweight</label>
-                <br /><br /><br />
-                <input type="submit" class="btn btn-primary" />
-            </form>
-        </div>   
+        <div class="col-md-4" id="panel">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @for (int i = 0; i < Model.EquipmentList.Count; i++)
+            {
+                string checkLabelId = "checkbox" + Model.EquipmentList[i].EquipmentId;
+                <div>
+                    @if (Model.EquipmentChecks[i] == true)
+                    {
+                        <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" checked style="margin-right: 20px;" />
+                    }
+                    else
+                    {
+                        <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" style="margin-right: 20px;" />
+                    }
+                    <label for="@checkLabelId" style="display: inline-block">@Model.EquipmentList[i].Name</label>
+                    <br />
+                    <br />
+                </div>
+            }
+            <input type="checkbox" id="checkbox7" checked disabled style="margin-right: 20px;" />
+            <label for="checkbox7" style="display: inline-block">Bodyweight</label>
+        </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-4">
+            <input type="submit" class="btn-fun" />
+        </div>
+    </div>
+            
+</form>
