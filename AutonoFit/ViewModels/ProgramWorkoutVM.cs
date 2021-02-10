@@ -16,5 +16,7 @@ namespace AutonoFit.ViewModels
 
         public List<Result> Exercises { get; set; }
 
+        public ClientWorkout ClientWorkout { get; set; }
+
     }
 }

@@ -110,6 +110,10 @@ namespace AutonoFit.Classes
         public async Task<FitnessDictionary> GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
             string runType = null;
+            if(currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6)
+            {
+                recentWorkoutCycle = SanitizeWorkouts(recentWorkoutCycle);
+            }
             
             if(currentProgram.GoalCount == 1 && recentWorkoutCycle.Count != 0)
             {
@@ -124,13 +128,15 @@ namespace AutonoFit.Classes
                 runType = "Easy";
             }
             //Corner Case
-            if(runType == "Easy" && currentProgram.GoalCount == 1) // == easy after the advancement.
+            if(runType == "Easy" && currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6) // == easy after the advancement.
             {
                 fitnessMetrics.runType = "6 Lift"; //this code will indicate a lift should be done instead of a run.  
                 return fitnessMetrics;//returned with only one change.
             }
 
+            fitnessMetrics.cardio = true;
             fitnessMetrics = await GenerateRun(currentProgram, runType, fitnessMetrics, recentWorkoutCycle);
+            fitnessMetrics = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
 
             return fitnessMetrics;
         }
@@ -147,6 +153,8 @@ namespace AutonoFit.Classes
             fitnessMetrics.milePace = (double)currentProgram.MileMinutes + (Convert.ToDouble(currentProgram.MileSeconds) / 60);
             fitnessMetrics.milePace *= paceCoefficient;
             fitnessMetrics.runDuration = currentProgram.MinutesPerSession;
+            fitnessMetrics.distanceMiles = fitnessMetrics.runDuration / fitnessMetrics.milePace;
+            fitnessMetrics.runType = runType;
             if (runType == "Easy")//all easy runs will need time to be accompanied by an aerobic lifting workout.
             {
                 fitnessMetrics.runDuration /= 2;
@@ -209,6 +217,19 @@ namespace AutonoFit.Classes
             }
 
             return paceCoefficient;
+        }
+
+        public List<ClientWorkout> SanitizeWorkouts(List<ClientWorkout> recentWorkoutCycle)//Makes sure that no "6 Lift" exercises make it in the collection.
+        {
+            List<ClientWorkout> sanitizedWorkouts = new List<ClientWorkout> { };
+            foreach(ClientWorkout workout in recentWorkoutCycle)
+            {
+                if (workout.GoalId < 4 || (workout.GoalId > 3 && workout.RunType != null))
+                {
+                    sanitizedWorkouts.Add(workout);
+                }
+            }
+            return sanitizedWorkouts;
         }
 
         public async Task<FitnessDictionary> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal, int exerciseId)

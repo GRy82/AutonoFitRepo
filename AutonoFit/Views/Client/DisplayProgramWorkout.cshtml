@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Workout";
+    int startingAerobicIndex = 0;
 }
 
 <link rel="stylesheet" href="~/css/SingleWorkout.css" />
@@ -26,7 +27,11 @@
             <th>RPE</th>
         </tr>
         <tbody>
-            @for(int i = 0; i < Model.ClientExercises.Count; i++)
+            @if (Model.FitnessDictionary[0].runType != null)
+            {
+                startingAerobicIndex = 1;
+            }
+            @for(int i = startingAerobicIndex; i < Model.ClientExercises.Count; i++)
             {
                 <tr>
                     <td>@Model.Exercises[i].name</td>
@@ -57,8 +62,8 @@
         </div>
     }
 
-    <form asp-action="CompleteSingleWorkout" style="top: 30px;">
-        <input type="hidden" name="workoutId" id="" />
+    <form asp-action="CompleteProgramWorkout" style="top: 30px;">
+        <input type="hidden" name="workoutId" asp-for="@Model.ClientWorkout.Id" />
         <input type="submit" class="btn btn-primary" value="Workout Completed" />
     </form>
 

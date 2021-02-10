@@ -326,7 +326,7 @@ namespace AutonoFit.Migrations
                     mileDistance = table.Column<double>(nullable: true),
                     Completed = table.Column<bool>(nullable: false),
                     DatePerformed = table.Column<DateTime>(nullable: true),
-                    OverallDifficultyRating = table.Column<int>(nullable: true)
+                    CardioRPE = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -375,7 +375,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "7c850e4b-babf-4b0e-92b0-b4e8d24f6c50", "e0b9fb4d-6b53-4aff-9a38-41a948863180", "Client", "CLIENT" });
+                values: new object[] { "f06da335-395b-4bbe-b283-45ae50ba4ab3", "f8a43eeb-2f6c-4e2a-b558-91e87df4bbc6", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",

@@ -273,9 +273,10 @@ namespace AutonoFit.Controllers
             List<ClientExercise> clientExercises = new List<ClientExercise> { };
 
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
+            string bodyParts = null;
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
                 fitnessMetrics.Add(await programModule.GetTodaysCardio(new FitnessDictionary(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
-
+                
                 if(fitnessMetrics[0].runType == "Easy")
                 {
                     
@@ -285,11 +286,21 @@ namespace AutonoFit.Controllers
 
                 }
             }
-            if(todaysGoalNumber != 4 && todaysGoalNumber != 5)
+            if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessMetrics.Count != 0 && (fitnessMetrics[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))
             {
+                int liftLengthMinutes = 0;
                 int totalExerciseTime = 0;
-                string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
-                while(totalExerciseTime < currentProgram.MinutesPerSession)
+                if(todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely lifitng workout
+                {
+                    bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
+                    liftLengthMinutes = currentProgram.MinutesPerSession;
+                }
+                else//if supplemental cardio is needed or a lift for someone who does too much cardio("6 Lift")
+                {
+                    bodyParts = fitnessMetrics[0].runType == "Easy" ? "Both" : "Upper Body";
+                    liftLengthMinutes = fitnessMetrics[0].runType == "Easy" ? Convert.ToInt32(fitnessMetrics[0].runDuration) : currentProgram.MinutesPerSession;
+                }
+                while(totalExerciseTime < liftLengthMinutes)
                 {
                     Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary);
                     exercise.description = SharedUtility.RemoveTags(exercise.description);
@@ -300,23 +311,34 @@ namespace AutonoFit.Controllers
                     ClientExercise clienteExercise = SharedUtility.CopyAsClientExercises(exercise, client.ClientId, tempFitDict);
                     clientExercises.Add(clienteExercise);
                     totalExerciseTime += (int)(SharedUtility.GetSingleExerciseTime(tempFitDict) / 60);
-                }
-                
+                } 
             }
-           
+
+            ClientWorkout clientWorkout = new ClientWorkout()
+            {
+                ClientId = client.ClientId,
+                BodyParts = bodyParts,
+                GoalId = todaysGoalNumber,
+                RunType = fitnessMetrics[0].runType,
+                milePaceSeconds = Convert.ToInt32(fitnessMetrics[0].milePace * 60),
+                mileDistance = fitnessMetrics[0].distanceMiles,
+                DatePerformed = DateTime.Now
+            };
+
             ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
             {
                 ClientExercises = clientExercises,
                 Exercises = todaysExercises,
-                FitnessDictionary = fitnessMetrics
+                FitnessDictionary = fitnessMetrics,
+                ClientWorkout = clientWorkout
             };
 
-            //1. Consider days/week. Consider 2 aspects about them 1.) even/odd 2.) actual number. 2 is the minumum, 6 is the max.
-
-            //2. Consider Number of goals.  1 goal: Cardio? yes => alternate cardio and lifting.  No => between lower reps/higher sets and higher reps/lower sets.
-            //                              2 goals: Cardio? yes => alternate cardio and lifting.
-
             return View("DisplayProgramWorkout", programWorkoutVM);
+        }
+
+        public async Task CompleteProgramWorkout(ProgramWorkoutVM programWorkoutVM)
+        {
+
         }
 
         //-------------------------------------------------------------------------------------------------------

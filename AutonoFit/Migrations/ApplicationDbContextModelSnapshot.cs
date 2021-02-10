@@ -214,6 +214,9 @@ namespace AutonoFit.Migrations
                     b.Property<string>("BodyParts")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CardioRPE")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -224,9 +227,6 @@ namespace AutonoFit.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("GoalId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OverallDifficultyRating")
                         .HasColumnType("int");
 
                     b.Property<string>("RunType")
@@ -408,8 +408,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7c850e4b-babf-4b0e-92b0-b4e8d24f6c50",
-                            ConcurrencyStamp = "e0b9fb4d-6b53-4aff-9a38-41a948863180",
+                            Id = "f06da335-395b-4bbe-b283-45ae50ba4ab3",
+                            ConcurrencyStamp = "f8a43eeb-2f6c-4e2a-b558-91e87df4bbc6",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
