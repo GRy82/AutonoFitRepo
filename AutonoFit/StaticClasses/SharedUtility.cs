@@ -22,6 +22,7 @@ namespace AutonoFit.StaticClasses
                 exercise.ExerciseId = result.id;
                 exercise.Reps = fitnessMetrics.reps;
                 exercise.RestSeconds = fitnessMetrics.rest;
+                exercise.Sets = fitnessMetrics.sets;
                 
                 workoutExercises.Add(exercise);
             }
@@ -35,7 +36,8 @@ namespace AutonoFit.StaticClasses
             exercise.ClientId = clientId;
             exercise.ExerciseId = randomlyChosenExercise.id;
             exercise.Reps = fitnessMetrics.reps;
-            exercise.RestSeconds = fitnessMetrics.rest; 
+            exercise.RestSeconds = fitnessMetrics.rest;
+            exercise.Sets = fitnessMetrics.sets;
 
             return exercise;
         }

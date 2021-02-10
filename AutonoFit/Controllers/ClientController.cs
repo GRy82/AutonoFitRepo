@@ -208,13 +208,24 @@ namespace AutonoFit.Controllers
                 return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
                     errorMessage = "That name is already taken." }));
             }
+            if(programSetuptVM.GoalIds[0] == 0)
+            {
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
+                    errorMessage = "Select the first goal if you only choose one." }));
+            }
+            if(programSetuptVM.GoalIds.Contains(4) && programSetuptVM.GoalIds.Contains(5))
+            {
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
+                    errorMessage = "You can only choose one cardio-intensive goal due to high overuse injury risk." }));
+            }
+
 
             ClientProgram clientProgram = new ClientProgram() {
                 ProgramName = programSetuptVM.ProgramName,
                 ClientId = client.ClientId,
-                GoalCount = programSetuptVM.GoalIds.Count,
                 GoalOneId = programSetuptVM.GoalIds[0],
-                GoalTwoId = programSetuptVM.GoalIds[1], //Will be 0 if not set to a goal. Maybe change to a null conditional in the future.
+                GoalTwoId = programSetuptVM.GoalIds[1],
+                GoalCount = programSetuptVM.GoalIds[1] == 0 ? 1 : 2,
                 MinutesPerSession = programSetuptVM.Minutes,
                 DaysPerWeek = programSetuptVM.Days,
                 MileMinutes = programSetuptVM?.MileMinutes,
@@ -230,7 +241,9 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> ProgramsList(int clientId)
         {
-            List<ClientProgram> programs = await _repo.ClientProgram.GetAllClientProgramsAsync(clientId);
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Client client = await _repo.Client.GetClientAsync(userId);
+            List<ClientProgram> programs = await _repo.ClientProgram.GetAllClientProgramsAsync(client.ClientId);
 
             return View(programs);
         }
@@ -317,6 +330,7 @@ namespace AutonoFit.Controllers
             ClientWorkout clientWorkout = new ClientWorkout()
             {
                 ClientId = client.ClientId,
+                ProgramId = currentProgram.ProgramId,
                 BodyParts = bodyParts,
                 GoalId = todaysGoalNumber,
                 RunType = fitnessMetrics[0].runType,
@@ -324,6 +338,14 @@ namespace AutonoFit.Controllers
                 mileDistance = fitnessMetrics[0].distanceMiles,
                 DatePerformed = DateTime.Now
             };
+
+            _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
+            foreach(ClientExercise exercise in clientExercises)
+            {
+                exercise.WorkoutId = clientWorkout.Id;
+                _repo.ClientExercise.CreateClientExercise(exercise);
+            }
+            await _repo.SaveAsync();
 
             ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
             {
@@ -336,9 +358,21 @@ namespace AutonoFit.Controllers
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
 
-        public async Task CompleteProgramWorkout(ProgramWorkoutVM programWorkoutVM)
+        public async Task<ActionResult> CompleteProgramWorkout(ProgramWorkoutVM programWorkoutVM)
         {
+            ClientWorkout clientWorkout = await _repo.ClientWorkout.GetClientWorkoutAsync(programWorkoutVM.ClientWorkout.Id);
+            clientWorkout.CardioRPE = programWorkoutVM.CardioRPE;
+            clientWorkout.Completed = true;
+            _repo.ClientWorkout.EditClientWorkout(clientWorkout);
+            List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(clientWorkout.Id);
+            for (int i = 0; i < clientExercises.Count; i++)
+            {
+                clientExercises[i].RPE = programWorkoutVM.RPEs[i];
+                _repo.ClientExercise.EditClientExercise(clientExercises[i]);
+            }
+            await _repo.SaveAsync();
 
+            return RedirectToAction("ProgramsList");
         }
 
         //-------------------------------------------------------------------------------------------------------
@@ -348,16 +382,33 @@ namespace AutonoFit.Controllers
 
         public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)
         {
-            List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllClientWorkoutsAsync(currentProgram.ClientId);
+            List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(currentProgram.ProgramId);
             if (recentWorkouts.Count == 0) {
                 return new List<ClientWorkout> { };
             }
 
-            recentWorkouts = (List<ClientWorkout>)recentWorkouts.OrderByDescending(c => c.DatePerformed);
-            List<ClientWorkout> lastWorkoutCycle = new List<ClientWorkout>() { };
-            for(int i = 0; i < currentProgram.DaysPerWeek; i++) 
+            var workouts = from s in recentWorkouts
+                                orderby s.Id descending
+                                select s;
+
+
+            List<ClientWorkout> lastWorkoutCycle = new List<ClientWorkout> { };
+            foreach (var workout in workouts)
             {
-                lastWorkoutCycle.Add(recentWorkouts[i]);
+                ClientWorkout convertedWorkout = new ClientWorkout();
+                convertedWorkout.Id = workout.Id;
+                convertedWorkout.CardioRPE = workout.CardioRPE;
+                convertedWorkout.BodyParts = workout.BodyParts;
+                convertedWorkout.ClientId = workout.ClientId;
+                convertedWorkout.Completed = workout.Completed;
+                convertedWorkout.DatePerformed = workout.DatePerformed;
+                convertedWorkout.mileDistance = workout.mileDistance;
+                convertedWorkout.milePaceSeconds = workout.milePaceSeconds;
+                convertedWorkout.ProgramId = workout.ProgramId;
+                convertedWorkout.GoalId = workout.GoalId;
+                convertedWorkout.RunType = workout.RunType;
+
+                lastWorkoutCycle.Add(convertedWorkout);
             }
 
             return lastWorkoutCycle;

@@ -16,54 +16,58 @@
 
 <hr />
 <div class="container">
-    <table class="table table-dark table-hover lift-table">
-        <tr>
-            <th>Exercise Name</th>
-            <th>Description</th>
-            <th>Sets</th>
-            <th>Repetitions</th>
-            <th>Rest Time</th>
-            <th>Completion</th>
-            <th>RPE</th>
-        </tr>
-        <tbody>
-            @if (Model.FitnessDictionary[0].runType != null)
-            {
-                startingAerobicIndex = 1;
-            }
-            @for(int i = startingAerobicIndex; i < Model.ClientExercises.Count; i++)
-            {
-                <tr>
-                    <td>@Model.Exercises[i].name</td>
-                    <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.Exercises[i].description</details></td>
-                    <td>@Model.ClientExercises[i].Sets</td>
-                    <td>@Model.ClientExercises[i].Reps</td>
-                    <td>@Model.FitnessDictionary[i].restString</td>
-                    <td><input type="checkbox" /></td>
-                    <td><input type="text" min="6" max="20"/></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <br />
-
-    @if (Model.FitnessDictionary[0].cardio == true)
-    {
-        <div class="cardio-zone col-md-6">
-            <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
-            <dl class="row">
-                <dt class="col-md-6">Target Distance: </dt>
-                <dd class="col-md-6">@Model.FitnessDictionary[0].distanceMiles.ToString("#.##") miles</dd>
-                <dt class="col-md-6">Target Duration: </dt>
-                <dd class="col-md-6">@Model.FitnessDictionary[0].durationString</dd>
-                <dt class="col-md-6">Target Pace: </dt>
-                <dd class="col-md-6">@Model.FitnessDictionary[0].paceString</dd>
-            </dl>
-        </div>
-    }
-
     <form asp-action="CompleteProgramWorkout" style="top: 30px;">
-        <input type="hidden" name="workoutId" asp-for="@Model.ClientWorkout.Id" />
+        <table class="table table-dark table-hover lift-table">
+            <tr>
+                <th>Exercise Name</th>
+                <th>Description</th>
+                <th>Sets</th>
+                <th>Repetitions</th>
+                <th>Rest Time</th>
+                <th>RPE</th>
+            </tr>
+            <tbody>
+                @if (Model.FitnessDictionary[0].runType != null)
+                {
+                    startingAerobicIndex = 1;
+                }
+                @for (int i = startingAerobicIndex; i < Model.ClientExercises.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.Exercises[i].name</td>
+                        <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.Exercises[i].description</details></td>
+                        <td>@Model.ClientExercises[i].Sets</td>
+                        <td>@Model.ClientExercises[i].Reps</td>
+                        <td>@Model.FitnessDictionary[i].restString</td>
+                        <td><input type="number" min="6" max="20" asp-for="@Model.RPEs" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <br />
+
+        @if (Model.FitnessDictionary[0].cardio == true)
+        {
+            <div class="cardio-zone col-md-6">
+                <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
+                <dl class="row">
+                    <dt class="col-md-6">Target Distance: </dt>
+                    <dd class="col-md-6">@Model.FitnessDictionary[0].distanceMiles.ToString("#.##") miles</dd>
+                    <dt class="col-md-6">Target Duration: </dt>
+                    <dd class="col-md-6">@Model.FitnessDictionary[0].durationString</dd>
+                    <dt class="col-md-6">Target Pace: </dt>
+                    <dd class="col-md-6">@Model.FitnessDictionary[0].paceString</dd>
+                </dl>
+            </div>
+        }
+
+        @if (Model.FitnessDictionary[0].runType != null)
+        {
+            <label asp-for="@Model.CardioRPE"></label>
+            <input type="number" min="6" max="20" asp-for="@Model.CardioRPE" id="cardio-rpe" />
+        }
+
+        <input type="hidden" asp-for="@Model.ClientWorkout.Id" />
         <input type="submit" class="btn btn-primary" value="Workout Completed" />
     </form>
 

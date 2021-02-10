@@ -18,5 +18,9 @@ namespace AutonoFit.ViewModels
 
         public ClientWorkout ClientWorkout { get; set; }
 
+        public List<int> RPEs { get; set; }
+
+        public int CardioRPE { get; set; }
+
     }
 }

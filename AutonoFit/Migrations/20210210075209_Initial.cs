@@ -319,6 +319,7 @@ namespace AutonoFit.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<int>(nullable: false),
                     WeekId = table.Column<int>(nullable: true),
+                    ProgramId = table.Column<int>(nullable: true),
                     BodyParts = table.Column<string>(nullable: true),
                     GoalId = table.Column<int>(nullable: true),
                     RunType = table.Column<string>(nullable: true),
@@ -375,7 +376,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "f06da335-395b-4bbe-b283-45ae50ba4ab3", "f8a43eeb-2f6c-4e2a-b558-91e87df4bbc6", "Client", "CLIENT" });
+                values: new object[] { "01d98bc5-f5c5-42d9-a466-21e5c1ea5c3c", "112a2910-e244-47fd-a12f-ce325de5c3ec", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",

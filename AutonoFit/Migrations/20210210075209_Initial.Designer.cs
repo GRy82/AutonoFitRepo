@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutonoFit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210210062136_Initial")]
+    [Migration("20210210075209_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,6 +231,9 @@ namespace AutonoFit.Migrations
                     b.Property<int?>("GoalId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProgramId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RunType")
                         .HasColumnType("nvarchar(max)");
 
@@ -410,8 +413,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f06da335-395b-4bbe-b283-45ae50ba4ab3",
-                            ConcurrencyStamp = "f8a43eeb-2f6c-4e2a-b558-91e87df4bbc6",
+                            Id = "01d98bc5-f5c5-42d9-a466-21e5c1ea5c3c",
+                            ConcurrencyStamp = "112a2910-e244-47fd-a12f-ce325de5c3ec",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
