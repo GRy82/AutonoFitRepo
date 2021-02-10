@@ -265,6 +265,12 @@ namespace AutonoFit.Controllers
             FitnessDictionary fitnessMetrics = new FitnessDictionary();
             List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
             fitnessMetrics.cardio = goalIds.Contains(4) || goalIds.Contains(5) ? true : false;
+            List<ClientEquipment>  equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+            string url = BuildEquipmentUrlString(equipment);
+            ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(url);
+            List<Result> resultsLibrary = new List<Result> { };
+            resultsLibrary = SharedUtility.RepackageResults(resultsLibrary, exerciseLibrary);
+            List<Result> todaysExercises = new List<Result> { };
 
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
@@ -273,7 +279,7 @@ namespace AutonoFit.Controllers
             else
             {
                 string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
-                
+                Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary);
             }
 
 
@@ -318,9 +324,14 @@ namespace AutonoFit.Controllers
         //-------------------------------------------------------------------------------------------------------
         //-----------------------------------Helper Methods----------------------------------------------------
 
+
         public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllClientWorkoutsAsync(currentProgram.ClientId);
+            if (recentWorkouts.Count == 0) {
+                return new List<ClientWorkout> { };
+            }
+
             recentWorkouts = (List<ClientWorkout>)recentWorkouts.OrderByDescending(c => c.DatePerformed);
             List<ClientWorkout> lastWorkoutCycle = new List<ClientWorkout>() { };
             for(int i = 0; i < currentProgram.DaysPerWeek; i++) 
@@ -353,7 +364,7 @@ namespace AutonoFit.Controllers
 
         private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
-            string urlString = "https://wger.de/api/v2/exercise?language=2&equipment=7";
+            string urlString = "https://wger.de/api/v2/exercise?language=2&limit=100&equipment=7";
             foreach (ClientEquipment piece in equipmentList){
                 urlString += "&equipment=" + piece.EquipmentId;
             }

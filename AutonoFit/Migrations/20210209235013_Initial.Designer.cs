@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutonoFit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210208192438_Initial")]
+    [Migration("20210209235013_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,13 +94,7 @@ namespace AutonoFit.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LastAdjusted")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("LastPerformed")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberRM")
                         .HasColumnType("int");
 
                     b.Property<int>("RPE")
@@ -141,10 +135,19 @@ namespace AutonoFit.Migrations
                     b.Property<int>("DaysPerWeek")
                         .HasColumnType("int");
 
+                    b.Property<int>("GoalCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("GoalOneId")
                         .HasColumnType("int");
 
                     b.Property<int?>("GoalTwoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MileMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MileSeconds")
                         .HasColumnType("int");
 
                     b.Property<int>("MinutesPerSession")
@@ -210,6 +213,9 @@ namespace AutonoFit.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("BodyParts")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -219,8 +225,14 @@ namespace AutonoFit.Migrations
                     b.Property<DateTime?>("DatePerformed")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("GoalId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("OverallDifficultyRating")
                         .HasColumnType("int");
+
+                    b.Property<string>("RunType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("WeekId")
                         .HasColumnType("int");
@@ -398,8 +410,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0d957c06-d35c-4145-b04e-b18cf0620afb",
-                            ConcurrencyStamp = "ca1e30df-a045-4b1b-89cc-38ba9f90da79",
+                            Id = "7c850e4b-babf-4b0e-92b0-b4e8d24f6c50",
+                            ConcurrencyStamp = "e0b9fb4d-6b53-4aff-9a38-41a948863180",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

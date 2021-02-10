@@ -118,6 +118,27 @@ namespace AutonoFit.StaticClasses
             return muscles;
         }
 
+        public static Result SelectExercise(string bodyParts, List<Result> exercises)
+        {
+            List<Result> possibleExercises = new List<Result> { };
+            int[] muscles = GetMuscles(bodyParts);
+            int[] categories = GetCategories(bodyParts);
+
+            foreach (Result exercise in exercises)
+            {
+                for (int i = 0; i > muscles.Length; i++)
+                {
+                    if (exercise.muscles.Contains(muscles[i]) || exercise.muscles_secondary.Contains(muscles[i]) || (i < categories.Length && exercise.category == categories[i]))
+                    {
+                        possibleExercises.Add(exercise);
+                    }
+                }
+            }
+
+            List<Result> singleExercise = SharedUtility.RandomizeExercises(possibleExercises, 1);
+            return singleExercise[0];
+        }
+
         public static List<int> CountGoals(List<int> goalIds)
         {
             List<int> revisedGoals = new List<int> { };

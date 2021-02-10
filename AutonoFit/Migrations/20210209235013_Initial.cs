@@ -239,11 +239,9 @@ namespace AutonoFit.Migrations
                     ExerciseId = table.Column<int>(nullable: false),
                     WorkoutId = table.Column<int>(nullable: false),
                     RPE = table.Column<int>(nullable: false),
-                    NumberRM = table.Column<int>(nullable: false),
                     Reps = table.Column<int>(nullable: false),
                     Sets = table.Column<int>(nullable: false),
                     RestSeconds = table.Column<int>(nullable: false),
-                    LastAdjusted = table.Column<string>(nullable: true),
                     DeltaRPECount = table.Column<int>(nullable: false),
                     LastPerformed = table.Column<int>(nullable: true),
                     TimeSinceLast = table.Column<TimeSpan>(nullable: true)
@@ -270,8 +268,11 @@ namespace AutonoFit.Migrations
                     MinutesPerSession = table.Column<int>(nullable: false),
                     DaysPerWeek = table.Column<int>(nullable: false),
                     ProgramName = table.Column<string>(nullable: true),
+                    GoalCount = table.Column<int>(nullable: false),
                     GoalOneId = table.Column<int>(nullable: false),
                     GoalTwoId = table.Column<int>(nullable: true),
+                    MileMinutes = table.Column<int>(nullable: true),
+                    MileSeconds = table.Column<int>(nullable: true),
                     ProgramStart = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -318,6 +319,9 @@ namespace AutonoFit.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<int>(nullable: false),
                     WeekId = table.Column<int>(nullable: true),
+                    BodyParts = table.Column<string>(nullable: true),
+                    GoalId = table.Column<int>(nullable: true),
+                    RunType = table.Column<string>(nullable: true),
                     milePaceSeconds = table.Column<int>(nullable: true),
                     mileDistance = table.Column<double>(nullable: true),
                     Completed = table.Column<bool>(nullable: false),
@@ -371,7 +375,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "0d957c06-d35c-4145-b04e-b18cf0620afb", "ca1e30df-a045-4b1b-89cc-38ba9f90da79", "Client", "CLIENT" });
+                values: new object[] { "7c850e4b-babf-4b0e-92b0-b4e8d24f6c50", "e0b9fb4d-6b53-4aff-9a38-41a948863180", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",
