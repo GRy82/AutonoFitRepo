@@ -1,11 +1,6 @@
 ﻿
-h1{
-    height: 30%;
-    width: auto;
-    margin-bottom: 50px;
-    margin-top: 40px;
-    text-align: center;
-}
+
+
 
 .btn-FitZone {
     text-align: center; 
@@ -40,4 +35,16 @@ h1{
     box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
 }
 
+
+.heading {
+    color: white;
+    font-weight: 800;
+    text-shadow: 10px 2px 15px rgba(49, 213, 225, .9);
+    text-align: left;
+}
+
+.panel {
+    background-color: rgba(49, 213, 225, .9);
+    box-shadow: rgba(16, 70, 70, .8) 0px 10px 7px;
+}
 

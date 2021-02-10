@@ -35,12 +35,7 @@ namespace AutonoFit.Models
 
         public DateTime? DatePerformed { get; set; }
 
-        public int? OverallDifficultyRating { get; set; }
-
-
-
-
-
+        public int? CardioRPE { get; set; }
 
     }
 }

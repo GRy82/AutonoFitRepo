@@ -23,6 +23,7 @@
             <th>Repetitions</th>
             <th>Rest Time</th>
             <th>Completion</th>
+            <th>RPE</th>
         </tr>
         <tbody>
             @for(int i = 0; i < Model.ClientExercises.Count; i++)
@@ -34,6 +35,7 @@
                     <td>@Model.ClientExercises[i].Reps</td>
                     <td>@Model.FitnessDictionary[i].restString</td>
                     <td><input type="checkbox" /></td>
+                    <td><input type="text" min="6" max="20"/></td>
                 </tr>
             }
         </tbody>

@@ -274,15 +274,25 @@ namespace AutonoFit.Controllers
 
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
-                
+                fitnessMetrics.Add(await programModule.GetTodaysCardio(new FitnessDictionary(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
+
+                if(fitnessMetrics[0].runType == "Easy")
+                {
+                    
+                }
+                if(fitnessMetrics[0].runType == "6 Lift")
+                {
+
+                }
             }
-            else
+            if(todaysGoalNumber != 4 && todaysGoalNumber != 5)
             {
                 int totalExerciseTime = 0;
                 string bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
                 while(totalExerciseTime < currentProgram.MinutesPerSession)
                 {
                     Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary);
+                    exercise.description = SharedUtility.RemoveTags(exercise.description);
                     todaysExercises.Add(exercise);
                     FitnessDictionary tempFitDict = new FitnessDictionary();
                     tempFitDict = await programModule.GenerateLift(currentProgram, recentWorkoutCycle, tempFitDict, todaysGoalNumber, exercise.id);
@@ -311,6 +321,7 @@ namespace AutonoFit.Controllers
 
         //-------------------------------------------------------------------------------------------------------
         //-----------------------------------Helper Methods----------------------------------------------------
+
 
 
         public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)

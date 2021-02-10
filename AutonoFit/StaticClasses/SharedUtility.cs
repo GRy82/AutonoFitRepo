@@ -143,7 +143,7 @@ namespace AutonoFit.StaticClasses
 
             foreach (Result exercise in exercises)
             {
-                for (int i = 0; i > muscles.Length; i++)
+                for (int i = 0; i < muscles.Length; i++)
                 {
                     if (exercise.muscles.Contains(muscles[i]) || exercise.muscles_secondary.Contains(muscles[i]) || (i < categories.Length && exercise.category == categories[i]))
                     {
