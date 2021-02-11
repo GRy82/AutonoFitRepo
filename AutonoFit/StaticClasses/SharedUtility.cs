@@ -137,7 +137,7 @@ namespace AutonoFit.StaticClasses
             return muscles;
         }
 
-        public static Result SelectExercise(string bodyParts, List<Result> exercises)
+        public static Result SelectExercise(string bodyParts, List<Result> exercises, List<Result> todaysExercises)
         {
             List<Result> possibleExercises = new List<Result> { };
             int[] muscles = GetMuscles(bodyParts);
@@ -154,7 +154,12 @@ namespace AutonoFit.StaticClasses
                 }
             }
 
-            List<Result> singleExercise = SharedUtility.RandomizeExercises(possibleExercises, 1);
+            List<Result> singleExercise;
+            do
+            {
+                singleExercise = new List<Result> { };
+                singleExercise = RandomizeExercises(possibleExercises, 1);
+            } while (todaysExercises.Contains(singleExercise[0]));
             return singleExercise[0];
         }
 

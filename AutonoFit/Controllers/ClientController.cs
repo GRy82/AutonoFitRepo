@@ -306,7 +306,7 @@ namespace AutonoFit.Controllers
                 }
                 while(totalExerciseTime < liftLengthMinutes)
                 {
-                    Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary);
+                    Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary, todaysExercises);
                     exercise.description = SharedUtility.RemoveTags(exercise.description);
                     todaysExercises.Add(exercise);
                     FitnessDictionary tempFitDict = new FitnessDictionary();
