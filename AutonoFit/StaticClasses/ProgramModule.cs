@@ -244,7 +244,7 @@ namespace AutonoFit.Classes
                                 orderby s.Id descending
                                 select s; //use date to order this, if i ever use hash values for id instead.
                 pastExercises = ConvertVarToExercise(past);
-                if (pastExercises[0].RPE > pastExercises[1].RPE) 
+                if (pastExercises[0].RPE < pastExercises[1].RPE) 
                 {
                     fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + 1;
                     fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].maxRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
