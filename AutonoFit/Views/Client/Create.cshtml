@@ -4,13 +4,45 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<style>
+    .box-thing {
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+        padding: 30px;
+        color: white;
+    }
+    h1 {
+        color: white;
+        font-weight: 800;
+        text-shadow: 10px 2px 15px blue;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .btn-fun {
+        text-align: center;
+        background-color: rgba(30, 90, 255, .9);
+        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
+        border-radius: 3px;
+        border: none;
+        color: whitesmoke;
+        font-size: large;
+        padding: 5px 20px 5px 20px;
+        margin-top: 30px;
+    }
+</style>
 
-<h4>Client</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-md-2"></div>
+    <div class="col-md-7">
+        <h1>Create Account</h1>
+    </div>
+</div>
+
+
+<form asp-action="Create">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-7 box-thing">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
@@ -37,16 +69,15 @@
                 <input asp-for="BirthYear" class="form-control" />
                 <span asp-validation-for="BirthYear" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn-fun" />
+        </div>
+    </div>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
