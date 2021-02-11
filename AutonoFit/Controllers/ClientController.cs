@@ -289,15 +289,6 @@ namespace AutonoFit.Controllers
             string bodyParts = null;
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
                 fitnessMetrics.Add(await programModule.GetTodaysCardio(new FitnessDictionary(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
-                
-                if(fitnessMetrics[0].runType == "Easy")
-                {
-                    
-                }
-                if(fitnessMetrics[0].runType == "6 Lift")
-                {
-
-                }
             }
             if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessMetrics.Count != 0 && (fitnessMetrics[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))
             {
@@ -616,20 +607,16 @@ namespace AutonoFit.Controllers
             try
             {
                 ClientProgram clientProgram = await _repo.ClientProgram.GetClientProgramAsync(id);
-                List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(clientProgram.ProgramId); 
-                foreach (ClientWeek week in clientWeeks)
+               
+                List<ClientWorkout> clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(clientProgram.ProgramId);
+                foreach (ClientWorkout workout in clientWorkouts)
                 {
-                    List<ClientWorkout> clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);
-                    foreach (ClientWorkout workout in clientWorkouts)
+                    List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id); 
+                    foreach (ClientExercise exercise in clientExercises)
                     {
-                        List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id); 
-                        foreach (ClientExercise exercise in clientExercises)
-                        {
-                            _repo.ClientExercise.DeleteClientExercise(exercise);
-                        }
-                        _repo.ClientWorkout.DeleteClientWorkout(workout);
+                        _repo.ClientExercise.DeleteClientExercise(exercise);
                     }
-                    _repo.ClientWeek.DeleteClientWeek(week);
+                    _repo.ClientWorkout.DeleteClientWorkout(workout);
                 }
                 _repo.ClientProgram.DeleteClientProgram(clientProgram);
                 await _repo.SaveAsync();
