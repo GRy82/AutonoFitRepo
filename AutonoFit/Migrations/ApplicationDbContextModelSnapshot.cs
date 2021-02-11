@@ -95,6 +95,9 @@ namespace AutonoFit.Migrations
                     b.Property<int?>("LastPerformed")
                         .HasColumnType("int");
 
+                    b.Property<int>("ProgramId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RPE")
                         .HasColumnType("int");
 
@@ -411,8 +414,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "01d98bc5-f5c5-42d9-a466-21e5c1ea5c3c",
-                            ConcurrencyStamp = "112a2910-e244-47fd-a12f-ce325de5c3ec",
+                            Id = "e00965b4-506e-48ce-af8b-a3f7da2a7ebc",
+                            ConcurrencyStamp = "6f9734ae-f4e9-456f-90e2-cfd35d379ca6",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

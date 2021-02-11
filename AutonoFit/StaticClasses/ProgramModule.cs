@@ -11,7 +11,7 @@ namespace AutonoFit.Classes
     public class ProgramModule
     {
         private readonly IRepositoryWrapper _repo;
-        public static int repTime = 5;
+        public static int repTime = 4;
 
         public ProgramModule(IRepositoryWrapper repo)
         {
@@ -36,20 +36,16 @@ namespace AutonoFit.Classes
         public async Task<int> GetWorkoutsCompletedByProgram(int programId)
         {
             int totalWorkoutCount = 0;
-            List<ClientWeek> clientWeeks = await _repo.ClientWeek.GetAllClientWeeksAsync(programId); 
-
-            foreach(ClientWeek week in clientWeeks)
+          
+            List<ClientWorkout> workouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(programId);
+            foreach(ClientWorkout workout in workouts)
             {
-                List<ClientWorkout> workouts = await _repo.ClientWorkout.GetAllWorkoutsByWeekAsync(week.Id);
-                foreach(ClientWorkout workout in workouts)
+                if (workout.Completed == true)
                 {
-                    if (workout.Completed == true)
-                    {
-                        totalWorkoutCount++;
-                    }
+                    totalWorkoutCount++;
                 }
             }
-
+            
             return totalWorkoutCount;
         }
 
@@ -235,7 +231,7 @@ namespace AutonoFit.Classes
         public async Task<FitnessDictionary> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal, int exerciseId)
         {
             List<TrainingStimulus> trainingStimulus = SharedUtility.DefineTrainingStimuli(new List<int> { todaysGoal });
-            List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExerciseAsync(exerciseId);
+            List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(exerciseId);
             
             if(pastExercises.Count >= 2)
             {

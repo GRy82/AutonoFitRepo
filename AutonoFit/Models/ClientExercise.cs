@@ -19,6 +19,8 @@ namespace AutonoFit.Models
         public int ExerciseId { get; set; }
 
         public int WorkoutId { get; set; }
+
+        public int ProgramId { get; set; }
         public int RPE { get; set; }
 
         public int Reps { get; set; }

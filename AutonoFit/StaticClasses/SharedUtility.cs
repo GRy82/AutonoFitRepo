@@ -10,7 +10,7 @@ namespace AutonoFit.StaticClasses
 {
     public static class SharedUtility
     {
-        public static int repTime = 5;
+        public static int repTime = 4;
 
         public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
         {
@@ -147,7 +147,7 @@ namespace AutonoFit.StaticClasses
             {
                 for (int i = 0; i < muscles.Length; i++)
                 {
-                    if (exercise.muscles.Contains(muscles[i]) || exercise.muscles_secondary.Contains(muscles[i]) || (i < categories.Length && exercise.category == categories[i]))
+                    if ((exercise.muscles.Contains(muscles[i]) || exercise.muscles_secondary.Contains(muscles[i]) || (i < categories.Length && exercise.category == categories[i])) && exercise.id != 393)//exercise 393 is a full workout
                     {
                         possibleExercises.Add(exercise);
                     }

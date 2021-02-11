@@ -329,11 +329,13 @@ namespace AutonoFit.Controllers
                 mileDistance = fitnessMetrics[0].distanceMiles,
                 DatePerformed = DateTime.Now
             };
-
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
+            await _repo.SaveAsync();
+
             foreach(ClientExercise exercise in clientExercises)
             {
                 exercise.WorkoutId = clientWorkout.Id;
+                exercise.ProgramId = currentProgram.ProgramId;
                 _repo.ClientExercise.CreateClientExercise(exercise);
             }
             await _repo.SaveAsync();

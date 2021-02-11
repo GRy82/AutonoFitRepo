@@ -29,6 +29,9 @@ namespace AutonoFit.Data.Repositories
         public async Task<List<ClientExercise>> GetClientExerciseByWorkoutAsync(int workoutId) =>
             await FindByCondition(c => c.WorkoutId.Equals(workoutId)).ToListAsync();
 
+        public async Task<List<ClientExercise>> GetClientExercisesByProgramAsync(int programId) =>
+            await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
+
         public void EditClientExercise(ClientExercise clientExercise) => Update(clientExercise);
         public void DeleteClientExercise(ClientExercise clientExercise) => Delete(clientExercise);
 
