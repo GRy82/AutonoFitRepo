@@ -84,7 +84,7 @@
         @if (Model.FitnessDictionary[0].runType != null)
         {
             <label asp-for="@Model.CardioRPE"></label>
-            <input type="number" min="6" max="20" asp-for="@Model.CardioRPE" id="cardio-rpe" />
+            <input type="number" min="6" max="20" value="12" asp-for="@Model.CardioRPE" id="cardio-rpe" />
         }
 
         <input type="hidden" asp-for="@Model.ClientWorkout.Id" />

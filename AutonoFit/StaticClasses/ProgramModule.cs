@@ -231,13 +231,18 @@ namespace AutonoFit.Classes
         public async Task<FitnessDictionary> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal, int exerciseId)
         {
             List<TrainingStimulus> trainingStimulus = SharedUtility.DefineTrainingStimuli(new List<int> { todaysGoal });
-            List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(exerciseId);
-            
-            if(pastExercises.Count >= 2)
+            List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(currentProgram.ProgramId, exerciseId);
+
+            if (pastExercises.Count <= 1)//start at min rep, max rest.
+            {
+                fitnessMetrics.reps = trainingStimulus[0].minReps;
+                fitnessMetrics.rest = trainingStimulus[0].maxRestSeconds;
+            }
+            else if (pastExercises.Count >= 2)
             {
                 var past = from s in pastExercises
                                 orderby s.Id descending
-                                select s; //use date to order this, if i ever use hash values instead.
+                                select s; //use date to order this, if i ever use hash values for id instead.
                 pastExercises = ConvertVarToExercise(past);
                 if (pastExercises[0].RPE > pastExercises[1].RPE) 
                 {
@@ -245,16 +250,7 @@ namespace AutonoFit.Classes
                     fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].maxRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
                 }
             }
-            else if(pastExercises.Count <= 1)//start at min rep, max rest.
-            {
-                fitnessMetrics.reps = trainingStimulus[0].minReps;
-                fitnessMetrics.rest = trainingStimulus[0].maxRestSeconds;
-            }
-            else //use same reps, rest time.
-            {
-                fitnessMetrics.reps = pastExercises[0].Reps;
-                fitnessMetrics.rest = pastExercises[0].RestSeconds;
-            }
+          
             fitnessMetrics.sets = trainingStimulus[0].sets;
             fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
 

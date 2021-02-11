@@ -12,7 +12,7 @@ namespace AutonoFit.Contracts
         Task<List<ClientExercise>> GetAllClientExercisesAsync(int clientId);
         Task<List<ClientExercise>> GetClientExerciseAsync(int exerciseId);
         Task<List<ClientExercise>> GetClientExerciseByWorkoutAsync(int workoutId);
-        Task<List<ClientExercise>> GetClientExercisesByProgramAsync(int programId);
+        Task<List<ClientExercise>> GetClientExercisesByProgramAsync(int programId, int exerciseId);
         void EditClientExercise(ClientExercise clientExercise);
         void DeleteClientExercise(ClientExercise clientExercise);
     }

@@ -203,7 +203,7 @@ namespace AutonoFit.StaticClasses
 
         public static string RemoveTags(string stringWithTags)
         {
-            string[] tagsArray = new string[] { "<p>", "<strong>" };
+            string[] tagsArray = new string[] { "<p>", "<strong>", "<ol>", "<li>", "<ul>" };
             for(int i = 0; i < tagsArray.Length; i++)
             {
                 stringWithTags = stringWithTags.Replace(tagsArray[i], "");
