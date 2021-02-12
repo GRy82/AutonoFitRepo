@@ -23,6 +23,7 @@ namespace AutonoFit.Controllers
         private IRepositoryWrapper _repo;
         private ExerciseLibraryService _exerciseLibraryService;
         private ProgramModule programModule;
+        private SingleModule singleModule;
         public ClientController(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
@@ -113,31 +114,14 @@ namespace AutonoFit.Controllers
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-
-            List<Result> exerciseResults = new List<Result> { };
-            ExerciseLibrary singleExerciseLibrary;
             //Get exercises by category and repackage neatly.
-            int[] categories = SharedUtility.GetCategories(workoutVM.BodySection);
-            for (int i = 0; i < categories.Length; i++)
-            {
-                string urlCategoryString = BuildEquipmentUrlString(workoutVM.Equipment) + "&category=" + categories[i];
-                singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
-                exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
-            }
+            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result>{ });
             //Get exercises by muslces and repackage neatly.
-            int[] muscles = SharedUtility.GetMuscles(workoutVM.BodySection);
-            string urlMusclesString = null;
-            for (int j = 0; j < muscles.Length; j++)
-            {
-                urlMusclesString += "&muscles=" + muscles[j];
-            }
-            urlMusclesString = BuildEquipmentUrlString(workoutVM.Equipment) + urlMusclesString;
-            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
-            exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
+            exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults);
             //Get rid of repeats
             exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
             //Calculate sets/reps, rest time to exercises.
-            FitnessDictionary fitnessMetrics = SingleWorkout.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds);
+            FitnessDictionary fitnessMetrics = singleModule.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds);
             //if cardio is involved, cut minutes in half to have half the time for cardio.
             workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes ;
             //Decide number of exercises based on time constraints 
@@ -268,7 +252,7 @@ namespace AutonoFit.Controllers
             List<FitnessDictionary> fitnessMetrics = new List<FitnessDictionary> { };
             List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
             List<ClientEquipment>  equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-            string url = BuildEquipmentUrlString(equipment);
+            string url = SharedUtility.BuildEquipmentUrlString(equipment);
             ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(url);
             List<Result> resultsLibrary = new List<Result> { };
             resultsLibrary = SharedUtility.RepackageResults(resultsLibrary, exerciseLibrary);
@@ -415,16 +399,6 @@ namespace AutonoFit.Controllers
             }
 
             await _repo.SaveAsync();
-        }
-
-        private string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
-        {
-            string urlString = "https://wger.de/api/v2/exercise?language=2&limit=100&equipment=7";
-            foreach (ClientEquipment piece in equipmentList){
-                urlString += "&equipment=" + piece.EquipmentId;
-            }
-
-            return urlString;
         }
 
         public ClientWorkout ClientWorkoutPseudoConstructor(SingleWorkoutVM workoutVM)

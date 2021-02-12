@@ -12,6 +12,18 @@ namespace AutonoFit.StaticClasses
     {
         public static int repTime = 4;
 
+
+        public static string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
+        {
+            string urlString = "https://wger.de/api/v2/exercise?language=2&limit=100&equipment=7";
+            foreach (ClientEquipment piece in equipmentList)
+            {
+                urlString += "&equipment=" + piece.EquipmentId;
+            }
+
+            return urlString;
+        }
+
         public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
         {
             List<ClientExercise> workoutExercises = new List<ClientExercise> { };
