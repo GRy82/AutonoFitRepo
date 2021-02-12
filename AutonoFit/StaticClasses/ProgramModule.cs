@@ -240,15 +240,18 @@ namespace AutonoFit.Classes
             }
             else if (pastExercises.Count >= 2)
             {
-                var past = pastExercises.OrderBy(c => c.Id);
-                //var past = from s in pastExercises
-                //                orderby s.Id descending
-                //                select s; //use date to order this, if i ever use hash values for id instead.
-                pastExercises = ConvertVarToExercise(past);
-                if (pastExercises[0].RPE < pastExercises[1].RPE) 
+                var past = pastExercises.OrderByDescending(c => c.Id);
+    `           pastExercises = ConvertOrderableToExercise(past);
+
+                if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps) 
                 {
                     fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + 1;
-                    fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].maxRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
+                    fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].minRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
+                }
+                else
+                {
+                    fitnessMetrics.reps = pastExercises[0].Reps;
+                    fitnessMetrics.rest = pastExercises[0].RestSeconds;
                 }
             }
           
@@ -259,7 +262,7 @@ namespace AutonoFit.Classes
         }
 
 
-        public List<ClientExercise> ConvertVarToExercise(IOrderedEnumerable<ClientExercise> elements)
+        public List<ClientExercise> ConvertOrderableToExercise(IOrderedEnumerable<ClientExercise> elements)
         {
             List<ClientExercise> exercises = new List<ClientExercise> { };
             foreach (var element in elements)
@@ -268,6 +271,7 @@ namespace AutonoFit.Classes
                 exercise.RestSeconds = element.RestSeconds;
                 exercise.RPE = element.RPE;
                 exercise.Reps = element.Reps;
+                exercise.Sets = element.Sets;
                 exercises.Add(exercise);
 
             }
