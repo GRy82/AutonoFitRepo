@@ -29,6 +29,7 @@ namespace AutonoFit.Controllers
             _repo = repo;
             programModule = new ProgramModule(_repo);
             _exerciseLibraryService = exerciseLibraryService;
+            singleModule = new SingleModule(_repo, exerciseLibraryService);
         }
 
         // GET: Client
@@ -114,9 +115,9 @@ namespace AutonoFit.Controllers
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-            //Get exercises by category and repackage neatly.
-            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result>{ });
-            //Get exercises by muslces and repackage neatly.
+            //Get exercises by category and repackage into Result reference type.
+            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result> { });
+            //Get exercises by muslces and repackage into Result reference type.
             exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults);
             //Get rid of repeats
             exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
