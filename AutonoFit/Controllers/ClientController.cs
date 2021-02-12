@@ -149,29 +149,19 @@ namespace AutonoFit.Controllers
             workoutVM.fitnessDictionary = fitnessMetrics.cardio == true ? SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics) : fitnessMetrics;
             //Create new workout to contain exercises and other stored data.
             ClientWorkout workout = ClientWorkoutPseudoConstructor(workoutVM);
-            _repo.ClientWorkout.CreateClientWorkout(workout);
-            await _repo.SaveAsync();
             //assign all ClientExercises the workout Id
-            await LoadExercisesInWorkout(workoutExercises, workout);
             workoutVM.Workout = workout;
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
             //Place exercises in ViewModel
             workoutVM.Exercises = randomlyChosenExercises;
-            //Run this regular garbage collection function for CLientExercises and ClientWorkouts that are more than a day old and not tied to a week/program.
-            await CleanExerciseWorkoutDatabase();
 
             return View("DisplaySingleWorkout", workoutVM);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CompleteSingleWorkout(int workoutId)
+        public ActionResult CompleteSingleWorkout()
         {
-            ClientWorkout clientWorkout = await _repo.ClientWorkout.GetClientWorkoutAsync(workoutId);
-            clientWorkout.Completed = true;
-            _repo.ClientWorkout.EditClientWorkout(clientWorkout);
-            await _repo.SaveAsync();
-
             return RedirectToAction("Index");
         }
 

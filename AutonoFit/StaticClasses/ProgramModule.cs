@@ -240,9 +240,10 @@ namespace AutonoFit.Classes
             }
             else if (pastExercises.Count >= 2)
             {
-                var past = from s in pastExercises
-                                orderby s.Id descending
-                                select s; //use date to order this, if i ever use hash values for id instead.
+                var past = pastExercises.OrderBy(c => c.Id);
+                //var past = from s in pastExercises
+                //                orderby s.Id descending
+                //                select s; //use date to order this, if i ever use hash values for id instead.
                 pastExercises = ConvertVarToExercise(past);
                 if (pastExercises[0].RPE < pastExercises[1].RPE) 
                 {
