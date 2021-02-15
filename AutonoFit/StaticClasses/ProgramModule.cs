@@ -241,7 +241,7 @@ namespace AutonoFit.Classes
             else if (pastExercises.Count >= 2)
             {
                 var past = pastExercises.OrderByDescending(c => c.Id);
-    `           pastExercises = ConvertOrderableToExercise(past);
+                pastExercises = ConvertOrderableToExercise(past);
 
                 if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps) 
                 {

@@ -75,6 +75,11 @@ namespace AutonoFit.Data
              },
              new Equipment
              {
+                 EquipmentId = 7,
+                 Name = "Bodyweight"
+             },
+             new Equipment
+             {
                  EquipmentId = 8,
                  Name = "Bench"
              },
