@@ -12,6 +12,7 @@
         margin-top: 20px;
         margin-bottom: 20px;
     }
+
     .btn-fun {
         text-align: center;
         background-color: rgba(30, 90, 255, .9);
@@ -109,24 +110,22 @@
 
                     </div>
                     <div class="col-md-2"></div>
-                       
-                    <input type="submit" class="btn-fun" style="margin-top: 30px;"/>
-                     
+
+                    <input type="submit" class="btn-fun" style="margin-top: 30px;" />
+
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script>
-    function checkCardio(goalOneValue, goalTwoValue) {
-        if (goalOneValue == 4 || goalOneValue == 5 || goalTwoValue == 4 || goalTwoValue == 5) {
-            document.getElementById("mile-min").style.display = "inline";
-            document.getElementById("mile-sec").style.display = "inline-block";
-        }
-        else {
-            document.getElementById("mile-min").style.display = "none";
-            document.getElementById("mile-sec").style.display = "none";
-        }
-    }
-</script>
+@if (Model.DiscourageHighIntensity)
+{
+    <script src="~/js/CheckCardioAndSuitableGoal.js">
+    </script>
+}
+else
+{
+    <script src="~/js/CheckCardio.js">
+    </script>
+}
