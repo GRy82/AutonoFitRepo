@@ -25,5 +25,7 @@ namespace AutonoFit.ViewModels
         public int? MileSeconds { get; set; }
 
         public string ErrorMessage { get; set; }
+
+        public bool DiscourageHighIntensity { get; set; }
     }
 }

@@ -77,8 +77,9 @@ namespace AutonoFit.Controllers
                 Client = client,
                 AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
                 GoalIds = new List<int> { 0, 0 },
-                ErrorMessage = errorMessage
-            };
+                ErrorMessage = errorMessage,
+                DiscourageHighIntensity = await RecommendAgainstHighIntensity()
+        };
 
             return View(singleWorkoutVM);
         }
@@ -159,7 +160,8 @@ namespace AutonoFit.Controllers
             {
                 AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
                 GoalIds = new List<int> { 0, 0 },
-                ErrorMessage = errorMessage
+                ErrorMessage = errorMessage,
+                DiscourageHighIntensity = await RecommendAgainstHighIntensity()
             };
 
             return View(programSetupVM);

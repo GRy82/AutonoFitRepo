@@ -15,6 +15,7 @@
         padding-left: 30px;
         color: white;
     }
+
     h1 {
         color: white;
         font-weight: 800;
@@ -22,6 +23,7 @@
         margin-top: 20px;
         margin-bottom: 20px;
     }
+
     .btn-fun {
         text-align: center;
         background-color: rgba(30, 90, 255, .9);
@@ -53,7 +55,7 @@
 
 
 <div class="container">
- 
+
     <form asp-action="CheckSingleWorkoutFormValidity" method="post">
         <div class="row">
             <div class="col-md-2"></div>
@@ -114,9 +116,9 @@
                 </div>
                 <br />
             </div>
-                <br />
-                <br />
-        </div>    
+            <br />
+            <br />
+        </div>
         <div class="row">
             <div class="col-md-2"></div>
             <input type="submit" class="btn-fun" />
@@ -124,15 +126,38 @@
     </form>
 </div>
 
-<script>
-    function checkCardio(goalOneValue, goalTwoValue) {
-        if (goalOneValue == 4 || goalOneValue == 5 || goalTwoValue == 4 || goalTwoValue == 5) {
-            document.getElementById("mile-min").style.display = "inline";
-            document.getElementById("mile-sec").style.display = "inline-block";
+@if (Model.DiscourageHighIntensity)
+{
+    <script>
+        function checkCardio(goalOneValue, goalTwoValue) {
+            if (goalOneValue == 4 || goalOneValue == 5 || goalTwoValue == 4 || goalTwoValue == 5) {
+                document.getElementById("mile-min").style.display = "inline";
+                document.getElementById("mile-sec").style.display = "inline-block";
+            }
+            else {
+                document.getElementById("mile-min").style.display = "none";
+                document.getElementById("mile-sec").style.display = "none";
+            }
+            if ((goalOneValue == 1 || goalOneValue == 2 || goalTwoValue == 1 || goalTwoValue == 2)) {
+                alert("Because you do not own equipment conducive to heavier lifting exercises, it is unlikely that the workout generated will"
+                    + " be suitable towards your goals if those goals include strength or hypertrophy.");
+            }
         }
-        else {
-            document.getElementById("mile-min").style.display = "none";
-            document.getElementById("mile-sec").style.display = "none";
+    </script>
+}
+else
+{
+    <script>
+        function checkCardio(goalOneValue, goalTwoValue) {
+            if (goalOneValue == 4 || goalOneValue == 5 || goalTwoValue == 4 || goalTwoValue == 5) {
+                document.getElementById("mile-min").style.display = "inline";
+                document.getElementById("mile-sec").style.display = "inline-block";
+            }
+            else {
+                document.getElementById("mile-min").style.display = "none";
+                document.getElementById("mile-sec").style.display = "none";
+            }
         }
-    }
-</script>
+    </script>
+}
+

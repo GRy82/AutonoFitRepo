@@ -34,5 +34,7 @@ namespace AutonoFit.ViewModels
 
         public string ErrorMessage { get; set; }
 
+        public bool DiscourageHighIntensity { get; set; }
+
     }
 }
