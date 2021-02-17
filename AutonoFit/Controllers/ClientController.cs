@@ -436,8 +436,6 @@ namespace AutonoFit.Controllers
         //---------------------------------------------------------------------------------------------------
 
 
-
-
         public async Task<ActionResult> Equipment()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -507,6 +505,24 @@ namespace AutonoFit.Controllers
             return clientEquipmentVM;
         }
 
+        public async Task<bool> RecommendAgainstHighIntensity()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var client = await _repo.Client.GetClientAsync(userId);
+
+            List<ClientEquipment> equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+            int[] highIntensityCompatibleEquipment = new int[]{ 1, 2, 3, 8, 9 };
+          
+            foreach(ClientEquipment piece in equipment)
+            {
+                if (highIntensityCompatibleEquipment.Contains(piece.EquipmentId))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         // GET: Client/Details/5
         public ActionResult Details(int id)
