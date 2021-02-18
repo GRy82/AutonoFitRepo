@@ -7,12 +7,11 @@ namespace AutonoFit.StaticClasses
 {
     public class MuscularEndurance : TrainingStimulus
     {
-        public int repInterval;
         public MuscularEndurance()
         {
             this.minReps = 11;
             this.maxReps = 20;
-            this.repInterval = 3;
+            this.repsInterval = 3;
             this.minRestSeconds = 30;
             this.maxRestSeconds = 45;
             this.restInterval = 15;

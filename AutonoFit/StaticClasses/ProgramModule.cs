@@ -245,7 +245,7 @@ namespace AutonoFit.Classes
 
                 if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps) 
                 {
-                    fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + 1;
+                    fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + trainingStimulus[0].repsInterval;
                     fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].minRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
                 }
                 else

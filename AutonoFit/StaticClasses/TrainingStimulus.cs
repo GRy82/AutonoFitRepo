@@ -9,6 +9,7 @@ namespace AutonoFit.StaticClasses
     {
         public int minReps;
         public int maxReps;
+        public int repsInterval;
         public int minRestSeconds;
         public int maxRestSeconds;
         public int restInterval;

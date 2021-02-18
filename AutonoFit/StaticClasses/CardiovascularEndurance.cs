@@ -7,7 +7,6 @@ namespace AutonoFit.StaticClasses
 {
     public class CardiovascularEndurance : TrainingStimulus
     {
-        public int repInterval;
         public float distance;
         public float duration;
         public float milePace;
@@ -15,7 +14,7 @@ namespace AutonoFit.StaticClasses
         {
             this.minReps = 11;
             this.maxReps = 20;
-            this.repInterval = 3;
+            this.repsInterval = 3;
             this.minRestSeconds = 30;
             this.maxRestSeconds = 45;
             this.restInterval = 15;

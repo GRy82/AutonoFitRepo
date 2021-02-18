@@ -11,6 +11,7 @@ namespace AutonoFit.StaticClasses
         {
             this.minReps = 3;
             this.maxReps = 6;
+            this.repsInterval = 1;
             this.minRestSeconds = 150;
             this.maxRestSeconds = 210;
             this.restInterval = 20;
