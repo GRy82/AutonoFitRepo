@@ -52,28 +52,23 @@
             {
                 string checkLabelId = "checkbox" + Model.EquipmentList[i].EquipmentId;
                 <div>
-                    @if (Model.EquipmentList[i].EquipmentId == 7)
+                    @if (Model.EquipmentChecks[i] == true)
                     {
-                        <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" checked disabled style="margin-right: 20px;" />
+                        <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" checked style="margin-right: 20px;" />
                     }
                     else
                     {
-                        @if (Model.EquipmentChecks[i] == true)
-                        {
-                            <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" checked style="margin-right: 20px;" />
-                        }
-                        else
-                        {
-                            <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" style="margin-right: 20px;" />
-                        }
+                        <input type="checkbox" asp-for="@Model.EquipmentChecks[i]" id="@checkLabelId" style="margin-right: 20px;" />
                     }
-                   
+
+
                     <label for="@checkLabelId" style="display: inline-block">@Model.EquipmentList[i].Name</label>
                     <br />
                     <br />
                 </div>
             }
-           
+            <input type="checkbox" checked disabled style="margin-right: 20px;" />
+            <label style="display: inline-block">Bodyweight</label>
         </div>
     </div>
     <div class="row">

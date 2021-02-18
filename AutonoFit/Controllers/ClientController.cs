@@ -33,7 +33,7 @@ namespace AutonoFit.Controllers
         }
 
         // GET: Client
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(bool accountNewlyCreated = false)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
@@ -45,7 +45,7 @@ namespace AutonoFit.Controllers
 
             var equipmentList = _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
 
-            if (equipmentList.Result.Count == 0)
+            if (accountNewlyCreated == true)
             {
                 return RedirectToAction("Equipment");
             }
@@ -546,9 +546,10 @@ namespace AutonoFit.Controllers
             client.IdentityUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             _repo.Client.CreateClient(client);
             await _repo.SaveAsync();
+            bool accountNewlyCreated = true;
             try
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", accountNewlyCreated);
             }
             catch
             {
