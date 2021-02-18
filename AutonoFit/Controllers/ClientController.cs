@@ -546,10 +546,10 @@ namespace AutonoFit.Controllers
             client.IdentityUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             _repo.Client.CreateClient(client);
             await _repo.SaveAsync();
-            bool accountNewlyCreated = true;
+          
             try
             {
-                return RedirectToAction("Index", accountNewlyCreated);
+                return RedirectToAction("Index", new { accountNewlyCreated = true });
             }
             catch
             {
