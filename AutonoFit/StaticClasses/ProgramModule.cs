@@ -217,7 +217,7 @@ namespace AutonoFit.Classes
 
         public int getRunDuration(int sessionMinutes, string runType)
         {
-            int runDuration;
+            int runDuration = 0;
             int halfSessionMinutes = sessionMinutes / 2;
 
             switch (runType)
