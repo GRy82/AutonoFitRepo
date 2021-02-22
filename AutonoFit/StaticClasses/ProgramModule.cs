@@ -187,7 +187,7 @@ namespace AutonoFit.Classes
                 return "Easy";
             }
             string[] runTypes = new string[] { "Easy", "Moderate", "Long", "Speed" };
-            int index = runType.IndexOf("runType");
+            int index = runType.IndexOf(runType);
             string newRunType = index != (runTypes.Length - 1) ? runTypes[index + 1] : runTypes[0];
 
             return newRunType;
