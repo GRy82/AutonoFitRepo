@@ -188,7 +188,8 @@ namespace AutonoFit.StaticClasses
             return revisedGoals;
         }
 
-        public static string ConvertToMinSecString(int input)//input in seconds
+        public static string ConvertToMinSecString(int input)//input in seconds. This rounds to nearest 15 seconds. 
+            //Get rid of this method if it is no longer needed with the addition of ConvertToMinSec method.
         {
             int remainder = input % 15;
             int newSeconds = remainder < 8 ? input - remainder : input - remainder + 15;
@@ -206,10 +207,26 @@ namespace AutonoFit.StaticClasses
             return newString;
         }
 
+        public static string ConvertToMinSec(int input) //inputin seconds. This does not round to nearest 15 seconds.
+        {
+            int minutes = input / 60;
+            int seconds = input % 60;
+            string newString = null;
+            if (minutes != 0)
+            {
+                newString += minutes + " min ";
+            }
+            if (seconds != 0)
+            {
+                newString += seconds + " sec";
+            }
+            return newString;
+        }
+
         public static FitnessDictionary ConvertFitnessDictCardioValues(FitnessDictionary fitDict)
         {
-            fitDict.durationString = ConvertToMinSecString((int)(fitDict.runDuration * 60));
-            fitDict.paceString = ConvertToMinSecString((int)(fitDict.milePace * 60));
+            fitDict.durationString = ConvertToMinSec((int)(fitDict.runDuration * 60));
+            fitDict.paceString = ConvertToMinSec((int)(fitDict.milePace * 60));
             return fitDict;
         }
 
