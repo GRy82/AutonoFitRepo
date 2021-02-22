@@ -148,7 +148,7 @@ namespace AutonoFit.Classes
            
             fitnessMetrics.milePace = (double)currentProgram.MileMinutes + (Convert.ToDouble(currentProgram.MileSeconds) / 60);
             fitnessMetrics.milePace *= paceCoefficient;
-            fitnessMetrics.runDuration = currentProgram.MinutesPerSession;
+            fitnessMetrics.runDuration = getRunDuration(currentProgram.MinutesPerSession, runType);
             fitnessMetrics.distanceMiles = fitnessMetrics.runDuration / fitnessMetrics.milePace;
             fitnessMetrics.runType = runType;
             if (runType == "Easy")//all easy runs will need time to be accompanied by an aerobic lifting workout.
@@ -213,6 +213,30 @@ namespace AutonoFit.Classes
             }
 
             return paceCoefficient;
+        }
+
+        public int getRunDuration(int sessionMinutes, string runType)
+        {
+            int runDuration;
+            int halfSessionMinutes = sessionMinutes / 2;
+
+            switch (runType)
+            {
+                case "Easy":
+                    runDuration = Math.Min(30, halfSessionMinutes);
+                    break;
+                case "Moderate":
+                    runDuration = Math.Min(sessionMinutes, 45);
+                    break;
+                case "Long":
+                    runDuration = sessionMinutes;
+                    break;
+                case "Speed":
+                    runDuration = Math.Min(15, halfSessionMinutes);
+                    break;
+            }
+
+            return runDuration;
         }
 
         public List<ClientWorkout> SanitizeWorkouts(List<ClientWorkout> recentWorkoutCycle)//Makes sure that no "6 Lift" exercises make it in the collection.
