@@ -18,7 +18,7 @@ namespace AutonoFit.StaticClasses
             this.minRestSeconds = 30;
             this.maxRestSeconds = 45;
             this.restInterval = 15;
-            this.sets = 5;
+            this.sets = 3;
         }
     }
 }
