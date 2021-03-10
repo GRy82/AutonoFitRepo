@@ -4,26 +4,12 @@
     ViewData["Title"] = "Workout";
 }
 
-<link rel="stylesheet" href="~/css/SingleWorkout.css" />
-
-<style>
-    .btn-fun {
-        text-align: center;
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-        margin-top: 45px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/DisplayWorkout.css" />
 
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-10">
-        <h1 style="color: white; font-weight: 800; text-shadow: 10px 2px 15px red;">@ViewData["Title"]</h1>
+        <h1>@ViewData["Title"]</h1>
     </div>
 </div>
 
@@ -68,7 +54,7 @@
     }
 
     <form asp-action="CompleteSingleWorkout" style="top: 30px;">
-        <input type="submit" class="btn-fun" value="Complete Workout" />
+        <input type="submit" class="complete-btn" value="Complete Workout" />
     </form>
 
 

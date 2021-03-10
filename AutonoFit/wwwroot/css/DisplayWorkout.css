@@ -1,0 +1,43 @@
+﻿dt, dd, h3, dl {
+    padding-left: 20px;
+    color: white;
+}
+
+h3 {
+    padding-bottom: 30px;
+    border-bottom: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: lightgray;
+}
+
+h1 {
+    color: white;
+    font-weight: 800;
+    text-shadow: 10px 2px 15px red;
+    margin-top: 8%;
+    margin-bottom: 20px;
+}
+
+.cardio-zone {
+    background-color: rgba(30, 90, 255, .9);
+    box-shadow: rgba(10, 30, 85, 1) 0px 10px 7px;
+    padding-bottom: 30px;
+    padding-top: 20px;
+}
+
+.lift-table {
+    background-color: rgba(250, 30, 90, .9);
+    box-shadow: rgba(163, 20, 60, .8) 0px 10px 7px;
+}
+
+.complete-btn {
+    text-align: center;
+    background-color: rgba(30, 90, 255, .9);
+    box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
+    border-radius: 3px;
+    border: none;
+    color: whitesmoke;
+    font-size: large;
+    padding: 5px 20px 5px 20px;
+    margin-top: 45px;
+}
