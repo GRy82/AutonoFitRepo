@@ -4,31 +4,12 @@
     ViewData["Title"] = "Program Setup";
     ViewData["ErrorMessage"] = Model.ErrorMessage;
 }
-<style>
-    h1 {
-        color: white;
-        font-weight: 800;
-        text-shadow: 10px 2px 15px blue;
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
 
-    .btn-fun {
-        text-align: center;
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-        margin-top: 30px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/Setup.css" type="text/css"/>
 
 <div class="row">
     <div class="col-md-2"></div>
-    <div class="col-md-10">
+    <div class="col-md-6">
         <h1>@ViewData["Title"]</h1>
     </div>
 </div>
@@ -48,7 +29,7 @@
         <div class="col-md-10">
             <form asp-action="CheckProgramFormValidity" method="post">
                 <div>
-                    <div style="background-color: rgba(30, 90, 255, .9); box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px; color: white; padding-left: 30px;">
+                    <div class="box-thing">
                         <br />
                         <div>
                             <p><b>Name your workout program(eg. Spring '21, Preseason Lifting, New Years Resolution).</b></p>
@@ -111,7 +92,7 @@
                     </div>
                     <div class="col-md-2"></div>
 
-                    <input type="submit" class="btn-fun" style="margin-top: 30px;" />
+                    <input type="submit" class="submission-btn" style="margin-top: 30px;" />
 
                 </div>
             </form>
