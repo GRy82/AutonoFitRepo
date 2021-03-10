@@ -5,34 +5,7 @@
     ViewData["Title"] = "Log in";
 }
 
-<style>
-    #panel {
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, 1) 0px 10px 7px;
-        color: white;
-        padding: 30px;
-    }
-
-    .btn-fun {
-        text-align: center;
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-        margin-top: 30px;
-    }
-
-    h1 {
-        color: white;
-        font-weight: 800;
-        text-shadow: 10px 2px 15px blue;
-        margin-top: 8%;
-        margin-bottom: 20px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/Account.css" type="text/css" />
 
 <div class="row">
     <div class="col-md-2"></div>
@@ -46,7 +19,7 @@
 <form id="account" method="post">
     <div class="row">
         <div class="col-md-2"></div>
-        <div class="col-md-7" id="panel">
+        <div class="col-md-7" id="form-panel">
             <h4>Use a local account to log in.</h4>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -82,7 +55,7 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="form-group">
-            <input type="submit" class="btn-fun" style="margin-top: 30px;" value="Login" />
+            <input type="submit" class="submission-btn" style="margin-top: 30px;" value="Login" />
         </div>
     </div>
 </form>

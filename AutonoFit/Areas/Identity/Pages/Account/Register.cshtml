@@ -5,33 +5,7 @@
     ViewData["Role"] = "Client";
 }
 
-<style>
-    #panel {
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, 1) 0px 10px 7px;
-        color: white;
-        padding: 30px;
-    }
-
-    .btn-fun {
-        text-align: center;
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-        margin-top: 30px;
-    }
-    h1 {
-        color: white;
-        font-weight: 800;
-        text-shadow: 10px 2px 15px blue;
-        margin-top: 8%;
-        margin-bottom: 20px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/Account.css" type="text/css"/>
 
 <div class="row">
     <div class="col-md-2"></div>
@@ -44,7 +18,7 @@
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div class="row">
                 <div class="col-md-2"></div>
-                <div class="col-md-5" id="panel">
+                <div class="col-md-5" id="form-panel">
                     <h4>Create a new account.</h4>
                     <hr />
                     <div asp-validation-summary="All" class="text-danger"></div>
@@ -69,7 +43,7 @@
             <div class="row">
                 <div class="col-md-2"></div>
                 <input asp-for="Input.Role" type="hidden" value="Client" />
-                <input type="submit" class="btn-fun" value="Register" />
+                <input type="submit" class="submission-btn" value="Register" />
             </div>
         </form>
 
