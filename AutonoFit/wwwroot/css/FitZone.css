@@ -1,6 +1,11 @@
 ﻿
-
-
+h1 {
+    color: white;
+    font-weight: 800;
+    text-shadow: 10px 2px 15px red;
+    text-align: center;
+    margin-top: 12%;
+}
 
 .btn-FitZone {
     text-align: center; 
