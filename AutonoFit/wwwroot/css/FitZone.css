@@ -29,7 +29,7 @@ h1 {
     height: auto;
     float: left;
     background-color: rgba(30, 90, 255, .9);
-    box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+    box-shadow: rgba(10, 30, 85, 1) 0px 10px 7px;
 }
 
 #continue-program {
@@ -37,7 +37,7 @@ h1 {
     height: auto;
     float: right;
     background-color: rgba(30, 90, 255, .9);
-    box-shadow: rgba(83, 60, 85, .8) 0px 10px 7px;
+    box-shadow: rgba(10, 30, 85, 1) 0px 10px 7px;
 }
 
 
