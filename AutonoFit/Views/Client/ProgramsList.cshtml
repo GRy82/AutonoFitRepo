@@ -4,36 +4,7 @@
     ViewData["Title"] = "Programs List";
 }
 
-<style>
-    h1 {
-        color: white;
-        font-weight: 800;
-        text-shadow: 10px 2px 15px blue;
-        margin-bottom: 20px;
-        text-align: left;
-    }
-    .btn-green {
-        text-align: center;
-        background-color: rgba(49, 213, 207, 0.9);
-        box-shadow: rgba(16, 70, 70, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-    }
-
-    .btn-fun {
-        text-align: center;
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/ProgramList.css" />
 
 <div class="row" style="margin-top: 8%;">
     <div class="col-md-2"></div>
@@ -41,11 +12,11 @@
         <h1>Select Program To Continue</h1>
     </div>
     <div class="col-md-3" style="margin-top: 17px;">
-        <a class="btn-fun" asp-action="Index" >Back</a>
+        <a class="btn-back" asp-action="Index" >Back</a>
     </div>
 </div>
 
-<table class="table" style="background-color: rgba(30, 90, 255, .9); box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px; 0px 10px 7px; color: white;">
+<table class="table" id="programs-table">
     <thead>
         <tr>     
             <th>

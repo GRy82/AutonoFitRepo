@@ -4,31 +4,7 @@
     ViewData["Title"] = "Program Overview";
 }
 
-<style>
-    h1, h2  {
-        color: white;
-        font-weight: 800;
-        text-shadow: 10px 2px 15px red;
-    }
-    .panel {
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        color: white;
-        padding-left: 30px;
-        padding-top: 30px;
-    }
-    .btn-fun {
-        text-align: center;
-        background-color: rgba(30, 90, 255, .9);
-        box-shadow: rgba(10, 30, 85, .8) 0px 10px 7px;
-        border-radius: 3px;
-        border: none;
-        color: whitesmoke;
-        font-size: large;
-        padding: 5px 20px 5px 20px;
-        margin-top: 45px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/ProgramOverview.css" type="text/css" />
 
     <div class="row">
         <div class="col-md-2"></div>
@@ -139,7 +115,7 @@
     <div class="row">
         <div class="col-md-2"></div>
         <input type="hidden" asp-for="@Model.ClientProgram.ProgramId" name="programId" />
-        <input class="btn-fun" type="submit" value="Generate Next Workout" />
+        <input class="submission-btn" type="submit" value="Generate Next Workout" />
     </div>
     
 </form>
