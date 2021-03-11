@@ -66,16 +66,16 @@ namespace AutonoFit.Controllers
         //---------------------------------------------------------------------------------------------------
         //-------------------------------------Single Workout------------------------------------------------
 
-        public async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
+        private async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
-            SingleWorkoutVM singleWorkoutVM = await instantiateSingleWorkoutVM(client, errorMessage);
+            SingleWorkoutVM singleWorkoutVM = await InstantiateSingleWorkoutVM(client, errorMessage);
          
             return View(singleWorkoutVM);
         }
 
-        private async Task<SingleWorkoutVM> instantiateSingleWorkoutVM(Client client, string errorMessage = null)
+        private async Task<SingleWorkoutVM> InstantiateSingleWorkoutVM(Client client, string errorMessage = null)
         {
             return new SingleWorkoutVM()
             {
@@ -91,22 +91,22 @@ namespace AutonoFit.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CheckSingleWorkoutFormValidity(SingleWorkoutVM singleWorkoutVM)
         {
-            if (singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0)//Client selected no goals.
-            {
+            string errorMessage = null;
+            bool noGoalsSelected = singleWorkoutVM.GoalIds[0] == 0 && singleWorkoutVM.GoalIds[1] == 0;
+            bool noBodySectionSelected = singleWorkoutVM.BodySection == null;
+
+            if (noGoalsSelected)
+                errorMessage = "You must choose at least one exercise goal to continue.";
+            
+            if (noBodySectionSelected)
+                errorMessage = "You must choose a workout type to continue.";
+            
+            if (noGoalsSelected || noBodySectionSelected) {
                 return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
                 {
                     controller = "Client",
                     action = "SingleWorkoutSetup",
-                    errorMessage = "You must choose at least one exercise goal to continue."
-                }));
-            }
-            if (singleWorkoutVM.BodySection == null)
-            {
-                return RedirectToAction("SingleWorkoutSetup", new RouteValueDictionary(new
-                {
-                    controller = "Client",
-                    action = "SingleWorkoutSetup",
-                    errorMessage = "You must choose a workout type to continue."
+                    errorMessage = errorMessage
                 }));
             }
 
