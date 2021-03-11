@@ -116,30 +116,19 @@ namespace AutonoFit.Controllers
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-            //Get exercises by category and repackage into Result reference type.
-            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result> { });
-            //Get exercises by muslces and repackage into Result reference type.
-            exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults);
-            //Get rid of repeats
-            exerciseResults = SharedUtility.RemoveRepeats(exerciseResults);
-            //Calculate sets/reps, rest time to exercises.
-            FitnessDictionary fitnessMetrics = singleModule.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds);
-            //if cardio is involved, cut minutes in half to have half the time for cardio.
-            workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes ;
-            //Decide number of exercises based on time constraints 
-            int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, workoutVM.Minutes);
-            //Randomly select N number of exercises from total collection thus far. 
-            List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises);
-            //Convert ExerciseLibrary objects to ClientExercises
-            List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);
+            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result> { }); //Get exercises by category and repackage into Result reference type.
+            exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults); //Get exercises by muslces and repackage into Result reference type.
+            exerciseResults = SharedUtility.RemoveRepeats(exerciseResults); //Get rid of repeats
+            FitnessDictionary fitnessMetrics = singleModule.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds); //Calculate sets/reps, rest time to exercises.
+            workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
+            int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, workoutVM.Minutes); //Decide number of exercises based on time constraints 
+            List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
+            List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);  //Convert ExerciseLibrary objects to ClientExercises
             workoutVM.fitnessDictionary = fitnessMetrics.cardio == true ? SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics) : fitnessMetrics;
-            //Create new workout to contain exercises and other stored data.
-            ClientWorkout workout = ClientWorkoutPseudoConstructor(workoutVM);
-            //assign all ClientExercises the workout Id
-            workoutVM.Workout = workout;
+            ClientWorkout workout = ClientWorkoutPseudoConstructor(workoutVM); //Create new workout to contain exercises and other stored data.
+            workoutVM.Workout = workout; //assign all ClientExercises the workout Id
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
-            //Place exercises in ViewModel
-            workoutVM.Exercises = randomlyChosenExercises;
+            workoutVM.Exercises = randomlyChosenExercises;  //Place exercises in ViewModel
 
             return View("DisplaySingleWorkout", workoutVM);
         }
