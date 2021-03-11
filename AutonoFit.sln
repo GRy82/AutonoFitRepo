@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonoFit", "AutonoFit\AutonoFit.csproj", "{833A6D8D-48EB-4871-A582-14954684C57F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutonoFit", "AutonoFit\AutonoFit.csproj", "{833A6D8D-48EB-4871-A582-14954684C57F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutonoFitUnitTest", "AutonoFitUnitTest\AutonoFitUnitTest.csproj", "{0AD16C89-8BD4-4CD9-A25C-03CEC33197EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{833A6D8D-48EB-4871-A582-14954684C57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{833A6D8D-48EB-4871-A582-14954684C57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{833A6D8D-48EB-4871-A582-14954684C57F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD16C89-8BD4-4CD9-A25C-03CEC33197EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD16C89-8BD4-4CD9-A25C-03CEC33197EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD16C89-8BD4-4CD9-A25C-03CEC33197EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD16C89-8BD4-4CD9-A25C-03CEC33197EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

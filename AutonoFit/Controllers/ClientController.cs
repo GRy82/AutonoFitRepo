@@ -66,7 +66,7 @@ namespace AutonoFit.Controllers
         //---------------------------------------------------------------------------------------------------
         //-------------------------------------Single Workout------------------------------------------------
 
-        private async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
+        public async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
@@ -75,7 +75,7 @@ namespace AutonoFit.Controllers
             return View(singleWorkoutVM);
         }
 
-        private async Task<SingleWorkoutVM> InstantiateSingleWorkoutVM(Client client, string errorMessage = null)
+        public async Task<SingleWorkoutVM> InstantiateSingleWorkoutVM(Client client, string errorMessage = null)
         {
             return new SingleWorkoutVM()
             {
@@ -110,31 +110,38 @@ namespace AutonoFit.Controllers
                 }));
             }
 
-            return RedirectToAction("GatherEligibleExercises", singleWorkoutVM);
+            return RedirectToAction("ConstructWorkoutVM", singleWorkoutVM);
         }
 
 
-        public async Task<ActionResult> GatherEligibleExercises(SingleWorkoutVM workoutVM)
+        public async Task<ActionResult> ConstructWorkoutVM(SingleWorkoutVM workoutVM)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result> { }); //Get exercises by category and repackage into Result reference type.
-            exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults); //Get exercises by muslces and repackage into Result reference type.
-            exerciseResults = SharedUtility.RemoveRepeats(exerciseResults); //Get rid of repeats
+            List<Result> exerciseResults = await GatherExercises(workoutVM);
             FitnessDictionary fitnessMetrics = singleModule.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds); //Calculate sets/reps, rest time to exercises.
             workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
             int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, workoutVM.Minutes); //Decide number of exercises based on time constraints 
             List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
             List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);  //Convert ExerciseLibrary objects to ClientExercises
             workoutVM.fitnessDictionary = fitnessMetrics.cardio == true ? SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics) : fitnessMetrics;
-            ClientWorkout workout = ClientWorkoutPseudoConstructor(workoutVM); //Create new workout to contain exercises and other stored data.
+            ClientWorkout workout = InstantiateClientWorkout(workoutVM); //Create new workout to contain exercises and other stored data.
             workoutVM.Workout = workout; //assign all ClientExercises the workout Id
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
             workoutVM.Exercises = randomlyChosenExercises;  //Place exercises in ViewModel
 
             return View("DisplaySingleWorkout", workoutVM);
         }
+
+        private async Task<List<Result>> GatherExercises(SingleWorkoutVM workoutVM)
+        {
+            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result> { }); //Get exercises by category and repackage into Result reference type.
+            exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults); //Get exercises by muslces and repackage into Result reference type.
+            exerciseResults = SharedUtility.RemoveRepeats(exerciseResults); //Get rid of repeats
+            return exerciseResults;
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -396,7 +403,7 @@ namespace AutonoFit.Controllers
             await _repo.SaveAsync();
         }
 
-        public ClientWorkout ClientWorkoutPseudoConstructor(SingleWorkoutVM workoutVM)
+        public ClientWorkout InstantiateClientWorkout(SingleWorkoutVM workoutVM)
         {
             ClientWorkout workout = new ClientWorkout();
             workout.ClientId = workoutVM.Client.ClientId;

@@ -21,7 +21,6 @@ namespace AutonoFit.StaticClasses
 
         public FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, int mileMinutes, int mileSeconds)
         {
-
             List<TrainingStimulus> trainingStimuli = SharedUtility.DefineTrainingStimuli(goalIds);
             FitnessDictionary fitnessMetrics = SharedUtility.DefineDict(trainingStimuli);
             if (SharedUtility.CheckCardio(goalIds))
