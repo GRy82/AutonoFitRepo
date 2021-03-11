@@ -70,18 +70,21 @@ namespace AutonoFit.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
+            SingleWorkoutVM singleWorkoutVM = await instantiateSingleWorkoutVM(client, errorMessage);
+         
+            return View(singleWorkoutVM);
+        }
 
-
-            SingleWorkoutVM singleWorkoutVM = new SingleWorkoutVM()
+        private async Task<SingleWorkoutVM> instantiateSingleWorkoutVM(Client client, string errorMessage = null)
+        {
+            return new SingleWorkoutVM()
             {
                 Client = client,
                 AvailableGoals = await _repo.Goals.GetAllGoalsAsync(),
                 GoalIds = new List<int> { 0, 0 },
                 ErrorMessage = errorMessage,
                 DiscourageHighIntensity = await RecommendAgainstHighIntensity()
-        };
-
-            return View(singleWorkoutVM);
+            };
         }
 
         [HttpPost]
