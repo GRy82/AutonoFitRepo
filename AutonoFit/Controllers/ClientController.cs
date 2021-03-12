@@ -168,51 +168,65 @@ namespace AutonoFit.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetuptVM)
+        public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetupVM)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
 
-            if (programSetuptVM.GoalIds[0] == 0 && programSetuptVM.GoalIds[1] == 0)//Client selected no goals.
+            if(await NotValidProgramSetup(programSetupVM, client))
             {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
-                    errorMessage = "You must choose at least one exercise goal to continue." }));
+                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new
+                {
+                    controller = "ClientController",
+                    action = "ProgramSetup",
+                    errorMessage = GetProgramSetupErrorMessage(programSetupVM, client)
+                }));
             }
 
-            if (await programModule.ProgramNameTaken(programSetuptVM.ProgramName, client.ClientId))
-            {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
-                    errorMessage = "That name is already taken." }));
-            }
-            if(programSetuptVM.GoalIds[0] == 0)
-            {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
-                    errorMessage = "Select the first goal if you only choose one." }));
-            }
-            if(programSetuptVM.GoalIds.Contains(4) && programSetuptVM.GoalIds.Contains(5))
-            {
-                return RedirectToAction("ProgramSetup", new RouteValueDictionary(new { controller = "Client", action = "ProgramSetup",
-                    errorMessage = "You can only choose one cardio-intensive goal due to high overuse injury risk." }));
-            }
-
-
-            ClientProgram clientProgram = new ClientProgram() {
-                ProgramName = programSetuptVM.ProgramName,
-                ClientId = client.ClientId,
-                GoalOneId = programSetuptVM.GoalIds[0],
-                GoalTwoId = programSetuptVM.GoalIds[1],
-                GoalCount = programSetuptVM.GoalIds[1] == 0 ? 1 : 2,
-                MinutesPerSession = programSetuptVM.Minutes,
-                DaysPerWeek = programSetuptVM.Days,
-                MileMinutes = programSetuptVM?.MileMinutes,
-                MileSeconds = programSetuptVM?.MileSeconds,
-                ProgramStart = DateTime.Now,
-            };
-
+            ClientProgram clientProgram = InstantiateClientProgram(programSetupVM, client);
             _repo.ClientProgram.CreateClientProgram(clientProgram);
             await _repo.SaveAsync();
 
             return RedirectToAction("ProgramOverview", new { programId = clientProgram.ProgramId });
+        }
+
+        private async Task<bool> NotValidProgramSetup(ProgramSetupVM programSetupVM, Client client)
+        {
+            return programSetupVM.GoalIds[0] == 0
+                || await programModule.ProgramNameTaken(programSetupVM.ProgramName, client.ClientId)
+                || programSetupVM.GoalIds.Contains(4) && programSetupVM.GoalIds.Contains(5);
+        }
+
+        private async Task<string> GetProgramSetupErrorMessage(ProgramSetupVM programSetupVM, Client client)
+        {
+            string errorMessage = null;
+            if (programSetupVM.GoalIds[0] == 0 && programSetupVM.GoalIds[1] == 0)//Client selected no goals.
+                errorMessage = "You must choose at least one exercise goal to continue.";
+            if (await programModule.ProgramNameTaken(programSetupVM.ProgramName, client.ClientId))
+                errorMessage = "That name is already taken.";
+            if (programSetupVM.GoalIds[0] == 0)
+                errorMessage = "Select the first goal if you only choose one.";
+            if (programSetupVM.GoalIds.Contains(4) && programSetupVM.GoalIds.Contains(5))
+                errorMessage = "You can only choose one cardio-intensive goal due to high overuse injury risk.";
+
+            return errorMessage;
+        }
+
+        private ClientProgram InstantiateClientProgram(ProgramSetupVM programSetupVM, Client client)
+        {
+            return new ClientProgram()
+            {
+                ProgramName = programSetupVM.ProgramName,
+                ClientId = client.ClientId,
+                GoalOneId = programSetupVM.GoalIds[0],
+                GoalTwoId = programSetupVM.GoalIds[1],
+                GoalCount = programSetupVM.GoalIds[1] == 0 ? 1 : 2,
+                MinutesPerSession = programSetupVM.Minutes,
+                DaysPerWeek = programSetupVM.Days,
+                MileMinutes = programSetupVM?.MileMinutes,
+                MileSeconds = programSetupVM?.MileSeconds,
+                ProgramStart = DateTime.Now,
+            };
         }
 
         public async Task<ActionResult> ProgramsList(int clientId)
@@ -223,7 +237,6 @@ namespace AutonoFit.Controllers
 
             return View(programs);
         }
-
 
         public async Task<ActionResult> ProgramOverview(int programId)
         {
