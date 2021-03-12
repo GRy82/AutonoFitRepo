@@ -319,13 +319,7 @@ namespace AutonoFit.Controllers
             }
             await _repo.SaveAsync();
 
-            ProgramWorkoutVM programWorkoutVM = new ProgramWorkoutVM()
-            {
-                ClientExercises = clientExercises,
-                Exercises = todaysExercises,
-                FitnessDictionary = fitnessMetrics,
-                ClientWorkout = clientWorkout
-            };
+            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, todaysExercises, fitnessMetrics, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
@@ -342,6 +336,17 @@ namespace AutonoFit.Controllers
                 milePaceSeconds = Convert.ToInt32(fitnessMetrics[0].milePace * 60),
                 mileDistance = fitnessMetrics[0].distanceMiles,
                 DatePerformed = DateTime.Now
+            };
+        }
+
+        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Result> todaysExercises, List<FitnessDictionary> fitnessMetrics, ClientWorkout clientWorkout)
+        {
+            return new ProgramWorkoutVM()
+            {
+                ClientExercises = clientExercises,
+                Exercises = todaysExercises,
+                FitnessDictionary = fitnessMetrics,
+                ClientWorkout = clientWorkout
             };
         }
 
