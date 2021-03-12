@@ -314,19 +314,22 @@ namespace AutonoFit.Controllers
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(fitnessMetrics, client, bodyParts, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
-            await _repo.SaveAsync();
-
-            foreach(ClientExercise exercise in clientExercises)
-            {
-                exercise.WorkoutId = clientWorkout.Id;
-                exercise.ProgramId = currentProgram.ProgramId;
-                _repo.ClientExercise.CreateClientExercise(exercise);
-            }
+            AddClientExercises(clientExercises, currentProgram, clientWorkout);
             await _repo.SaveAsync();
 
             ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, todaysExercises, fitnessMetrics, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
+        }
+
+        private void AddClientExercises(List<ClientExercise> clientExercises, ClientProgram currentProgram, ClientWorkout clientWorkout)
+        {
+            foreach (ClientExercise exercise in clientExercises)
+            {
+                exercise.WorkoutId = clientWorkout.Id;
+                exercise.ProgramId = currentProgram.ProgramId;
+                _repo.ClientExercise.CreateClientExercise(exercise);
+            }
         }
 
         private ClientWorkout InstantiateClientWorkout(List<FitnessDictionary> fitnessMetrics, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
