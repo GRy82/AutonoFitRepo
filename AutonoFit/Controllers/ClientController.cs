@@ -258,24 +258,29 @@ namespace AutonoFit.Controllers
             return View(programOverviewVM);
         }
 
+        private async Task<List<Result>> GetExercisesByEquipment(Client client)
+        {
+            List<ClientEquipment> equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+            string url = SharedUtility.BuildEquipmentUrlString(equipment);
+            ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(url);
+            return SharedUtility.RepackageResults(new List<Result>(), exerciseLibrary);
+        }
+
         public async Task<ActionResult> GenerateProgramWorkout(int programId)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             Client client = await _repo.Client.GetClientAsync(userId);
-            ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
-            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
-            List<FitnessDictionary> fitnessMetrics = new List<FitnessDictionary> { };
-            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
-            List<ClientEquipment>  equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-            string url = SharedUtility.BuildEquipmentUrlString(equipment);
-            ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(url);
-            List<Result> resultsLibrary = new List<Result> { };
-            resultsLibrary = SharedUtility.RepackageResults(resultsLibrary, exerciseLibrary);
-            List<Result> todaysExercises = new List<Result> { };
-            List<ClientExercise> clientExercises = new List<ClientExercise> { };
+            List<Result> resultsLibrary = await GetExercisesByEquipment(client);
 
+            List<Result> todaysExercises = new List<Result> { };
+            ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
+            List<FitnessDictionary> fitnessMetrics = new List<FitnessDictionary> { };
+            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
+            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
+            List<ClientExercise> clientExercises = new List<ClientExercise> { };
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
             string bodyParts = null;
+            
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
                 fitnessMetrics.Add(await programModule.GetTodaysCardio(new FitnessDictionary(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
             }
