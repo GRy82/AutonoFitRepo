@@ -307,17 +307,7 @@ namespace AutonoFit.Controllers
                 } 
             }
 
-            ClientWorkout clientWorkout = new ClientWorkout()
-            {
-                ClientId = client.ClientId,
-                ProgramId = currentProgram.ProgramId,
-                BodyParts = bodyParts,
-                GoalId = todaysGoalNumber,
-                RunType = fitnessMetrics[0].runType,
-                milePaceSeconds = Convert.ToInt32(fitnessMetrics[0].milePace * 60),
-                mileDistance = fitnessMetrics[0].distanceMiles,
-                DatePerformed = DateTime.Now
-            };
+            ClientWorkout clientWorkout = InstantiateClientWorkout(fitnessMetrics, client, bodyParts, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
             await _repo.SaveAsync();
 
@@ -338,6 +328,21 @@ namespace AutonoFit.Controllers
             };
 
             return View("DisplayProgramWorkout", programWorkoutVM);
+        }
+
+        private ClientWorkout InstantiateClientWorkout(List<FitnessDictionary> fitnessMetrics, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
+        {
+            return new ClientWorkout()
+            {
+                ClientId = client.ClientId,
+                ProgramId = currentProgram.ProgramId,
+                BodyParts = bodyParts,
+                GoalId = todaysGoalNumber,
+                RunType = fitnessMetrics[0].runType,
+                milePaceSeconds = Convert.ToInt32(fitnessMetrics[0].milePace * 60),
+                mileDistance = fitnessMetrics[0].distanceMiles,
+                DatePerformed = DateTime.Now
+            };
         }
 
         public async Task<ActionResult> CompleteProgramWorkout(ProgramWorkoutVM programWorkoutVM)
