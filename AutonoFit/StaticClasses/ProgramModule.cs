@@ -11,7 +11,7 @@ namespace AutonoFit.Classes
     public class ProgramModule
     {
         private readonly IRepositoryWrapper _repo;
-        public static int repTime = 4;
+        public const int repTime = 4;
 
         public ProgramModule(IRepositoryWrapper repo)
         {
@@ -140,7 +140,7 @@ namespace AutonoFit.Classes
 
         private async Task<FitnessDictionary> GenerateRun(ClientProgram currentProgram, string runType, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
         {
-            double paceCoefficient = GetPaceCoefficient(runType);
+            double paceCoefficient = SharedUtility.GetPaceCoefficient(runType);
             if((currentProgram.GoalCount == 1 && recentWorkoutCycle.Count > 1) || (currentProgram.GoalCount == 2 && recentWorkoutCycle.Count > 3))
             {
                 await CheckCardioProgression(currentProgram, recentWorkoutCycle);
@@ -191,28 +191,6 @@ namespace AutonoFit.Classes
             string newRunType = index != (runTypes.Length - 1) ? runTypes[index + 1] : runTypes[0];
 
             return newRunType;
-        }
-
-        public double GetPaceCoefficient(string runType)
-        {
-            double paceCoefficient = 0;
-            switch (runType)
-            {
-                case "Easy":
-                    paceCoefficient = 1.5;
-                    break;
-                case "Moderate":
-                    paceCoefficient = 1.43;
-                    break;
-                case "Long":
-                    paceCoefficient = 1.39;
-                    break;
-                case "Speed":
-                    paceCoefficient = 1.1;
-                    break;
-            }
-
-            return paceCoefficient;
         }
 
         public int getRunDuration(int sessionMinutes, string runType)

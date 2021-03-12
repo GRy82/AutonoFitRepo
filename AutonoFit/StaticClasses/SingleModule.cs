@@ -1,4 +1,5 @@
-﻿using AutonoFit.Contracts;
+﻿using AutonoFit.Classes;
+using AutonoFit.Contracts;
 using AutonoFit.Services;
 using AutonoFit.ViewModels;
 using System;
@@ -33,16 +34,23 @@ namespace AutonoFit.StaticClasses
             {
                 fitnessMetrics.cardio = false;
             }
+
             return fitnessMetrics;
         }
 
 
         public FitnessDictionary CalculateCardio(FitnessDictionary cardioMetrics, double milePace, int sessionDuration)
         {
-            sessionDuration /= 2;
-            cardioMetrics.runDuration = sessionDuration;
+            int runDuration = sessionDuration / 2;
+
+            if (runDuration > 30)
+                milePace *= SharedUtility.GetPaceCoefficient("easy");
+            else
+                milePace *= SharedUtility.GetPaceCoefficient("moderate");
+
+            cardioMetrics.runDuration = runDuration;
             cardioMetrics.milePace = milePace;
-            cardioMetrics.distanceMiles = sessionDuration / milePace;
+            cardioMetrics.distanceMiles = runDuration / milePace;
 
 
             return cardioMetrics;

@@ -10,7 +10,7 @@ namespace AutonoFit.StaticClasses
 {
     public static class SharedUtility
     {
-        public static int repTime = 4;
+        public const int repTime = 4;
 
 
         public static string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
@@ -250,6 +250,28 @@ namespace AutonoFit.StaticClasses
                 return true;
             }
             return false;
+        }
+
+        public static double GetPaceCoefficient(string runType)
+        {
+            double paceCoefficient = 0;
+            switch (runType)
+            {
+                case "Easy":
+                    paceCoefficient = 1.5;
+                    break;
+                case "Moderate":
+                    paceCoefficient = 1.43;
+                    break;
+                case "Long":
+                    paceCoefficient = 1.39;
+                    break;
+                case "Speed":
+                    paceCoefficient = 1.1;
+                    break;
+            }
+
+            return paceCoefficient;
         }
 
         public static List<TrainingStimulus> DefineTrainingStimuli(List<int> goalIds)
