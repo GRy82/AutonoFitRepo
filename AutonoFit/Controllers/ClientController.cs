@@ -281,10 +281,10 @@ namespace AutonoFit.Controllers
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
             string bodyParts = null;
             
-            if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {
+            if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {//if cardio in any capactiy
                 fitnessMetrics.Add(await programModule.GetTodaysCardio(new FitnessDictionary(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
             }
-            if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessMetrics.Count != 0 && (fitnessMetrics[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))
+            if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessMetrics.Count != 0 && (fitnessMetrics[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))//Generate a Lifting componenent
             {
                 int liftLengthMinutes = 0;
                 int totalExerciseTime = 0;

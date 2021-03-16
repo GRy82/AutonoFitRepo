@@ -44,9 +44,9 @@ namespace AutonoFit.StaticClasses
             int runDuration = sessionDuration / 2;
 
             if (runDuration > 30)
-                milePace *= SharedUtility.GetPaceCoefficient("easy");
+                milePace *= SharedUtility.GetPaceCoefficient("Easy");
             else
-                milePace *= SharedUtility.GetPaceCoefficient("moderate");
+                milePace *= SharedUtility.GetPaceCoefficient("Moderate");
 
             cardioMetrics.runDuration = runDuration;
             cardioMetrics.milePace = milePace;
