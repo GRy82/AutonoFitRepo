@@ -20,6 +20,7 @@ namespace AutonoFit.Controllers
     [Authorize(Roles = "Client")]
     public class ClientController : Controller
     {
+        private string userId;
         private IRepositoryWrapper _repo;
         private ExerciseLibraryService _exerciseLibraryService;
         private ProgramModule programModule;
@@ -30,12 +31,12 @@ namespace AutonoFit.Controllers
             programModule = new ProgramModule(_repo);
             _exerciseLibraryService = exerciseLibraryService;
             singleModule = new SingleModule(_repo, exerciseLibraryService);
+            userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         // GET: Client
         public async Task<ActionResult> Index(bool accountNewlyCreated = false)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
           
             if(client == null)
@@ -56,7 +57,6 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> AccountOverview()
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
             return View(client);
         }
@@ -68,7 +68,6 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> SingleWorkoutSetup(string errorMessage = null)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
             SingleWorkoutVM singleWorkoutVM = await InstantiateSingleWorkoutVM(client, errorMessage);
          
@@ -170,7 +169,6 @@ namespace AutonoFit.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CheckProgramFormValidity(ProgramSetupVM programSetupVM)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
 
             if(await NotValidProgramSetup(programSetupVM, client))
@@ -231,7 +229,6 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> ProgramsList(int clientId)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             Client client = await _repo.Client.GetClientAsync(userId);
             List<ClientProgram> programs = await _repo.ClientProgram.GetAllClientProgramsAsync(client.ClientId);
 
@@ -268,7 +265,6 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> GenerateProgramWorkout(int programId)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             Client client = await _repo.Client.GetClientAsync(userId);
             List<Result> resultsLibrary = await GetExercisesByEquipment(client);
 
@@ -417,7 +413,6 @@ namespace AutonoFit.Controllers
 
         private async Task CleanExerciseWorkoutDatabase()
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             Client client = await _repo.Client.GetClientAsync(userId);
 
             List<ClientWorkout> oldWorkouts = await _repo.ClientWorkout.GetOldWorkoutsAsync(client.ClientId);
@@ -470,7 +465,6 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> Equipment()
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
             var clientEquipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
             var equipment = await _repo.Equipment.GetAllEquipmentAsync();
@@ -484,7 +478,6 @@ namespace AutonoFit.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Equipment(ClientEquipmentVM clientEquipmentVM)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
             var clientEquipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
             var equipment = await _repo.Equipment.GetAllEquipmentAsync();
@@ -539,7 +532,6 @@ namespace AutonoFit.Controllers
 
         public async Task<bool> RecommendAgainstHighIntensity()
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var client = await _repo.Client.GetClientAsync(userId);
 
             List<ClientEquipment> equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
