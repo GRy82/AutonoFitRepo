@@ -124,10 +124,9 @@ namespace AutonoFit.Controllers
             FitnessParameters fitnessParameters = new FitnessParameters();
             fitnessParameters.SetFitnessParameters(workoutVM); //Calculate sets/reps, rest time to exercises.
             workoutVM.Minutes = fitnessParameters.cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
+            workoutVM.FitnessParameters = fitnessParameters;
             int numberOfExercises = SharedUtility.GetExerciseQty(fitnessParameters, workoutVM.Minutes); 
-            List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exercises, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
-            List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessParameters);  //Convert ExerciseLibrary objects to ClientExercises
-            workoutVM.FitnessParameters = fitnessParameters.cardioComponent != null ? SharedUtility.ConvertFitnessDictCardioValues(fitnessParameters) : fitnessParameters;
+            List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exercises, numberOfExercises);
             ClientWorkout workout = InstantiateClientWorkout(workoutVM); //Create new workout to contain exercises and other stored data.
             workoutVM.Workout = workout; //assign all ClientExercises the workout Id
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);

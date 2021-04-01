@@ -18,8 +18,12 @@ namespace AutonoFit.StaticClasses
             List<TrainingStimulus> trainingStimuli = SharedUtility.SetTrainingStimuli(workoutVM.GoalIds);
             var liftingComponent = new LiftingComponent(trainingStimuli);
             liftingComponent.SetLiftParameters();
-            var cardioComponent = new CardioComponent(workoutVM);
-            cardioComponent.SetCardioParameters();
+
+            if (SharedUtility.CheckCardio(workoutVM.GoalIds))
+            {
+                cardioComponent = new CardioComponent(workoutVM);
+                cardioComponent.SetCardioParameters();
+            }
             
         }
     }

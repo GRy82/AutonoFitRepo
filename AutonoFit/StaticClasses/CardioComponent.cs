@@ -9,7 +9,6 @@ namespace AutonoFit.StaticClasses
     public class CardioComponent
     {
         public SingleWorkoutVM workoutVM;
-        public bool cardio;
         public string runType;
         public double milePace;
         public string paceString;
@@ -25,29 +24,18 @@ namespace AutonoFit.StaticClasses
         public void SetCardioParameters()
         {
             if (SharedUtility.CheckCardio(workoutVM.GoalIds))
-            {
-                milePace = workoutVM.MileMinutes + ((double)workoutVM.MileSeconds / 60);
-                SetCardioParameters(this, milePace, workoutVM.Minutes);
-                cardio = true;
-            }
-            else
-            {
-                cardio = false;
-            }
-        }
-
-        private void SetCardioParameters(CardioComponent cardioComponent, double milePace, int sessionDuration)
-        {
-            int runDuration = sessionDuration / 2;
+           
+            runDuration = workoutVM.Minutes / 2;
+            milePace = workoutVM.MileMinutes + ((double)workoutVM.MileSeconds / 60);
 
             if (runDuration > 30)
                 milePace *= SharedUtility.GetPaceCoefficient("Easy");
             else
                 milePace *= SharedUtility.GetPaceCoefficient("Moderate");
 
-            cardioComponent.runDuration = runDuration;
-            cardioComponent.milePace = milePace;
-            cardioComponent.distanceMiles = runDuration / milePace;
+            distanceMiles = runDuration / milePace;
+            durationString = SharedUtility.ConvertToMinSec((int)(runDuration * 60));
+            paceString = SharedUtility.ConvertToMinSec((int)(milePace * 60));
         }
     }
 }

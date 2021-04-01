@@ -222,12 +222,6 @@ namespace AutonoFit.StaticClasses
             return newString;
         }
 
-        public static FitnessParameters ConvertFitnessDictCardioValues(FitnessParameters fitDict)
-        {
-            fitDict.durationString = ConvertToMinSec((int)(fitDict.runDuration * 60));
-            fitDict.paceString = ConvertToMinSec((int)(fitDict.milePace * 60));
-            return fitDict;
-        }
 
         public static string RemoveTags(string stringWithTags)
         {
