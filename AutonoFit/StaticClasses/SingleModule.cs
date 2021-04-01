@@ -19,21 +19,21 @@ namespace AutonoFit.StaticClasses
         }
 
 
-        public async Task<List<Result>> FindExercisesByCategory(SingleWorkoutVM workoutVM, List<Result> exerciseResults)
+        public async Task<List<Exercise>> FindExercisesByCategory(SingleWorkoutVM workoutVM, List<Exercise> exercises)
         {
-            ExerciseLibrary singleExerciseLibrary;
+            ExerciseLibrary exerciseLibrary;
             int[] categories = SharedUtility.GetCategories(workoutVM.BodySection);
             for (int i = 0; i < categories.Length; i++)
             {
                 string urlCategoryString = SharedUtility.BuildEquipmentUrlString(workoutVM.Equipment) + "&category=" + categories[i];
-                singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
-                exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
+                exerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
+                exercises = SharedUtility.AddLibrarytoExercises(exercises, exerciseLibrary);
             }
 
-            return exerciseResults;
+            return exercises;
         }
 
-        public async Task<List<Result>> FindExercisesByMuscles(SingleWorkoutVM workoutVM, List<Result> exerciseResults)
+        public async Task<List<Exercise>> FindExercisesByMuscles(SingleWorkoutVM workoutVM, List<Exercise> exerciseResults)
         {
             ExerciseLibrary singleExerciseLibrary;
             int[] muscles = SharedUtility.GetMuscles(workoutVM.BodySection);

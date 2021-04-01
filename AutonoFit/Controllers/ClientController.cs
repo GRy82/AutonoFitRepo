@@ -29,7 +29,7 @@ namespace AutonoFit.Controllers
             _repo = repo;
             _exerciseLibraryService = exerciseLibraryService;
             programModule = new ProgramModule(_repo);
-            singleModule = new SingleModule(_repo, exerciseLibraryService);
+            singleModule = new SingleModule(exerciseLibraryService);
         }
 
         private string GetUserId()
@@ -118,17 +118,16 @@ namespace AutonoFit.Controllers
 
         public async Task<ActionResult> ConstructWorkoutVM(SingleWorkoutVM workoutVM)
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            workoutVM.Client = await _repo.Client.GetClientAsync(userId);
+            workoutVM.Client = await _repo.Client.GetClientAsync(GetUserId());
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-            List<Result> exerciseResults = await GatherExercises(workoutVM);
+            List<Exercise> exerciseResults = await GatherExercises(workoutVM);
             FitnessParameters fitnessParameters = new FitnessParameters();
             fitnessParameters.SetFitnessParameters(workoutVM); //Calculate sets/reps, rest time to exercises.
-            workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
-            int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, workoutVM.Minutes); //Decide number of exercises based on time constraints 
-            List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
-            List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessMetrics);  //Convert ExerciseLibrary objects to ClientExercises
-            workoutVM.fitnessDictionary = fitnessMetrics.cardio == true ? SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics) : fitnessMetrics;
+            workoutVM.Minutes = fitnessParameters.cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
+            int numberOfExercises = SharedUtility.DetermineVolume(fitnessParameters, workoutVM.Minutes); //Decide number of exercises based on time constraints 
+            List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
+            List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessParameters);  //Convert ExerciseLibrary objects to ClientExercises
+            workoutVM.FitnessParameters = fitnessParameters.cardioComponent != null ? SharedUtility.ConvertFitnessDictCardioValues(fitnessParameters) : fitnessParameters;
             ClientWorkout workout = InstantiateClientWorkout(workoutVM); //Create new workout to contain exercises and other stored data.
             workoutVM.Workout = workout; //assign all ClientExercises the workout Id
             randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
@@ -137,9 +136,9 @@ namespace AutonoFit.Controllers
             return View("DisplaySingleWorkout", workoutVM);
         }
 
-        private async Task<List<Result>> GatherExercises(SingleWorkoutVM workoutVM)
+        private async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
         {
-            List<Result> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Result> { }); //Get exercises by category and repackage into Result reference type.
+            List<Exercise> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
             exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults); //Get exercises by muslces and repackage into Result reference type.
             exerciseResults = SharedUtility.RemoveRepeats(exerciseResults); //Get rid of repeats
             return exerciseResults;
@@ -274,7 +273,7 @@ namespace AutonoFit.Controllers
 
             List<Result> todaysExercises = new List<Result> { };
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
-            List<FitnessDictionary> fitnessMetrics = new List<FitnessDictionary> { };
+            List<FitnessParameters> fitnessParameters = new List<FitnessParameters> { };
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
             List<ClientExercise> clientExercises = new List<ClientExercise> { };
@@ -282,9 +281,9 @@ namespace AutonoFit.Controllers
             string bodyParts = null;
             
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {//if cardio in any capactiy
-                fitnessMetrics.Add(await programModule.GetTodaysCardio(new FitnessDictionary(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
+                fitnessParameters.Add(await programModule.GetTodaysCardio(new FitnessParameters(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
             }
-            if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessMetrics.Count != 0 && (fitnessMetrics[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))//Generate a Lifting componenent
+            if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessParameters.Count != 0 && (fitnessParameters[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))//Generate a Lifting componenent
             {
                 int liftLengthMinutes = 0;
                 int totalExerciseTime = 0;
@@ -295,29 +294,29 @@ namespace AutonoFit.Controllers
                 }
                 else//if supplemental cardio is needed or a lift for someone who does too much cardio("6 Lift")
                 {
-                    bodyParts = fitnessMetrics[0].runType == "Easy" ? "Both" : "Upper Body";
-                    liftLengthMinutes = fitnessMetrics[0].runType == "Easy" ? Convert.ToInt32(fitnessMetrics[0].runDuration) : currentProgram.MinutesPerSession;
+                    bodyParts = fitnessParameters[0].runType == "Easy" ? "Both" : "Upper Body";
+                    liftLengthMinutes = fitnessParameters[0].runType == "Easy" ? Convert.ToInt32(fitnessParameters[0].runDuration) : currentProgram.MinutesPerSession;
                 }
                 while(totalExerciseTime < liftLengthMinutes)
                 {
                     Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary, todaysExercises);
                     exercise.description = SharedUtility.RemoveTags(exercise.description);
                     todaysExercises.Add(exercise);
-                    FitnessDictionary tempFitDict = new FitnessDictionary();
+                    FitnessParameters tempFitDict = new FitnessParameters();
                     tempFitDict = await programModule.GenerateLift(currentProgram, recentWorkoutCycle, tempFitDict, todaysGoalNumber, exercise.id);
-                    fitnessMetrics.Add(tempFitDict);
+                    fitnessParameters.Add(tempFitDict);
                     ClientExercise clienteExercise = SharedUtility.CopyAsClientExercises(exercise, client.ClientId, tempFitDict);
                     clientExercises.Add(clienteExercise);
                     totalExerciseTime += (int)(SharedUtility.GetSingleExerciseTime(tempFitDict) / 60);
                 } 
             }
 
-            ClientWorkout clientWorkout = InstantiateClientWorkout(fitnessMetrics, client, bodyParts, currentProgram, todaysGoalNumber);
+            ClientWorkout clientWorkout = InstantiateClientWorkout(fitnessParameters, client, bodyParts, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
             AddClientExercises(clientExercises, currentProgram, clientWorkout);
             await _repo.SaveAsync();
 
-            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, todaysExercises, fitnessMetrics, clientWorkout);
+            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, todaysExercises, fitnessParameters, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
@@ -332,7 +331,7 @@ namespace AutonoFit.Controllers
             }
         }
 
-        private ClientWorkout InstantiateClientWorkout(List<FitnessDictionary> fitnessMetrics, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
+        private ClientWorkout InstantiateClientWorkout(List<FitnessParameters> fitnessMetrics, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
         {
             return new ClientWorkout()
             {
@@ -347,7 +346,7 @@ namespace AutonoFit.Controllers
             };
         }
 
-        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Result> todaysExercises, List<FitnessDictionary> fitnessMetrics, ClientWorkout clientWorkout)
+        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Result> todaysExercises, List<FitnessParameters> fitnessMetrics, ClientWorkout clientWorkout)
         {
             return new ProgramWorkoutVM()
             {

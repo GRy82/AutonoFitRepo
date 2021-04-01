@@ -11,10 +11,12 @@ namespace AutonoFit.Services
         public int count { get; set; }
         public string next { get; set; }
         public object previous { get; set; }
-        public Result[] results { get; set; }
+
+        [JsonProperty(PropertyName = "Result")]
+        public Exercise[] results { get; set; }
     }
 
-    public class Result
+    public class Exercise
     {
         public int id { get; set; }
         public int category { get; set; }

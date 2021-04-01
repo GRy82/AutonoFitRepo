@@ -20,7 +20,7 @@ namespace AutonoFit.ViewModels
 
         public List<Goals> AvailableGoals { get; set; }
 
-        public FitnessParameters fitnessParameters { get; set; }
+        public FitnessParameters FitnessParameters { get; set; }
 
         public List<int> GoalIds { get; set; }
 

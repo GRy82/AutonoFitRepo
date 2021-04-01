@@ -24,7 +24,7 @@ namespace AutonoFit.StaticClasses
             return urlString;
         }
 
-        public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessParameters fitnessMetrics)
+        public static List<ClientExercise> CopyAsClientExercises(List<Exercise> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessParameters fitnessMetrics)
         {
             List<ClientExercise> workoutExercises = new List<ClientExercise> { };
             foreach (Result result in randomlyChosenExercises)
@@ -42,7 +42,7 @@ namespace AutonoFit.StaticClasses
             return workoutExercises;
         }
 
-        public static ClientExercise CopyAsClientExercises(Result randomlyChosenExercise, int clientId, FitnessParameters fitnessMetrics)
+        public static ClientExercise CopyAsClientExercises(Exercise randomlyChosenExercise, int clientId, FitnessParameters fitnessMetrics)
         {
             ClientExercise exercise = new ClientExercise();
             exercise.ClientId = clientId;
@@ -54,7 +54,7 @@ namespace AutonoFit.StaticClasses
             return exercise;
         }
 
-        public static List<Result> RandomizeExercises(List<Result> exerciseResults, int exerciseQuantity)
+        public static List<Exercise> RandomizeExercises(List<Exercise> exerciseResults, int exerciseQuantity)
         {
             List<Result> selectedExercises = new List<Result> { };
             Random rand = new Random();
@@ -86,19 +86,18 @@ namespace AutonoFit.StaticClasses
             return singleExerciseTime;
         }
 
-        public static List<Result> RepackageResults(List<Result> exerciseResults, ExerciseLibrary singleExerciseLibrary)
+        public static List<Exercise> AddLibrarytoExercises(List<Exercise> exercises, ExerciseLibrary exerciseLibrary)
         {
-            for (int i = 0; i < singleExerciseLibrary.results.Length; i++)
+            for (int i = 0; i < exerciseLibrary.results.Length; i++)
             {
-                Result[] tempResult = new Result[1];
-                tempResult[0] = singleExerciseLibrary.results[i];
-                exerciseResults.Add(tempResult[0]);
+                Exercise tempResult = exerciseLibrary.results[i];
+                exercises.Add(tempResult);
             }
 
-            return exerciseResults;
+            return exercises;
         }
 
-        public static List<Result> RemoveRepeats(List<Result> exerciseResults)
+        public static List<Exercise> RemoveRepeats(List<Exercise> exerciseResults)
         {
             List<Result> revisedResults = new List<Result> { };
             List<int> addedExerciseIds = new List<int> { };
@@ -149,7 +148,7 @@ namespace AutonoFit.StaticClasses
             return muscles;
         }
 
-        public static Result SelectExercise(string bodyParts, List<Result> exercises, List<Result> todaysExercises)
+        public static Exercise SelectExercise(string bodyParts, List<Exercise> exercises, List<Exercise> todaysExercises)
         {
             List<Result> possibleExercises = new List<Result> { };
             int[] muscles = GetMuscles(bodyParts);
