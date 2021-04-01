@@ -11,33 +11,13 @@ namespace AutonoFit.StaticClasses
 {
     public class SingleModule
     {
-        private readonly IRepositoryWrapper _repo;
         private ExerciseLibraryService _exerciseLibraryService;
 
-        public SingleModule(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
+        public SingleModule(ExerciseLibraryService exerciseLibraryService)
         {
-            _repo = repo;
             _exerciseLibraryService = exerciseLibraryService;
         }
 
-
-
-        public FitnessParameters CalculateCardio(FitnessParameters cardioMetrics, double milePace, int sessionDuration)
-        {
-            int runDuration = sessionDuration / 2;
-
-            if (runDuration > 30)
-                milePace *= SharedUtility.GetPaceCoefficient("Easy");
-            else
-                milePace *= SharedUtility.GetPaceCoefficient("Moderate");
-
-            cardioMetrics.runDuration = runDuration;
-            cardioMetrics.milePace = milePace;
-            cardioMetrics.distanceMiles = runDuration / milePace;
-
-
-            return cardioMetrics;
-        }
 
         public async Task<List<Result>> FindExercisesByCategory(SingleWorkoutVM workoutVM, List<Result> exerciseResults)
         {

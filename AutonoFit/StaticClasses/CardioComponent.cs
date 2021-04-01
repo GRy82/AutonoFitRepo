@@ -27,13 +27,27 @@ namespace AutonoFit.StaticClasses
             if (SharedUtility.CheckCardio(workoutVM.GoalIds))
             {
                 milePace = workoutVM.MileMinutes + ((double)workoutVM.MileSeconds / 60);
-                fitnessMetrics = CalculateCardio(fitnessMetrics, milePace, workoutVM.Minutes);
+                SetCardioParameters(this, milePace, workoutVM.Minutes);
                 cardio = true;
             }
             else
             {
                 cardio = false;
             }
+        }
+
+        private void SetCardioParameters(CardioComponent cardioComponent, double milePace, int sessionDuration)
+        {
+            int runDuration = sessionDuration / 2;
+
+            if (runDuration > 30)
+                milePace *= SharedUtility.GetPaceCoefficient("Easy");
+            else
+                milePace *= SharedUtility.GetPaceCoefficient("Moderate");
+
+            cardioComponent.runDuration = runDuration;
+            cardioComponent.milePace = milePace;
+            cardioComponent.distanceMiles = runDuration / milePace;
         }
     }
 }
