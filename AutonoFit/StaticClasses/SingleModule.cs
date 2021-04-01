@@ -33,7 +33,7 @@ namespace AutonoFit.StaticClasses
             return exercises;
         }
 
-        public async Task<List<Exercise>> FindExercisesByMuscles(SingleWorkoutVM workoutVM, List<Exercise> exerciseResults)
+        public async Task<List<Exercise>> FindExercisesByMuscles(SingleWorkoutVM workoutVM, List<Exercise> exercises)
         {
             ExerciseLibrary singleExerciseLibrary;
             int[] muscles = SharedUtility.GetMuscles(workoutVM.BodySection);
@@ -44,9 +44,9 @@ namespace AutonoFit.StaticClasses
             }
             urlMusclesString = SharedUtility.BuildEquipmentUrlString(workoutVM.Equipment) + urlMusclesString;
             singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
-            exerciseResults = SharedUtility.RepackageResults(exerciseResults, singleExerciseLibrary);
+            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
 
-            return exerciseResults;
+            return exercises;
         }
     }
 }

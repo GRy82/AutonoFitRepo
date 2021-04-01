@@ -72,12 +72,11 @@ namespace AutonoFit.StaticClasses
             return selectedExercises;
         }
 
-        public static int DetermineVolume(FitnessParameters fitnessMetrics, int workoutMinutes)
+        public static int DetermineVolume(FitnessParameters fitnessParameters, int workoutMinutes)
         {
-            double singleExerciseTime = GetSingleExerciseTime(fitnessMetrics);
-            int exerciseQuantity = (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
-
-            return exerciseQuantity;
+            double singleExerciseTime = (fitnessParameters.liftingComponent.reps * repTime + fitnessParameters.liftingComponent.rest)
+                    * fitnessParameters.liftingComponent.sets;
+            return (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
         }
 
         public static double GetSingleExerciseTime(FitnessParameters fitnessMetrics)// return value is in seconds
@@ -97,11 +96,11 @@ namespace AutonoFit.StaticClasses
             return exercises;
         }
 
-        public static List<Exercise> RemoveRepeats(List<Exercise> exerciseResults)
+        public static List<Exercise> RemoveRepeats(List<Exercise> exercises)
         {
-            List<Result> revisedResults = new List<Result> { };
+            List<Exercise> revisedResults = new List<Exercise> { };
             List<int> addedExerciseIds = new List<int> { };
-            foreach (Result exercise in exerciseResults)
+            foreach (Exercise exercise in exercises)
             {
                 if (!addedExerciseIds.Contains(exercise.id) && exercise.id != 393)//exercise 393 is trash. It's a full workout.
                 {

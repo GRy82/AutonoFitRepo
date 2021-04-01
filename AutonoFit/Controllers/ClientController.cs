@@ -138,10 +138,10 @@ namespace AutonoFit.Controllers
 
         private async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
         {
-            List<Exercise> exerciseResults = await singleModule.FindExercisesByCategory(workoutVM, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
-            exerciseResults = await singleModule.FindExercisesByMuscles(workoutVM, exerciseResults); //Get exercises by muslces and repackage into Result reference type.
-            exerciseResults = SharedUtility.RemoveRepeats(exerciseResults); //Get rid of repeats
-            return exerciseResults;
+            List<Exercise> exercises = await singleModule.FindExercisesByCategory(workoutVM, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            exercises = await singleModule.FindExercisesByMuscles(workoutVM, exercises); //Get exercises by muslces and repackage into Result reference type.
+            exercises = SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
+            return exercises;
         }
 
 
