@@ -16,7 +16,7 @@ namespace AutonoFit.ViewModels
 
         public List<ClientEquipment> Equipment { get; set; }
 
-        public List<Result> Exercises { get; set; }
+        public List<Exercise> Exercises { get; set; }
 
         public List<Goals> AvailableGoals { get; set; }
 

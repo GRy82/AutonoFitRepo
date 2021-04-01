@@ -435,8 +435,11 @@ namespace AutonoFit.Controllers
         {
             ClientWorkout workout = new ClientWorkout();
             workout.ClientId = workoutVM.Client.ClientId;
-            workout.mileDistance = workoutVM.fitnessDictionary.distanceMiles;
-            workout.milePaceSeconds = (int)(workoutVM.fitnessDictionary.milePace * 60);
+            if (workoutVM.FitnessParameters.cardioComponent != null)
+            {
+                workout.mileDistance = workoutVM.FitnessParameters.cardioComponent.distanceMiles;
+                workout.milePaceSeconds = (int)(workoutVM.FitnessParameters.cardioComponent.milePace * 60);
+            }
             workout.DatePerformed = DateTime.Now;
             return workout;
         }
@@ -451,9 +454,9 @@ namespace AutonoFit.Controllers
             await _repo.SaveAsync();
         }
 
-        private List<Result> CleanExerciseDescriptions(List<Result> exercises)
+        private List<Exercise> CleanExerciseDescriptions(List<Exercise> exercises)
         {
-            foreach (Result exercise in exercises)
+            foreach (Exercise exercise in exercises)
             {
                 exercise.description = SharedUtility.RemoveTags(exercise.description);
             }
