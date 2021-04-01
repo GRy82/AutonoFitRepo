@@ -27,8 +27,8 @@ namespace AutonoFit.Controllers
         public ClientController(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
-            programModule = new ProgramModule(_repo);
             _exerciseLibraryService = exerciseLibraryService;
+            programModule = new ProgramModule(_repo);
             singleModule = new SingleModule(_repo, exerciseLibraryService);
         }
 
@@ -122,7 +122,8 @@ namespace AutonoFit.Controllers
             workoutVM.Client = await _repo.Client.GetClientAsync(userId);
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
             List<Result> exerciseResults = await GatherExercises(workoutVM);
-            FitnessDictionary fitnessMetrics = singleModule.CalculateSetsRepsRest(workoutVM.GoalIds, workoutVM.Minutes, workoutVM.MileMinutes, workoutVM.MileSeconds); //Calculate sets/reps, rest time to exercises.
+            FitnessParameters fitnessParameters = new FitnessParameters();
+            fitnessParameters.SetFitnessParameters(workoutVM); //Calculate sets/reps, rest time to exercises.
             workoutVM.Minutes = fitnessMetrics.cardio == true ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
             int numberOfExercises = SharedUtility.DetermineVolume(fitnessMetrics, workoutVM.Minutes); //Decide number of exercises based on time constraints 
             List<Result> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 

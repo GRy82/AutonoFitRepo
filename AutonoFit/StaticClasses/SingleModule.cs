@@ -20,26 +20,9 @@ namespace AutonoFit.StaticClasses
             _exerciseLibraryService = exerciseLibraryService;
         }
 
-        public FitnessDictionary CalculateSetsRepsRest(List<int> goalIds, int sessionDuration, int mileMinutes, int mileSeconds)
-        {
-            List<TrainingStimulus> trainingStimuli = SharedUtility.DefineTrainingStimuli(goalIds);
-            FitnessDictionary fitnessMetrics = SharedUtility.DefineDict(trainingStimuli);
-            if (SharedUtility.CheckCardio(goalIds))
-            {
-                double milePace = mileMinutes + ((double)mileSeconds / 60);
-                fitnessMetrics = CalculateCardio(fitnessMetrics, milePace, sessionDuration);
-                fitnessMetrics.cardio = true;
-            }
-            else
-            {
-                fitnessMetrics.cardio = false;
-            }
-
-            return fitnessMetrics;
-        }
 
 
-        public FitnessDictionary CalculateCardio(FitnessDictionary cardioMetrics, double milePace, int sessionDuration)
+        public FitnessParameters CalculateCardio(FitnessParameters cardioMetrics, double milePace, int sessionDuration)
         {
             int runDuration = sessionDuration / 2;
 

@@ -24,7 +24,7 @@ namespace AutonoFit.StaticClasses
             return urlString;
         }
 
-        public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessDictionary fitnessMetrics)
+        public static List<ClientExercise> CopyAsClientExercises(List<Result> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessParameters fitnessMetrics)
         {
             List<ClientExercise> workoutExercises = new List<ClientExercise> { };
             foreach (Result result in randomlyChosenExercises)
@@ -42,7 +42,7 @@ namespace AutonoFit.StaticClasses
             return workoutExercises;
         }
 
-        public static ClientExercise CopyAsClientExercises(Result randomlyChosenExercise, int clientId, FitnessDictionary fitnessMetrics)
+        public static ClientExercise CopyAsClientExercises(Result randomlyChosenExercise, int clientId, FitnessParameters fitnessMetrics)
         {
             ClientExercise exercise = new ClientExercise();
             exercise.ClientId = clientId;
@@ -72,7 +72,7 @@ namespace AutonoFit.StaticClasses
             return selectedExercises;
         }
 
-        public static int DetermineVolume(FitnessDictionary fitnessMetrics, int workoutMinutes)
+        public static int DetermineVolume(FitnessParameters fitnessMetrics, int workoutMinutes)
         {
             double singleExerciseTime = GetSingleExerciseTime(fitnessMetrics);
             int exerciseQuantity = (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
@@ -80,7 +80,7 @@ namespace AutonoFit.StaticClasses
             return exerciseQuantity;
         }
 
-        public static double GetSingleExerciseTime(FitnessDictionary fitnessMetrics)// return value is in seconds
+        public static double GetSingleExerciseTime(FitnessParameters fitnessMetrics)// return value is in seconds
         {
             double singleExerciseTime = (fitnessMetrics.reps * repTime + fitnessMetrics.rest) * fitnessMetrics.sets;//in seconds
             return singleExerciseTime;
@@ -223,7 +223,7 @@ namespace AutonoFit.StaticClasses
             return newString;
         }
 
-        public static FitnessDictionary ConvertFitnessDictCardioValues(FitnessDictionary fitDict)
+        public static FitnessParameters ConvertFitnessDictCardioValues(FitnessParameters fitDict)
         {
             fitDict.durationString = ConvertToMinSec((int)(fitDict.runDuration * 60));
             fitDict.paceString = ConvertToMinSec((int)(fitDict.milePace * 60));
@@ -274,7 +274,7 @@ namespace AutonoFit.StaticClasses
             return paceCoefficient;
         }
 
-        public static List<TrainingStimulus> DefineTrainingStimuli(List<int> goalIds)
+        public static List<TrainingStimulus> SetTrainingStimuli(List<int> goalIds)
         {
             List<TrainingStimulus> trainingStimuli = new List<TrainingStimulus> { };
             foreach (int goalId in goalIds)
@@ -301,27 +301,6 @@ namespace AutonoFit.StaticClasses
             return trainingStimuli;
         }
 
-        public static FitnessDictionary DefineDict(List<TrainingStimulus> trainingStimuli)
-        {
-            FitnessDictionary fitnessMetrics = new FitnessDictionary();
-            int repsSum = 0;
-            int restSum = 0;
-            int setsSum = 0;
-            foreach (TrainingStimulus stimuli in trainingStimuli)
-            {
-                int middleGroundReps = (stimuli.maxReps + stimuli.minReps) / 2;
-                repsSum += middleGroundReps;
-                int middleGroundRest = (stimuli.maxRestSeconds + stimuli.minRestSeconds) / 2;
-                restSum += middleGroundRest;
-                setsSum += stimuli.sets;
-            }
-
-            fitnessMetrics.reps = (int)(repsSum / trainingStimuli.Count);
-            fitnessMetrics.rest = (int)restSum / trainingStimuli.Count;
-            fitnessMetrics.sets = (int)setsSum / trainingStimuli.Count;
-            fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
-
-            return fitnessMetrics;
-        }
+        
     }
 }
