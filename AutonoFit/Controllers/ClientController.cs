@@ -120,12 +120,12 @@ namespace AutonoFit.Controllers
         {
             workoutVM.Client = await _repo.Client.GetClientAsync(GetUserId());
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-            List<Exercise> exerciseResults = await GatherExercises(workoutVM);
+            List<Exercise> exercises = await GatherExercises(workoutVM);
             FitnessParameters fitnessParameters = new FitnessParameters();
             fitnessParameters.SetFitnessParameters(workoutVM); //Calculate sets/reps, rest time to exercises.
             workoutVM.Minutes = fitnessParameters.cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
-            int numberOfExercises = SharedUtility.DetermineVolume(fitnessParameters, workoutVM.Minutes); //Decide number of exercises based on time constraints 
-            List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exerciseResults, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
+            int numberOfExercises = SharedUtility.GetExerciseQty(fitnessParameters, workoutVM.Minutes); 
+            List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exercises, numberOfExercises); //Randomly select N number of exercises from total collection thus far. 
             List<ClientExercise> workoutExercises = SharedUtility.CopyAsClientExercises(randomlyChosenExercises, workoutVM, fitnessParameters);  //Convert ExerciseLibrary objects to ClientExercises
             workoutVM.FitnessParameters = fitnessParameters.cardioComponent != null ? SharedUtility.ConvertFitnessDictCardioValues(fitnessParameters) : fitnessParameters;
             ClientWorkout workout = InstantiateClientWorkout(workoutVM); //Create new workout to contain exercises and other stored data.
