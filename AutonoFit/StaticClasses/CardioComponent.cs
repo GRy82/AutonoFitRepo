@@ -21,6 +21,10 @@ namespace AutonoFit.StaticClasses
             this.workoutVM = workoutVM;
         }
 
+        public CardioComponent()
+        {
+        }
+
         public void SetCardioParameters()
         {
             if (SharedUtility.CheckCardio(workoutVM.GoalIds))
