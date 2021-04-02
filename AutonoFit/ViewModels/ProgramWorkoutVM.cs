@@ -10,11 +10,11 @@ namespace AutonoFit.ViewModels
 {
     public class ProgramWorkoutVM
     {
-        public List<FitnessDictionary> FitnessDictionary { get; set; }
+        public List<FitnessParameters> FitnessDictionary { get; set; }
 
         public List<ClientExercise> ClientExercises { get; set; }
 
-        public List<Result> Exercises { get; set; }
+        public List<Exercise> Exercises { get; set; }
 
         public ClientWorkout ClientWorkout { get; set; }
 

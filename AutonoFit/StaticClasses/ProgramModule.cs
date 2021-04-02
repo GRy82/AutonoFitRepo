@@ -62,9 +62,10 @@ namespace AutonoFit.Classes
         }
 
 
-        public int GetTodaysGoal(List<ClientWorkout> recentWorkoutCycle, List<int> goalIds, int goalCount)
+        public int GetTodaysGoal(List<ClientWorkout> recentWorkoutCycle, ClientProgram currentProgram)
         {
-            if (goalCount == 1)//If program has one goal, then return the only goal in the list that isn't 0.
+            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
+            if (currentProgram.GoalCount == 1)//If program has one goal, then return the only goal in the list that isn't 0.
             {
                 return goalIds[1] == 0 ? goalIds[0] : goalIds[1];
             }
@@ -103,7 +104,7 @@ namespace AutonoFit.Classes
             return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }
 
-        public async Task<FitnessDictionary> GetTodaysCardio(FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
+        public async Task<FitnessParameters> GetTodaysCardio(FitnessParameters fitnessParameters, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
             string runType = null;
             if(currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6)
@@ -126,19 +127,18 @@ namespace AutonoFit.Classes
             //Corner Case
             if(runType == "Easy" && currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6) // == easy after the advancement.
             {
-                fitnessMetrics.runType = "6 Lift"; //this code will indicate a lift should be done instead of a run.  
-                return fitnessMetrics;//returned with only one change.
+                fitnessParameters.cardioComponent.runType = "6 Lift"; //this code will indicate a lift should be done instead of a run.  
+                return fitnessParameters;//returned with only one change.
             }
 
-            fitnessMetrics.cardio = true;
-            fitnessMetrics = await GenerateRun(currentProgram, runType, fitnessMetrics, recentWorkoutCycle);
-            fitnessMetrics = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
+            fitnessParameters.cardio = true;
+            fitnessParameters = await GenerateRun(currentProgram, runType, fitnessParameters, recentWorkoutCycle);
+            fitnessParameters = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
 
-            return fitnessMetrics;
+            return fitnessParameters;
         }
 
-
-        private async Task<FitnessDictionary> GenerateRun(ClientProgram currentProgram, string runType, FitnessDictionary fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
+        private async Task<FitnessParameters> GenerateRun(ClientProgram currentProgram, string runType, FitnessParameters fitnessMetrics, List<ClientWorkout> recentWorkoutCycle)
         {
             double paceCoefficient = SharedUtility.GetPaceCoefficient(runType);
             if((currentProgram.GoalCount == 1 && recentWorkoutCycle.Count > 1) || (currentProgram.GoalCount == 2 && recentWorkoutCycle.Count > 3))
@@ -230,7 +230,7 @@ namespace AutonoFit.Classes
             return sanitizedWorkouts;
         }
 
-        public async Task<FitnessDictionary> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessDictionary fitnessMetrics, int todaysGoal, int exerciseId)
+        public async Task<FitnessParameters> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessParameters fitnessMetrics, int todaysGoal, int exerciseId)
         {
             List<TrainingStimulus> trainingStimulus = SharedUtility.DefineTrainingStimuli(new List<int> { todaysGoal });
             List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(currentProgram.ProgramId, exerciseId);

@@ -129,7 +129,7 @@ namespace AutonoFit.Controllers
             List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exercises, numberOfExercises);
             ClientWorkout workout = InstantiateClientWorkout(workoutVM); //Create new workout to contain exercises and other stored data.
             workoutVM.Workout = workout; //assign all ClientExercises the workout Id
-            randomlyChosenExercises = CleanExerciseDescriptions(randomlyChosenExercises);
+            randomlyChosenExercises = CleanseExerciseDescriptions(randomlyChosenExercises);
             workoutVM.Exercises = randomlyChosenExercises;  //Place exercises in ViewModel
 
             return View("DisplaySingleWorkout", workoutVM);
@@ -243,6 +243,7 @@ namespace AutonoFit.Controllers
             Client client = await _repo.Client.GetClientAsync(clientProgram.ClientId);
             int workoutsCompleted = await programModule.GetWorkoutsCompletedByProgram(programId);
             string goalTwoName = clientProgram.GoalTwoId == 0 ? null : (await _repo.Goals.GetGoalsAsync(Convert.ToInt32(clientProgram.GoalTwoId))).Name;
+ 
             ProgramOverviewVM programOverviewVM = new ProgramOverviewVM()
             {
                 WorkoutsCompleted = workoutsCompleted,
@@ -257,36 +258,35 @@ namespace AutonoFit.Controllers
             return View(programOverviewVM);
         }
 
-        private async Task<List<Result>> GetExercisesByEquipment(Client client)
+        private async Task<List<Exercise>> GetExercisesByEquipment(Client client)
         {
             List<ClientEquipment> equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
             string url = SharedUtility.BuildEquipmentUrlString(equipment);
             ExerciseLibrary exerciseLibrary = await _exerciseLibraryService.GetExercises(url);
-            return SharedUtility.RepackageResults(new List<Result>(), exerciseLibrary);
+            return SharedUtility.AddLibrarytoExercises(new List<Exercise>(), exerciseLibrary);
         }
 
         public async Task<ActionResult> GenerateProgramWorkout(int programId)
         {
             Client client = await _repo.Client.GetClientAsync(GetUserId());
-            List<Result> resultsLibrary = await GetExercisesByEquipment(client);
+            List<Exercise> resultsLibrary = await GetExercisesByEquipment(client);
 
-            List<Result> todaysExercises = new List<Result> { };
+            List<Exercise> todaysExercises = new List<Exercise> { };
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             List<FitnessParameters> fitnessParameters = new List<FitnessParameters> { };
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
-            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
-            List<ClientExercise> clientExercises = new List<ClientExercise> { };
-            int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, goalIds, currentProgram.GoalCount);
-            string bodyParts = null;
+            int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, currentProgram);
             
             if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {//if cardio in any capactiy
                 fitnessParameters.Add(await programModule.GetTodaysCardio(new FitnessParameters(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
             }
-            if(todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessParameters.Count != 0 && (fitnessParameters[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))//Generate a Lifting componenent
+            string bodyParts = null;
+            List<ClientExercise> clientExercises = new List<ClientExercise> { };
+            if (todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessParameters.Count != 0 && (fitnessParameters[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))//Generate a Lifting componenent
             {
                 int liftLengthMinutes = 0;
                 int totalExerciseTime = 0;
-                if(todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely lifitng workout
+                if (todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely lifitng workout
                 {
                     bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
                     liftLengthMinutes = currentProgram.MinutesPerSession;
@@ -296,9 +296,9 @@ namespace AutonoFit.Controllers
                     bodyParts = fitnessParameters[0].runType == "Easy" ? "Both" : "Upper Body";
                     liftLengthMinutes = fitnessParameters[0].runType == "Easy" ? Convert.ToInt32(fitnessParameters[0].runDuration) : currentProgram.MinutesPerSession;
                 }
-                while(totalExerciseTime < liftLengthMinutes)
+                while (totalExerciseTime < liftLengthMinutes)
                 {
-                    Result exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary, todaysExercises);
+                    Exercise exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary, todaysExercises);
                     exercise.description = SharedUtility.RemoveTags(exercise.description);
                     todaysExercises.Add(exercise);
                     FitnessParameters tempFitDict = new FitnessParameters();
@@ -345,7 +345,7 @@ namespace AutonoFit.Controllers
             };
         }
 
-        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Result> todaysExercises, List<FitnessParameters> fitnessMetrics, ClientWorkout clientWorkout)
+        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Exercise> todaysExercises, List<FitnessParameters> fitnessMetrics, ClientWorkout clientWorkout)
         {
             return new ProgramWorkoutVM()
             {
@@ -454,7 +454,7 @@ namespace AutonoFit.Controllers
             await _repo.SaveAsync();
         }
 
-        private List<Exercise> CleanExerciseDescriptions(List<Exercise> exercises)
+        private List<Exercise> CleanseExerciseDescriptions(List<Exercise> exercises)
         {
             foreach (Exercise exercise in exercises)
             {
