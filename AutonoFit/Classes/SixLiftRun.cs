@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace AutonoFit.Classes
 {
-    public class SixLiftRun
+    public class SixLiftRun : CardioComponent
     {
+
     }
 }

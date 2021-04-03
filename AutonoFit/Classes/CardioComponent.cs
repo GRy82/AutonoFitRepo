@@ -11,6 +11,7 @@ namespace AutonoFit.Classes
         public SingleWorkoutVM workoutVM;
         public string runType;
         public double milePace;
+        public double paceCoefficient;
         public string paceString;
         public double distanceMiles;
         public double runDuration;

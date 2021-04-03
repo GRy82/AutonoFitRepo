@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace AutonoFit.Classes
 {
-    public class SpeedRun
+    public class SpeedRun : CardioComponent
     {
+        private double paceCoefficient = 1.1;
     }
 }
