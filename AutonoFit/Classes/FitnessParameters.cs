@@ -72,7 +72,7 @@ namespace AutonoFit.Classes
 
             fitnessParameters.cardio = true;
             fitnessParameters = await GenerateRun(currentProgram, runType, fitnessParameters, recentWorkoutCycle);
-            fitnessParameters = SharedUtility.ConvertFitnessDictCardioValues(fitnessMetrics);
+            fitnessParameters = ConvertFitnessDictCardioValues(fitnessParameters);
 
             return fitnessParameters;
         }
