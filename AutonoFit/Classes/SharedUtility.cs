@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AutonoFit.StaticClasses
+namespace AutonoFit.Classes
 {
     public static class SharedUtility
     {
@@ -57,7 +57,7 @@ namespace AutonoFit.StaticClasses
 
         public static List<Exercise> RandomizeExercises(List<Exercise> exerciseResults, int exerciseQuantity)
         {
-            List<Result> selectedExercises = new List<Result> { };
+            List<Exercise> selectedExercises = new List<Exercise> { };
             Random rand = new Random();
             int index;
             while (selectedExercises.Count < exerciseQuantity)
@@ -150,11 +150,11 @@ namespace AutonoFit.StaticClasses
 
         public static Exercise SelectExercise(string bodyParts, List<Exercise> exercises, List<Exercise> todaysExercises)
         {
-            List<Result> possibleExercises = new List<Result> { };
+            List<Exercise> possibleExercises = new List<Exercise> { };
             int[] muscles = GetMuscles(bodyParts);
             int[] categories = GetCategories(bodyParts);
 
-            foreach (Result exercise in exercises)
+            foreach (Exercise exercise in exercises)
             {
                 for (int i = 0; i < muscles.Length; i++)
                 {
@@ -165,10 +165,10 @@ namespace AutonoFit.StaticClasses
                 }
             }
 
-            List<Result> singleExercise;
+            List<Exercise> singleExercise;
             do
             {
-                singleExercise = new List<Result> { };
+                singleExercise = new List<Exercise> { };
                 singleExercise = RandomizeExercises(possibleExercises, 1);
             } while (todaysExercises.Contains(singleExercise[0]));
             return singleExercise[0];

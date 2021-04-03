@@ -2,7 +2,6 @@
 using AutonoFit.Contracts;
 using AutonoFit.Models;
 using AutonoFit.Services;
-using AutonoFit.StaticClasses;
 using AutonoFit.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -286,14 +285,14 @@ namespace AutonoFit.Controllers
             {
                 int liftLengthMinutes = 0;
                 int totalExerciseTime = 0;
-                if (todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely lifitng workout
+                if (todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely liftng workout
                 {
                     bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
                     liftLengthMinutes = currentProgram.MinutesPerSession;
                 }
                 else//if supplemental cardio is needed or a lift for someone who does too much cardio("6 Lift")
                 {
-                    bodyParts = fitnessParameters[0].runType == "Easy" ? "Both" : "Upper Body";
+                    bodyParts = fitnessParameters[0].runType == "Easy" ? "Both" : "Upper Body";//full-body lift w/ easy run OR solely upper-body exercise
                     liftLengthMinutes = fitnessParameters[0].runType == "Easy" ? Convert.ToInt32(fitnessParameters[0].runDuration) : currentProgram.MinutesPerSession;
                 }
                 while (totalExerciseTime < liftLengthMinutes)

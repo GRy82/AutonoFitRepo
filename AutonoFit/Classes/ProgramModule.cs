@@ -1,6 +1,6 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Models;
-using AutonoFit.StaticClasses;
+using AutonoFit.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

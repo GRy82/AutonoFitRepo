@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutonoFit.ViewModels;
 
-namespace AutonoFit.StaticClasses
+namespace AutonoFit.Classes
 {
     public class CardioComponent
     {

@@ -5,13 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AutonoFit.StaticClasses
+namespace AutonoFit.Classes
 {
     public class FitnessParameters
     {
         public CardioComponent cardioComponent;
         public LiftingComponent liftingComponent;
 
+        public FitnessParameters(CardioComponent cardioComponent = null, LiftingComponent liftingComponent = null)
+        {
+
+        }
 
         public void SetFitnessParameters(SingleWorkoutVM workoutVM)
         {
