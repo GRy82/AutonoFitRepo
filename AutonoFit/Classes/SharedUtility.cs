@@ -267,6 +267,12 @@ namespace AutonoFit.Classes
             return paceCoefficient;
         }
 
+        public static TrainingStimulus SetTrainingStimulus(int goalId)
+        {
+            List<TrainingStimulus> trainingStimuli = SetTrainingStimuli(new List<int> { goalId });
+            return trainingStimuli[0];
+        }
+
         public static List<TrainingStimulus> SetTrainingStimuli(List<int> goalIds)
         {
             List<TrainingStimulus> trainingStimuli = new List<TrainingStimulus> { };

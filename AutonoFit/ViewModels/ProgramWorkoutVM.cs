@@ -1,6 +1,6 @@
-﻿using AutonoFit.Models;
+﻿using AutonoFit.Classes;
+using AutonoFit.Models;
 using AutonoFit.Services;
-using AutonoFit.StaticClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace AutonoFit.ViewModels
 {
     public class ProgramWorkoutVM
     {
-        public List<FitnessParameters> FitnessDictionary { get; set; }
+        public FitnessParameters FitnessParameters { get; set; }
 
         public List<ClientExercise> ClientExercises { get; set; }
 

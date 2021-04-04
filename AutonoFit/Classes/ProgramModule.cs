@@ -104,9 +104,10 @@ namespace AutonoFit.Classes
             return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }
 
+        //Move this, and its helper methods to Prescription class eventually/
         public async Task<FitnessParameters> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessParameters fitnessMetrics, int todaysGoal, int exerciseId)
         {
-            List<TrainingStimulus> trainingStimulus = SharedUtility.DefineTrainingStimuli(new List<int> { todaysGoal });
+            TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
             List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(currentProgram.ProgramId, exerciseId);
 
             if (pastExercises.Count <= 1)//start at min rep, max rest.
@@ -116,25 +117,30 @@ namespace AutonoFit.Classes
             }
             else if (pastExercises.Count >= 2)
             {
-                var past = pastExercises.OrderByDescending(c => c.Id);
-                pastExercises = ConvertOrderableToExercise(past);
-
-                if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps) 
-                {
-                    fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + trainingStimulus[0].repsInterval;
-                    fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].minRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
-                }
-                else
-                {
-                    fitnessMetrics.reps = pastExercises[0].Reps;
-                    fitnessMetrics.rest = pastExercises[0].RestSeconds;
-                }
+                CheckLiftProgression(pastExercises, trainingStimulus[0]);
             }
           
             fitnessMetrics.sets = trainingStimulus[0].sets;
             fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
 
             return fitnessMetrics;
+        }
+
+        private FitnessParameters CheckLiftProgression(List<ClientExercise> pastExercises, TrainingStimulus trainingStimulus)
+        {
+            var past = pastExercises.OrderByDescending(c => c.Id);
+            pastExercises = ConvertOrderableToExercise(past);
+
+            if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps)
+            {
+                fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + trainingStimulus[0].repsInterval;
+                fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].minRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
+            }
+            else
+            {
+                fitnessMetrics.reps = pastExercises[0].Reps;
+                fitnessMetrics.rest = pastExercises[0].RestSeconds;
+            }
         }
 
 
