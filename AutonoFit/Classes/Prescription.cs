@@ -16,19 +16,19 @@ namespace AutonoFit.Classes
             _repo = repo;
         }
 
-        public async Task<FitnessParameters> GetTodaysCardio(FitnessParameters fitnessParameters, List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
+        public async Task<CardioComponent> GetTodaysCardio(List<ClientWorkout> recentWorkoutCycle, ClientProgram currentProgram)
         {
             string runType = null;
             if (currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6)
             {
-                var recentCardioWorkouts = GetRecentCardioOnly(recentWorkoutCycle);//Excludes workouts marked w/ cardio goals that were a lift instead, due to excess cardio that week.
+                recentWorkoutCycle = GetRecentCardioOnly(recentWorkoutCycle);//Excludes workouts marked w/ cardio goals that were a lift instead, due to excess cardio that week.
             }
 
             if (currentProgram.GoalCount == 1 && recentWorkoutCycle.Count != 0)//One goal, there is a recent cardio
             {
                 runType = AdvanceRunType(recentWorkoutCycle[0].RunType);
             }
-            else if (currentProgram.GoalCount == 2 && recentWorkoutCycle.Count > 1)//2 goals, there's a recent cardio
+            else if (currentProgram.GoalCount == 2 && recentWorkoutCycle.Count > 1)//2 goals, there's a recent cardio 2 workouts ago
             {
                 runType = AdvanceRunType(recentWorkoutCycle[1].RunType);
             }
@@ -36,37 +36,29 @@ namespace AutonoFit.Classes
             {
                 runType = "Easy";
             }
-            //Corner Case
+            //Edge Case
             if (runType == "Easy" && currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek == 6) // == easy after the advancement.
             {
-                fitnessParameters.cardioComponent.runType = "6 Lift"; //this code will indicate a lift should be done instead of a run.  
-                return fitnessParameters;//returned with only one change.
+                return new SixLift(); //this object will indicate a lift should be done instead of a run. This is because of excessive cardio in the week.
             }
 
             //fitnessParameters.cardio = true;
-            CardioComponent cardioc = await GetCardioComponent(currentProgram, runType, recentWorkoutCycle);
-            fitnessParameters = ConvertFitnessDictCardioValues(fitnessParameters);
-
-            return fitnessParameters;
+            return await CreateCardioComponent(currentProgram, runType, recentWorkoutCycle);
+            //fitnessParameters = ConvertFitnessDictCardioValues(fitnessParameters);//not sure what this does
         }
 
-        public async Task<CardioComponent> GetCardioComponent(ClientProgram currentProgram, string runType, List<ClientWorkout> recentWorkoutCycle)
+        public async Task<CardioComponent> CreateCardioComponent(ClientProgram currentProgram, string runType, List<ClientWorkout> recentWorkoutCycle)
         {
             CardioComponent cardioComponent = CardioComponentFactoryMethod(runType);
+            //increases difficulty of cardio if 2 consecutive workouts have been done with decreasing RPE scores.
             if ((currentProgram.GoalCount == 1 && recentWorkoutCycle.Count > 1) || (currentProgram.GoalCount == 2 && recentWorkoutCycle.Count > 3))
-            {
                 await CheckCardioProgression(currentProgram, recentWorkoutCycle);
-            }
 
             cardioComponent.milePace = (double)currentProgram.MileMinutes + (Convert.ToDouble(currentProgram.MileSeconds) / 60);
             cardioComponent.milePace *= cardioComponent.paceCoefficient;
-            cardioComponent.runDuration = getRunDuration(currentProgram.MinutesPerSession, runType);
+            cardioComponent.runDuration = cardioComponent.GetRunDuration(currentProgram.MinutesPerSession);
             cardioComponent.distanceMiles = cardioComponent.runDuration / cardioComponent.milePace;
             cardioComponent.runType = runType;
-            if (runType == "Easy")//all easy runs will need time to be accompanied by an aerobic lifting workout.
-            {
-                cardioComponent.runDuration /= 2;
-            }
 
             return cardioComponent;
         }
@@ -88,12 +80,13 @@ namespace AutonoFit.Classes
                 case "Speed":
                     cardioComponent = new SpeedRun();
                     break;
+                case "6-lift":
+                    cardioComponent = new SixLift();
+                    break;
             }
 
             return cardioComponent;
         }
-
-
 
         public async Task CheckCardioProgression(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle)
         {
@@ -127,30 +120,6 @@ namespace AutonoFit.Classes
             string newRunType = index != (runTypes.Length - 1) ? runTypes[index + 1] : runTypes[0];
 
             return newRunType;
-        }
-
-        public int getRunDuration(int sessionMinutes, string runType)
-        {
-            int runDuration = 0;
-            int halfSessionMinutes = sessionMinutes / 2;
-
-            switch (runType)
-            {
-                case "Easy":
-                    runDuration = Math.Min(30, halfSessionMinutes);
-                    break;
-                case "Moderate":
-                    runDuration = Math.Min(sessionMinutes, 45);
-                    break;
-                case "Long":
-                    runDuration = sessionMinutes;
-                    break;
-                case "Speed":
-                    runDuration = Math.Min(15, halfSessionMinutes);
-                    break;
-            }
-
-            return runDuration;
         }
 
         public List<ClientWorkout> GetRecentCardioOnly(List<ClientWorkout> recentWorkoutCycle)//Makes sure that no "6 Lift" exercises make it in the collection.

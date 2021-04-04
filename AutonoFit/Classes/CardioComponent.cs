@@ -32,7 +32,7 @@ namespace AutonoFit.Classes
         }
       
 
-        public void SetCardioParameters()
+        public void SetCardioParameters()//used by single workout
         {
             if (SharedUtility.CheckCardio(workoutVM.GoalIds))
            

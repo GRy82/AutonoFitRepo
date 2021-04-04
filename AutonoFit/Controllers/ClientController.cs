@@ -23,12 +23,14 @@ namespace AutonoFit.Controllers
         private ExerciseLibraryService _exerciseLibraryService;
         private ProgramModule programModule;
         private SingleModule singleModule;
+        private Prescription prescription;
         public ClientController(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
             _exerciseLibraryService = exerciseLibraryService;
             programModule = new ProgramModule(_repo);
             singleModule = new SingleModule(exerciseLibraryService);
+            prescription = new Prescription(_repo);
         }
 
         private string GetUserId()
@@ -272,17 +274,21 @@ namespace AutonoFit.Controllers
 
             List<Exercise> todaysExercises = new List<Exercise> { };
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
-            List<FitnessParameters> fitnessParameters = new List<FitnessParameters> { };
+            FitnessParameters fitnessParameters = new FitnessParameters();
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, currentProgram);
+
+            if (todaysGoalNumber == 4 || todaysGoalNumber == 5) //if cardio in any capactiy
+                fitnessParameters.cardioComponent = await prescription.GetTodaysCardio(recentWorkoutCycle, currentProgram);
             
-            if (todaysGoalNumber == 4 || todaysGoalNumber == 5) {//if cardio in any capactiy
-                fitnessParameters.Add(await programModule.GetTodaysCardio(new FitnessParameters(), recentWorkoutCycle, todaysGoalNumber, currentProgram));
-            }
             string bodyParts = null;
             List<ClientExercise> clientExercises = new List<ClientExercise> { };
-            if (todaysGoalNumber != 4 && todaysGoalNumber != 5 || (fitnessParameters.Count != 0 && (fitnessParameters[0].runType == "Easy" || fitnessMetrics[0].runType == "6-Lift")))//Generate a Lifting componenent
+            if (todaysGoalNumber != 4 && todaysGoalNumber != 5 ||
+                (fitnessParameters.cardioComponent != null &&
+                (fitnessParameters.cardioComponent.GetType().Equals(new EasyRun()) ||
+                fitnessParameters.cardioComponent.GetType().Equals(new SixLift()))))//Generate a Lifting componenent
             {
+                fitnessParameters.liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
                 int liftLengthMinutes = 0;
                 int totalExerciseTime = 0;
                 if (todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely liftng workout
@@ -290,7 +296,7 @@ namespace AutonoFit.Controllers
                     bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
                     liftLengthMinutes = currentProgram.MinutesPerSession;
                 }
-                else//if supplemental cardio is needed or a lift for someone who does too much cardio("6 Lift")
+                else//if supplemental lift is needed or a lift for someone who does too much cardio("6 Lift")
                 {
                     bodyParts = fitnessParameters[0].runType == "Easy" ? "Both" : "Upper Body";//full-body lift w/ easy run OR solely upper-body exercise
                     liftLengthMinutes = fitnessParameters[0].runType == "Easy" ? Convert.ToInt32(fitnessParameters[0].runDuration) : currentProgram.MinutesPerSession;

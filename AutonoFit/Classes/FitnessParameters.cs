@@ -30,19 +30,6 @@ namespace AutonoFit.Classes
             }
             
         }
-
-        public void SetFitnessParameters(int todaysGoalNumber)
-        {
-            if (CardioIsNeeded(todaysGoalNumber))
-                cardioComponent = new CardioComponent();
-
-        }
-
-        private bool CardioIsNeeded(int todaysGoalNumber)
-        {
-            return (todaysGoalNumber == 4 || todaysGoalNumber == 5);
-        }
-     
     }
 
 
