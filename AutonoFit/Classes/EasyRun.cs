@@ -7,6 +7,13 @@ namespace AutonoFit.Classes
 {
     public class EasyRun : CardioComponent
     {
-        private double paceCoefficient = 1.5;
+        public new readonly double paceCoefficient = 1.5;
+
+        public override int GetRunDuration(int sessionMinutes)
+        {
+            int halfSessionMinutes = sessionMinutes / 2;
+            return Math.Min(30, halfSessionMinutes);
+        }
+
     }
 }

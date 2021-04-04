@@ -11,7 +11,7 @@ namespace AutonoFit.Classes
         public SingleWorkoutVM workoutVM;
         public string runType;
         public double milePace;
-        public double paceCoefficient;
+        public readonly double paceCoefficient;
         public string paceString;
         public double distanceMiles;
         public double runDuration;
@@ -25,6 +25,12 @@ namespace AutonoFit.Classes
         public CardioComponent()
         {
         }
+
+        public virtual int GetRunDuration(int sessionMinutes)
+        {
+            return sessionMinutes;
+        }
+      
 
         public void SetCardioParameters()
         {

@@ -43,7 +43,7 @@ namespace AutonoFit.Classes
                 return fitnessParameters;//returned with only one change.
             }
 
-            fitnessParameters.cardio = true;
+            //fitnessParameters.cardio = true;
             CardioComponent cardioc = await GetCardioComponent(currentProgram, runType, recentWorkoutCycle);
             fitnessParameters = ConvertFitnessDictCardioValues(fitnessParameters);
 
