@@ -4,16 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutonoFit.Contracts;
 using AutonoFit.Models;
+using AutonoFit.Services;
 
 namespace AutonoFit.Classes
 {
     public class Prescription
     {
         private IRepositoryWrapper _repo;
+        private ExerciseLibraryService _exerciseLibraryService;
 
-        public Prescription(IRepositoryWrapper repo)
+        public Prescription(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
+            _exerciseLibraryService = exerciseLibraryService;
         }
 
         public async Task<CardioComponent> GetTodaysCardio(List<ClientWorkout> recentWorkoutCycle, ClientProgram currentProgram)
@@ -135,5 +138,39 @@ namespace AutonoFit.Classes
             return recentCardioWorkouts;
         }
 
+
+        //------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------
+
+
+        public async Task<List<Exercise>> FindExercisesByCategory(List<ClientEquipment> equipment, string upperOrLowerBody, List<Exercise> exercises)
+        {
+            ExerciseLibrary exerciseLibrary;
+            int[] categories = SharedUtility.GetCategories(upperOrLowerBody);
+            for (int i = 0; i < categories.Length; i++)
+            {
+                string urlCategoryString = SharedUtility.BuildEquipmentUrlString(equipment) + "&category=" + categories[i];
+                exerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
+                exercises = SharedUtility.AddLibrarytoExercises(exercises, exerciseLibrary);
+            }
+
+            return exercises;
+        }
+
+        public async Task<List<Exercise>> FindExercisesByMuscles(List<ClientEquipment> equipment, string upperOrLowerBody, List<Exercise> exercises)
+        {
+            ExerciseLibrary singleExerciseLibrary;
+            int[] muscles = SharedUtility.GetMuscles(upperOrLowerBody);
+            string urlMusclesString = null;
+            for (int j = 0; j < muscles.Length; j++)
+            {
+                urlMusclesString += "&muscles=" + muscles[j];
+            }
+            urlMusclesString = SharedUtility.BuildEquipmentUrlString(equipment) + urlMusclesString;
+            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
+            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
+
+            return exercises;
+        }
     }
 }

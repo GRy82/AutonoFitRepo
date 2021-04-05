@@ -24,37 +24,6 @@ namespace AutonoFit.Classes
             return urlString;
         }
 
-        public static List<ClientExercise> CopyAsClientExercises(List<Exercise> randomlyChosenExercises, SingleWorkoutVM workoutVM, FitnessParameters fitnessParamenters)
-        {
-            List<ClientExercise> workoutExercises = new List<ClientExercise> { };
-            LiftingComponent lift = fitnessParamenters.liftingComponent;
-            foreach (Exercise exercise in randomlyChosenExercises)
-            {
-                ClientExercise clientExercise = new ClientExercise();
-                clientExercise.ClientId = workoutVM.Client.ClientId;
-                clientExercise.ExerciseId = exercise.id;
-                clientExercise.Reps = lift.reps;
-                clientExercise.RestSeconds = lift.rest;
-                clientExercise.Sets = lift.sets;
-                
-                workoutExercises.Add(clientExercise);
-            }
-
-            return workoutExercises;
-        }
-
-        public static ClientExercise CopyAsClientExercises(Exercise randomlyChosenExercise, int clientId, FitnessParameters fitnessMetrics)
-        {
-            ClientExercise exercise = new ClientExercise();
-            exercise.ClientId = clientId;
-            exercise.ExerciseId = randomlyChosenExercise.id;
-            exercise.Reps = fitnessMetrics.reps;
-            exercise.RestSeconds = fitnessMetrics.rest;
-            exercise.Sets = fitnessMetrics.sets;
-
-            return exercise;
-        }
-
         public static List<Exercise> RandomizeExercises(List<Exercise> exerciseResults, int exerciseQuantity)
         {
             List<Exercise> selectedExercises = new List<Exercise> { };
@@ -73,16 +42,16 @@ namespace AutonoFit.Classes
             return selectedExercises;
         }
 
-        public static int GetExerciseQty(FitnessParameters fitnessParameters, int workoutMinutes)
+        public static int GetExerciseQty(LiftingComponent liftingComponent, int workoutMinutes)
         {
-            double singleExerciseTime = GetSingleExerciseTime(fitnessParameters);
+            double singleExerciseTime = GetSingleExerciseTime(liftingComponent);
             return (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
         }
 
-        public static double GetSingleExerciseTime(FitnessParameters fitnessParameters)// return value is in seconds
+        public static double GetSingleExerciseTime(LiftingComponent liftingComponent)// return value is in seconds
         {
-            return (fitnessParameters.liftingComponent.reps * repTime + fitnessParameters.liftingComponent.rest)
-                    * fitnessParameters.liftingComponent.sets; 
+            return (liftingComponent.reps * repTime + liftingComponent.rest)
+                    * liftingComponent.sets; 
 
         }
 
