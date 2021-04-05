@@ -105,41 +105,37 @@ namespace AutonoFit.Classes
         }
 
         //Move this, and its helper methods to Prescription class eventually/
-        public async Task<FitnessParameters> GenerateLift(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle, FitnessParameters fitnessMetrics, int todaysGoal, int exerciseId)
+        public async Task<ClientExercise> GenerateLiftingExercise(ClientProgram currentProgram, int todaysGoal, int exerciseId)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
             List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(currentProgram.ProgramId, exerciseId);
-
-            if (pastExercises.Count <= 1)//start at min rep, max rest.
-            {
-                fitnessMetrics.reps = trainingStimulus[0].minReps;
-                fitnessMetrics.rest = trainingStimulus[0].maxRestSeconds;
-            }
-            else if (pastExercises.Count >= 2)
-            {
-                CheckLiftProgression(pastExercises, trainingStimulus[0]);
-            }
+            ClientExercise newExercise = new ClientExercise();
+            //default reps and rest seconds if this will be the first or second time performing this exercise.
+            newExercise.Reps = trainingStimulus.minReps;
+            newExercise.RestSeconds = trainingStimulus.maxRestSeconds;
+            
+            if (pastExercises.Count >= 2)//exercise has been performed > 1 time. Now possible to progress reps/rest.
+                CheckLiftProgression(pastExercises, trainingStimulus, newExercise);
           
-            fitnessMetrics.sets = trainingStimulus[0].sets;
-            fitnessMetrics.restString = SharedUtility.ConvertToMinSecString(fitnessMetrics.rest);
+            newExercise.Sets = trainingStimulus.sets;
+            newExercise.RestString = SharedUtility.ConvertToMinSecString(newExercise.RestSeconds);
 
-            return fitnessMetrics;
+            return newExercise;
         }
 
-        private FitnessParameters CheckLiftProgression(List<ClientExercise> pastExercises, TrainingStimulus trainingStimulus)
+        private void CheckLiftProgression(List<ClientExercise> pastExercises, TrainingStimulus trainingStimulus, ClientExercise newExercise)
         {
             var past = pastExercises.OrderByDescending(c => c.Id);
             pastExercises = ConvertOrderableToExercise(past);
 
+            newExercise.Reps = pastExercises[0].Reps;
+            newExercise.RestSeconds = pastExercises[0].RestSeconds;
+
             if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps)
             {
-                fitnessMetrics.reps = pastExercises[0].Reps + 1 > trainingStimulus[0].maxReps ? trainingStimulus[0].minReps : pastExercises[0].Reps + trainingStimulus[0].repsInterval;
-                fitnessMetrics.rest = pastExercises[0].RestSeconds - trainingStimulus[0].restInterval < trainingStimulus[0].minRestSeconds ? trainingStimulus[0].maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus[0].restInterval;
-            }
-            else
-            {
-                fitnessMetrics.reps = pastExercises[0].Reps;
-                fitnessMetrics.rest = pastExercises[0].RestSeconds;
+                newExercise.Reps = pastExercises[0].Reps + 1 > trainingStimulus.maxReps ? trainingStimulus.minReps : pastExercises[0].Reps + trainingStimulus.repsInterval;
+                newExercise.RestSeconds = pastExercises[0].RestSeconds - trainingStimulus.restInterval < trainingStimulus.minRestSeconds ?
+                    trainingStimulus.maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus.restInterval;
             }
         }
 

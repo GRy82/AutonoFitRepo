@@ -29,6 +29,8 @@ namespace AutonoFit.Models
 
         public int RestSeconds { get; set; }
 
+        public string RestString { get; set; } 
+
         //These are used for gauging progression
 
         public int DeltaRPECount { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutonoFit.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +8,8 @@ namespace AutonoFit.Classes
 {
     public class LiftingComponent
     {
-        List<TrainingStimulus> trainingStimuli;
+        private List<TrainingStimulus> trainingStimuli;
+        private List<ClientExercise> exercises;
         public int reps;
         public int rest;
         public string restString;

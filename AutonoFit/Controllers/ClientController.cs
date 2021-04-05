@@ -274,48 +274,44 @@ namespace AutonoFit.Controllers
 
             List<Exercise> todaysExercises = new List<Exercise> { };
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
-            FitnessParameters fitnessParameters = new FitnessParameters();
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             int todaysGoalNumber = programModule.GetTodaysGoal(recentWorkoutCycle, currentProgram);
-
-            if (todaysGoalNumber == 4 || todaysGoalNumber == 5) //if cardio in any capactiy
-                fitnessParameters.cardioComponent = await prescription.GetTodaysCardio(recentWorkoutCycle, currentProgram);
-            
-            string bodyParts = null;
+            CardioComponent cardioComponent = null;
+            LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<ClientExercise> clientExercises = new List<ClientExercise> { };
-            if (todaysGoalNumber != 4 && todaysGoalNumber != 5 ||
-                (fitnessParameters.cardioComponent != null &&
-                (fitnessParameters.cardioComponent.GetType().Equals(new EasyRun()) ||
-                fitnessParameters.cardioComponent.GetType().Equals(new SixLift()))))//Generate a Lifting componenent
-            {
-                fitnessParameters.liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
-                int liftLengthMinutes = 0;
-                int totalExerciseTime = 0;
-                if (todaysGoalNumber != 4 && todaysGoalNumber != 5)// if it is a purely liftng workout
+            string upperOrLowerBody = "Upper Body";
+            bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
+            bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
+                cardioComponent.GetType().Equals(new SixLift())));
+
+            if (todayIsCardioGoal) //if cardio in any capactiy
+                cardioComponent = await prescription.GetTodaysCardio(recentWorkoutCycle, currentProgram);
+
+            int liftLengthMinutes = currentProgram.MinutesPerSession;//default value
+            if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
+                upperOrLowerBody = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
+            if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
+                if (cardioComponent.runType == "Easy")
                 {
-                    bodyParts = programModule.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
-                    liftLengthMinutes = currentProgram.MinutesPerSession;
+                    upperOrLowerBody = "Both";
+                    liftLengthMinutes /= 2;
                 }
-                else//if supplemental lift is needed or a lift for someone who does too much cardio("6 Lift")
-                {
-                    bodyParts = fitnessParameters[0].runType == "Easy" ? "Both" : "Upper Body";//full-body lift w/ easy run OR solely upper-body exercise
-                    liftLengthMinutes = fitnessParameters[0].runType == "Easy" ? Convert.ToInt32(fitnessParameters[0].runDuration) : currentProgram.MinutesPerSession;
-                }
+
+            int totalExerciseTime = 0;
+            if (!todayIsCardioGoal || supplementalLiftNeeded) { 
                 while (totalExerciseTime < liftLengthMinutes)
                 {
-                    Exercise exercise = SharedUtility.SelectExercise(bodyParts, resultsLibrary, todaysExercises);
+                    Exercise exercise = SharedUtility.SelectExercise(upperOrLowerBody, resultsLibrary, todaysExercises);
                     exercise.description = SharedUtility.RemoveTags(exercise.description);
                     todaysExercises.Add(exercise);
-                    FitnessParameters tempFitDict = new FitnessParameters();
-                    tempFitDict = await programModule.GenerateLift(currentProgram, recentWorkoutCycle, tempFitDict, todaysGoalNumber, exercise.id);
-                    fitnessParameters.Add(tempFitDict);
+                    ClientExercise clientExercise = await programModule.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise.id);
                     ClientExercise clienteExercise = SharedUtility.CopyAsClientExercises(exercise, client.ClientId, tempFitDict);
                     clientExercises.Add(clienteExercise);
                     totalExerciseTime += (int)(SharedUtility.GetSingleExerciseTime(tempFitDict) / 60);
                 } 
             }
 
-            ClientWorkout clientWorkout = InstantiateClientWorkout(fitnessParameters, client, bodyParts, currentProgram, todaysGoalNumber);
+            ClientWorkout clientWorkout = InstantiateClientWorkout(fitnessParameters, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
             AddClientExercises(clientExercises, currentProgram, clientWorkout);
             await _repo.SaveAsync();
