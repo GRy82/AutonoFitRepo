@@ -117,19 +117,6 @@ namespace AutonoFit.Classes
             return muscles;
         }
 
-        public static List<int> CountGoals(List<int> goalIds)
-        {
-            List<int> revisedGoals = new List<int> { };
-            foreach (int goalId in goalIds)
-            {
-                if (goalId != 0)
-                {
-                    revisedGoals.Add(goalId);
-                }
-            }
-            return revisedGoals;
-        }
-
         public static string ConvertToMinSecString(int input)//input in seconds. This rounds to nearest 15 seconds. 
             //Get rid of this method if it is no longer needed with the addition of ConvertToMinSec method.
         {

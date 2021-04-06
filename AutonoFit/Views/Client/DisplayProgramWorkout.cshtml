@@ -41,22 +41,22 @@
         </table>
         <br />
 
-        @if (Model.FitnessParameters.cardioComponent != null)
+        @if (Model.CardioComponent != null)
         {
             <div class="cardio-zone col-md-6">
                 <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
                 <dl class="row">
                     <dt class="col-md-6">Target Distance: </dt>
-                    <dd class="col-md-6">@Model.FitnessParameters.cardioComponent.distanceMiles.ToString("#.##") miles</dd>
+                    <dd class="col-md-6">@Model.CardioComponent.distanceMiles.ToString("#.##") miles</dd>
                     <dt class="col-md-6">Target Duration: </dt>
-                    <dd class="col-md-6">@Model.FitnessParameters.cardioComponent.durationString</dd>
+                    <dd class="col-md-6">@Model.CardioComponent.durationString</dd>
                     <dt class="col-md-6">Target Pace: </dt>
-                    <dd class="col-md-6">@Model.FitnessParameters.cardioComponent.paceString</dd>
+                    <dd class="col-md-6">@Model.CardioComponent.paceString</dd>
                 </dl>
             </div>
         }
 
-        @if (Model.FitnessParameters.cardioComponent.runType != null)
+        @if (Model.CardioComponent.runType != null)
         {
             <label asp-for="@Model.CardioRPE"></label>
             <input type="number" min="6" max="20" value="12" asp-for="@Model.CardioRPE" id="cardio-rpe" />
@@ -65,6 +65,4 @@
         <input type="hidden" asp-for="@Model.ClientWorkout.Id" />
         <input type="submit" class="complete-btn" value="Workout Completed" />
     </form>
-
-
 </div>
