@@ -10,7 +10,9 @@ namespace AutonoFit.ViewModels
 {
     public class ProgramWorkoutVM
     {
-        public FitnessParameters FitnessParameters { get; set; }
+        public LiftingComponent LiftingComponent { get; set; }
+
+        public CardioComponent CardioComponent { get; set; }
 
         public List<ClientExercise> ClientExercises { get; set; }
 

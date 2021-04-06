@@ -317,8 +317,7 @@ namespace AutonoFit.Controllers
             await _repo.SaveAsync();
 
             ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, eligibleExercises, 
-                                                                            new FitnessParameters(cardioComponent, liftingComponent),
-                                                                            clientWorkout);
+                                                                            cardioComponent, liftingComponent, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
@@ -348,13 +347,16 @@ namespace AutonoFit.Controllers
             };
         }
 
-        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Exercise> todaysExercises, FitnessParameters fitnessParameters, ClientWorkout clientWorkout)
+        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Exercise> todaysExercises, 
+                                                               CardioComponent cardioComponent, LiftingComponent liftingComponent,
+                                                               ClientWorkout clientWorkout)
         {
             return new ProgramWorkoutVM()
             {
                 ClientExercises = clientExercises,
                 Exercises = todaysExercises,
-                FitnessParameters = fitnessParameters,
+                CardioComponent = cardioComponent,
+                LiftingComponent = liftingComponent,
                 ClientWorkout = clientWorkout
             };
         }
