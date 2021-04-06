@@ -15,6 +15,10 @@ namespace AutonoFit.Data
         {
         }
 
+        public DbSet<Client> Client { get; set; }
+
+        public DbSet<ClientProgram> ClientProgram { get; set; }
+
         public DbSet<Equipment> Equipment { get; set; }
 
         public DbSet<Goals> Goals { get; set; }
@@ -23,11 +27,7 @@ namespace AutonoFit.Data
 
         public DbSet<ClientExercise> ClientExercise { get; set; }
 
-        public DbSet<ClientWeek> ClientWeek { get; set; }
-
         public DbSet<ClientWorkout> ClientWorkout { get; set; }
-
-        public DbSet<PeriodGoals> PeriodGoals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -128,9 +128,5 @@ namespace AutonoFit.Data
 
             });
         }
-
-        public DbSet<AutonoFit.Models.Client> Client { get; set; }
-
-        public DbSet<AutonoFit.Models.ClientProgram> ClientProgram { get; set; }
     }
 }

@@ -15,7 +15,6 @@ namespace AutonoFit.Contracts
         IClientExerciseRepository ClientExercise { get; }
         IClientWorkoutRepository ClientWorkout { get; }
         IClientProgramRepository ClientProgram { get; }
-        IClientWeekRepository ClientWeek { get; }
     
         Task SaveAsync();
     }

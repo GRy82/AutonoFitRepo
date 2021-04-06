@@ -19,7 +19,6 @@ namespace AutonoFit.Models
 
         [ForeignKey("ClientWeek")]
         public int? WeekId { get; set; }
-        public ClientWeek ClientWeek { get; set; }
 
         public int? ProgramId { get; set; }
 

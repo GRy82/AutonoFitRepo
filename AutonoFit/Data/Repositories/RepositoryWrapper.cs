@@ -18,7 +18,6 @@ namespace AutonoFit.Repositories
         private IClientExerciseRepository _clientExercise;
         private IClientWorkoutRepository _clientWorkout;
         private IClientProgramRepository _clientProgram;
-        private IClientWeekRepository _clientWeek;
 
         public IClientRepository Client
         {
@@ -104,17 +103,6 @@ namespace AutonoFit.Repositories
             }
         }
 
-        public IClientWeekRepository ClientWeek
-        {
-            get
-            {
-                if (_clientWeek == null)
-                {
-                    _clientWeek = new ClientWeekRepository(_context);
-                }
-                return _clientWeek;
-            }
-        }
 
         public RepositoryWrapper(ApplicationDbContext context)
         {
