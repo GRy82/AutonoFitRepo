@@ -117,32 +117,6 @@ namespace AutonoFit.Classes
             return muscles;
         }
 
-        public static Exercise SelectExercise(string bodyParts, List<Exercise> exercises, List<Exercise> todaysExercises)
-        {
-            List<Exercise> possibleExercises = new List<Exercise> { };
-            int[] muscles = GetMuscles(bodyParts);
-            int[] categories = GetCategories(bodyParts);
-
-            foreach (Exercise exercise in exercises)
-            {
-                for (int i = 0; i < muscles.Length; i++)
-                {
-                    if ((exercise.muscles.Contains(muscles[i]) || exercise.muscles_secondary.Contains(muscles[i]) || (i < categories.Length && exercise.category == categories[i])) && exercise.id != 393)//exercise 393 is a full workout
-                    {
-                        possibleExercises.Add(exercise);
-                    }
-                }
-            }
-
-            List<Exercise> singleExercise;
-            do
-            {
-                singleExercise = new List<Exercise> { };
-                singleExercise = RandomizeExercises(possibleExercises, 1);
-            } while (todaysExercises.Contains(singleExercise[0]));
-            return singleExercise[0];
-        }
-
         public static List<int> CountGoals(List<int> goalIds)
         {
             List<int> revisedGoals = new List<int> { };
