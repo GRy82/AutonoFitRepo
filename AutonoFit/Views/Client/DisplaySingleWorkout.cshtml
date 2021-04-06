@@ -29,26 +29,26 @@
                 <tr>
                     <td>@exercise.name</td>
                     <td><details style="max-width: 60%;"><summary>Instructions</summary>@exercise.description</details></td>
-                    <td>@Model.FitnessParameters.liftingComponent.sets</td>
-                    <td>@Model.FitnessParameters.liftingComponent.reps</td>
-                    <td>@Model.FitnessParameters.liftingComponent.restString</td>
+                    <td>@Model.LiftingComponent.sets</td>
+                    <td>@Model.LiftingComponent.reps</td>
+                    <td>@Model.LiftingComponent.restString</td>
                 </tr>
             }
         </tbody>
     </table>
     <br />
 
-    @if (Model.FitnessParameters.cardioComponent != null)
+    @if (Model.CardioComponent != null)
     {
         <div class="cardio-zone col-md-6">
             <h3 style="margin-bottom: 30px;">Today's Cardio</h3>
             <dl class="row">
                 <dt class="col-md-6">Target Distance: </dt>
-                <dd class="col-md-6">@Model.FitnessParameters.cardioComponent.distanceMiles.ToString("#.##") miles</dd>
+                <dd class="col-md-6">@Model.CardioComponent.distanceMiles.ToString("#.##") miles</dd>
                 <dt class="col-md-6">Target Duration: </dt>
-                <dd class="col-md-6">@Model.FitnessParameters.cardioComponent.durationString</dd>
+                <dd class="col-md-6">@Model.CardioComponent.durationString</dd>
                 <dt class="col-md-6">Target Pace: </dt>
-                <dd class="col-md-6">@Model.FitnessParameters.cardioComponent.paceString</dd>
+                <dd class="col-md-6">@Model.CardioComponent.paceString</dd>
             </dl>
         </div>
     }
