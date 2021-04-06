@@ -122,11 +122,12 @@ namespace AutonoFit.Controllers
             workoutVM.Client = await _repo.Client.GetClientAsync(GetUserId());
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
             List<Exercise> exercises = await GatherExercises(workoutVM);
-            FitnessParameters fitnessParameters = new FitnessParameters();
-            fitnessParameters.SetFitnessParameters(workoutVM); //Calculate sets/reps, rest time to exercises.
-            workoutVM.Minutes = fitnessParameters.cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
-            workoutVM.FitnessParameters = fitnessParameters;
-            int numberOfExercises = SharedUtility.GetExerciseQty(fitnessParameters.liftingComponent, workoutVM.Minutes); 
+            LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(workoutVM.GoalIds));
+            CardioComponent cardioComponent = SharedUtility.CheckCardio(workoutVM.GoalIds) ? new CardioComponent(workoutVM) : null;
+            workoutVM.Minutes = cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
+            workoutVM.LiftingComponent = liftingComponent;
+            workoutVM.CardioComponent = cardioComponent;
+            int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, workoutVM.Minutes); 
             List<Exercise> randomlyChosenExercises = SharedUtility.RandomizeExercises(exercises, numberOfExercises);
             ClientWorkout workout = InstantiateClientWorkout(workoutVM); //Create new workout to contain exercises and other stored data.
             workoutVM.Workout = workout; //assign all ClientExercises the workout Id
@@ -440,10 +441,10 @@ namespace AutonoFit.Controllers
         {
             ClientWorkout workout = new ClientWorkout();
             workout.ClientId = workoutVM.Client.ClientId;
-            if (workoutVM.FitnessParameters.cardioComponent != null)
+            if (workoutVM.CardioComponent != null)
             {
-                workout.mileDistance = workoutVM.FitnessParameters.cardioComponent.distanceMiles;
-                workout.milePaceSeconds = (int)(workoutVM.FitnessParameters.cardioComponent.milePace * 60);
+                workout.mileDistance = workoutVM.CardioComponent.distanceMiles;
+                workout.milePaceSeconds = (int)(workoutVM.CardioComponent.milePace * 60);
             }
             workout.DatePerformed = DateTime.Now;
             return workout;

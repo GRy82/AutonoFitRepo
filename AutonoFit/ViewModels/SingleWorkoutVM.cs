@@ -1,6 +1,6 @@
-﻿using AutonoFit.Models;
+﻿using AutonoFit.Classes;
+using AutonoFit.Models;
 using AutonoFit.Services;
-using AutonoFit.StaticClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,9 @@ namespace AutonoFit.ViewModels
 
         public List<Goals> AvailableGoals { get; set; }
 
-        public FitnessParameters FitnessParameters { get; set; }
+        public LiftingComponent LiftingComponent { get; set; }
+
+        public CardioComponent CardioComponent { get; set; }
 
         public List<int> GoalIds { get; set; }
 
