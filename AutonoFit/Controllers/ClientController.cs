@@ -125,6 +125,7 @@ namespace AutonoFit.Controllers
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(workoutVM.GoalIds));
             liftingComponent.SetLiftParameters();
             CardioComponent cardioComponent = SharedUtility.CheckCardio(workoutVM.GoalIds) ? new CardioComponent(workoutVM) : null;
+            cardioComponent.SetCardioParameters();
             workoutVM.Minutes = cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
             workoutVM.LiftingComponent = liftingComponent;
             workoutVM.CardioComponent = cardioComponent;
