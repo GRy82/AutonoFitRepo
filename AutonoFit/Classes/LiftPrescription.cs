@@ -1,6 +1,7 @@
 ﻿using AutonoFit.Contracts;
 using AutonoFit.Models;
 using AutonoFit.Services;
+using AutonoFit.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +62,26 @@ namespace AutonoFit.Classes
             return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }
 
-        //Move this, and its helper methods to Prescription class eventually/
+        public async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
+        {
+            List<Exercise> exercises = await FindExercisesByCategory(workoutVM.Equipment,
+                                                                                  workoutVM.BodySection,
+                                                                                  new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            await FindExercisesByMuscles(workoutVM.Equipment, workoutVM.BodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
+            SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
+            return exercises;
+        }
+
+        public async Task<List<Exercise>> GatherExercises(List<ClientEquipment> equipment, string bodySection)
+        {
+            List<Exercise> exercises = await FindExercisesByCategory(equipment,
+                                                                                  bodySection,
+                                                                                  new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            await FindExercisesByMuscles(equipment, bodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
+            SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
+            return exercises;
+        }
+
         public async Task<ClientExercise> GenerateLiftingExercise(ClientProgram currentProgram, int todaysGoal, int exerciseId)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);

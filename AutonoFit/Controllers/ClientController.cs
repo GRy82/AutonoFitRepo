@@ -121,7 +121,7 @@ namespace AutonoFit.Controllers
         {
             workoutVM.Client = await _repo.Client.GetClientAsync(GetUserId());
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
-            List<Exercise> exercises = await GatherExercises(workoutVM);
+            List<Exercise> exercises = await liftPrescript.GatherExercises(workoutVM);
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(workoutVM.GoalIds));
             liftingComponent.SetLiftParameters();
             CardioComponent cardioComponent = SharedUtility.CheckCardio(workoutVM.GoalIds) ? new CardioComponent(workoutVM) : null;
@@ -139,25 +139,7 @@ namespace AutonoFit.Controllers
             return View("DisplaySingleWorkout", workoutVM);
         }
 
-        private async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
-        {
-            List<Exercise> exercises = await liftPrescript.FindExercisesByCategory(workoutVM.Equipment,
-                                                                                  workoutVM.BodySection,
-                                                                                  new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
-            await liftPrescript.FindExercisesByMuscles(workoutVM.Equipment, workoutVM.BodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
-            SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
-            return exercises;
-        }
-
-        private async Task<List<Exercise>> GatherExercises(List<ClientEquipment> equipment, string bodySection)
-        {
-            List<Exercise> exercises = await liftPrescript.FindExercisesByCategory(equipment,
-                                                                                  bodySection,
-                                                                                  new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
-            await liftPrescript.FindExercisesByMuscles(equipment, bodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
-            SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
-            return exercises;
-        }
+        
 
 
         [HttpPost]
@@ -302,7 +284,7 @@ namespace AutonoFit.Controllers
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-            List<Exercise> eligibleExercises = await GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
+            List<Exercise> eligibleExercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
             int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, liftLengthMinutes);
             SharedUtility.RandomizeExercises(eligibleExercises, numberOfExercises);
             CleanseExerciseDescriptions(eligibleExercises);
