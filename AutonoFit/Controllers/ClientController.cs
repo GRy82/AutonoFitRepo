@@ -262,7 +262,6 @@ namespace AutonoFit.Controllers
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             int todaysGoalNumber = liftPrescript.GetTodaysGoal(recentWorkoutCycle, currentProgram);
             CardioComponent cardioComponent = null;
-            LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<ClientExercise> clientExercises = new List<ClientExercise> { };
             string upperOrLowerBody = "Upper Body";
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
@@ -284,27 +283,40 @@ namespace AutonoFit.Controllers
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-            List<Exercise> eligibleExercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, liftLengthMinutes);
-            SharedUtility.RandomizeExercises(eligibleExercises, numberOfExercises);
-            CleanseExerciseDescriptions(eligibleExercises);
-
-            foreach (var exercise in eligibleExercises) {
-                var clientExercise = await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise.id);
-                clientExercise.ClientId = client.ClientId;
-                clientExercise.ExerciseId = exercise.id;
-                clientExercises.Add(clientExercise);
-            }
+            LiftingComponent liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, currentProgram,
+                                                                                liftLengthMinutes, equipment, client, clientExercises);
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
             AddClientExercises(clientExercises, currentProgram, clientWorkout);
             await _repo.SaveAsync();
 
-            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, eligibleExercises, 
+            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, liftingComponent.exercises, 
                                                                             cardioComponent, liftingComponent, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
+        }
+
+
+        private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientProgram currentProgram,
+                                                                        int liftLengthMinutes, List<ClientEquipment> equipment, Client client,
+                                                                        List<ClientExercise> clientExercises)
+        {
+            LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
+            liftingComponent.exercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
+            int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, liftLengthMinutes);
+            SharedUtility.RandomizeExercises(liftingComponent.exercises, numberOfExercises);
+            CleanseExerciseDescriptions(liftingComponent.exercises);
+
+            foreach (var exercise in liftingComponent.exercises)
+            {
+                var clientExercise = await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise.id);
+                clientExercise.ClientId = client.ClientId;
+                clientExercise.ExerciseId = exercise.id;
+                clientExercises.Add(clientExercise);
+            }
+
+            return liftingComponent;
         }
 
         private void AddClientExercises(List<ClientExercise> clientExercises, ClientProgram currentProgram, ClientWorkout clientWorkout)
