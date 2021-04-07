@@ -121,7 +121,8 @@ namespace AutonoFit.Classes
             {
                 string urlCategoryString = SharedUtility.BuildEquipmentUrlString(equipment) + "&category=" + categories[i];
                 exerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
-                exercises = SharedUtility.AddLibrarytoExercises(exercises, exerciseLibrary);
+                if (exerciseLibrary.count > 0)
+                    exercises = SharedUtility.AddLibrarytoExercises(exercises, exerciseLibrary);
             }
 
             return exercises;

@@ -57,9 +57,9 @@ namespace AutonoFit.Classes
 
         public static List<Exercise> AddLibrarytoExercises(List<Exercise> exercises, ExerciseLibrary exerciseLibrary)
         {
-            for (int i = 0; i < exerciseLibrary.results.Length; i++)
+            for (int i = 0; i < exerciseLibrary.exercises.Length; i++)
             {
-                Exercise tempResult = exerciseLibrary.results[i];
+                Exercise tempResult = exerciseLibrary.exercises[i];
                 exercises.Add(tempResult);
             }
 
