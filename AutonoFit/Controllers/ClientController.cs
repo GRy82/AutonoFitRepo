@@ -123,6 +123,7 @@ namespace AutonoFit.Controllers
             workoutVM.Equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(workoutVM.Client.ClientId);
             List<Exercise> exercises = await GatherExercises(workoutVM);
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(workoutVM.GoalIds));
+            liftingComponent.SetLiftParameters();
             CardioComponent cardioComponent = SharedUtility.CheckCardio(workoutVM.GoalIds) ? new CardioComponent(workoutVM) : null;
             workoutVM.Minutes = cardioComponent != null ? (workoutVM.Minutes / 2) : workoutVM.Minutes; //if cardio is involved, cut minutes in half to have half the time for cardio.
             workoutVM.LiftingComponent = liftingComponent;
