@@ -297,7 +297,7 @@ namespace AutonoFit.Controllers
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
 
-
+        //Consider making this a member method of LiftingComponent
         private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientProgram currentProgram,
                                                                         int liftLengthMinutes, List<ClientEquipment> equipment, Client client,
                                                                         List<ClientExercise> clientExercises)
@@ -331,15 +331,25 @@ namespace AutonoFit.Controllers
 
         private ClientWorkout InstantiateClientWorkout(CardioComponent cardioComponent, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
         {
+            double milePace = 0, distanceMiles = 0;
+            string runType = "";
+
+            if(cardioComponent != null)
+            {
+                milePace = cardioComponent.milePace;
+                distanceMiles = cardioComponent.distanceMiles;
+                runType = cardioComponent.runType;
+            }
+
             return new ClientWorkout()
             {
                 ClientId = client.ClientId,
                 ProgramId = currentProgram.ProgramId,
                 BodyParts = bodyParts,
                 GoalId = todaysGoalNumber,
-                RunType = cardioComponent.runType,
-                milePaceSeconds = Convert.ToInt32(cardioComponent.milePace * 60),
-                mileDistance = cardioComponent.distanceMiles,
+                RunType = runType,
+                milePaceSeconds = Convert.ToInt32(milePace * 60),
+                mileDistance = distanceMiles,
                 DatePerformed = DateTime.Now
             };
         }
