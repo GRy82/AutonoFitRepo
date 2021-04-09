@@ -304,17 +304,20 @@ namespace AutonoFit.Controllers
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             liftingComponent.exercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, liftWorkoutInMinutes);
-            SharedUtility.RandomizeExercises(liftingComponent.exercises, numberOfExercises);
-            CleanseExerciseDescriptions(liftingComponent.exercises);
-
-            foreach (var exercise in liftingComponent.exercises)
+            List<Exercise> randomlyRefinedExerciseList = new List<Exercise>();
+            while (liftWorkoutInMinutes > 0)
             {
-                var clientExercise = await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise.id);
+                Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(liftingComponent.exercises);
+                randomlyRefinedExerciseList.Add(newExercise);
+                var clientExercise = await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, newExercise.id);
                 clientExercise.ClientId = client.ClientId;
-                clientExercise.ExerciseId = exercise.id;
+                clientExercise.ExerciseId = newExercise.id;
                 clientExercises.Add(clientExercise);
+                liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(clientExercise));
             }
+
+            liftingComponent.exercises = randomlyRefinedExerciseList;
+            CleanseExerciseDescriptions(liftingComponent.exercises);
 
             return liftingComponent;
         }

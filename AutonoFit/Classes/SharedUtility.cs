@@ -53,9 +53,12 @@ namespace AutonoFit.Classes
 
         public static double GetSingleExerciseTime(LiftingComponent liftingComponent)// return value is in seconds
         {
-            return (liftingComponent.reps * repTime + liftingComponent.rest)
-                    * liftingComponent.sets; 
+            return (liftingComponent.reps * repTime + liftingComponent.rest) * liftingComponent.sets; 
+        }
 
+        public static double GetSingleExerciseTime(ClientExercise clientExercise)
+        {
+            return (clientExercise.Reps * repTime + clientExercise.RestSeconds) * clientExercise.Sets;
         }
 
         public static List<Exercise> AddLibrarytoExercises(List<Exercise> exercises, ExerciseLibrary exerciseLibrary)
