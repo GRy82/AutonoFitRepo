@@ -25,29 +25,8 @@ namespace AutonoFit.Data.Repositories
         public async Task<ClientWorkout> GetClientWorkoutAsync(int clientWorkoutId) =>
             await FindByCondition(c => c.Id.Equals(clientWorkoutId)).FirstOrDefaultAsync();
 
-        public async Task<List<ClientWorkout>> GetAllWorkoutsByWeekAsync(int weekId) =>
-            await FindByCondition(c => c.WeekId.Equals(weekId)).ToListAsync();
-
         public async Task<List<ClientWorkout>> GetAllWorkoutsByProgramAsync(int programId) =>
             await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
-
-
-        //Find workouts >= 1 day old and not tied to a week/program. (For eventual deletion)
-        public async Task<List<ClientWorkout>> GetOldWorkoutsAsync(int clientId)
-        {
-            List<ClientWorkout> pastWorkouts = await GetAllClientWorkoutsAsync(clientId);
-            List<ClientWorkout> workoutsToDelete = new List<ClientWorkout> { };
-            foreach (ClientWorkout workout in pastWorkouts)
-            {
-                if (workout.WeekId == null && Convert.ToDateTime(workout.DatePerformed).CompareTo(DateTime.Now.AddDays(-1)) <= 0)
-                {
-                    workoutsToDelete.Add(workout);
-                }
-            }
-
-            return workoutsToDelete;
-        }
-
 
         public void EditClientWorkout(ClientWorkout clientWorkout) => Update(clientWorkout);
         public void DeleteClientWorkout(ClientWorkout clientWorkout) => Delete(clientWorkout);

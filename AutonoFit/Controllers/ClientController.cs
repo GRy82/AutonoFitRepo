@@ -428,24 +428,6 @@ namespace AutonoFit.Controllers
         }
 
 
-        private async Task CleanExerciseWorkoutDatabase()
-        {
-            Client client = await _repo.Client.GetClientAsync(GetUserId());
-
-            List<ClientWorkout> oldWorkouts = await _repo.ClientWorkout.GetOldWorkoutsAsync(client.ClientId);
-            foreach (ClientWorkout workout in oldWorkouts)
-            {
-                List<ClientExercise> oldExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id);
-                foreach (ClientExercise exercise in oldExercises)
-                {
-                    _repo.ClientExercise.DeleteClientExercise(exercise);
-                }
-                _repo.ClientWorkout.DeleteClientWorkout(workout);
-            }
-
-            await _repo.SaveAsync();
-        }//Delete this if it does not end up being needed.
-
         public ClientWorkout InstantiateClientWorkout(SingleWorkoutVM workoutVM)
         {
             ClientWorkout workout = new ClientWorkout();
