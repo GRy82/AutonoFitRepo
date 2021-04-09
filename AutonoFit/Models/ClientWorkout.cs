@@ -16,10 +16,6 @@ namespace AutonoFit.Models
         public int ClientId { get; set; }
         public Client Client { get; set; }
 
-
-        [ForeignKey("ClientWeek")]
-        public int? WeekId { get; set; }
-
         public int? ProgramId { get; set; }
 
         public string BodyParts { get; set; } //"Upper Body" or "Lower Body"
