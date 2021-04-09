@@ -54,10 +54,7 @@
                     <dd class="col-md-6">@Model.CardioComponent.paceString</dd>
                 </dl>
             </div>
-        }
-
-        @if (Model.CardioComponent.runType != null)
-        {
+        
             <label asp-for="@Model.CardioRPE"></label>
             <input type="number" min="6" max="20" value="12" asp-for="@Model.CardioRPE" id="cardio-rpe" />
         }
