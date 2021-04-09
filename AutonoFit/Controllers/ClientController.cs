@@ -271,20 +271,20 @@ namespace AutonoFit.Controllers
             if (todayIsCardioGoal) //if cardio in any capactiy
                 cardioComponent = await cardioPrescript.GetTodaysCardio(recentWorkoutCycle, currentProgram);
 
-            int liftLengthMinutes = currentProgram.MinutesPerSession;//default value
+            int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
                 upperOrLowerBody = liftPrescript.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
             if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
                 if (cardioComponent.runType == "Easy")
                 {
                     upperOrLowerBody = "Both";
-                    liftLengthMinutes /= 2;
+                    liftWorkoutInMinutes /= 2;
                 }
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
             LiftingComponent liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, currentProgram,
-                                                                                liftLengthMinutes, equipment, client, clientExercises);
+                                                                                liftWorkoutInMinutes, equipment, client, clientExercises);
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
@@ -299,12 +299,12 @@ namespace AutonoFit.Controllers
 
         //Consider making this a member method of LiftingComponent
         private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientProgram currentProgram,
-                                                                        int liftLengthMinutes, List<ClientEquipment> equipment, Client client,
+                                                                        int liftWorkoutInMinutes, List<ClientEquipment> equipment, Client client,
                                                                         List<ClientExercise> clientExercises)
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             liftingComponent.exercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, liftLengthMinutes);
+            int numberOfExercises = SharedUtility.GetExerciseQty(liftingComponent, liftWorkoutInMinutes);
             SharedUtility.RandomizeExercises(liftingComponent.exercises, numberOfExercises);
             CleanseExerciseDescriptions(liftingComponent.exercises);
 

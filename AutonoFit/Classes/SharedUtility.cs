@@ -11,6 +11,7 @@ namespace AutonoFit.Classes
     public static class SharedUtility
     {
         public const int repTime = 4;
+        public static Random rand = new Random();
 
 
         public static string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
@@ -27,19 +28,21 @@ namespace AutonoFit.Classes
         public static List<Exercise> RandomizeExercises(List<Exercise> exerciseResults, int exerciseQuantity)
         {
             List<Exercise> selectedExercises = new List<Exercise> { };
-            Random rand = new Random();
-            int index;
             while (selectedExercises.Count < exerciseQuantity)
             {
-                do
-                {
-                    index = rand.Next(0, exerciseResults.Count);
-                } while (selectedExercises.Contains(exerciseResults.ElementAt(index)));
-
-                selectedExercises.Add(exerciseResults.ElementAt(index));
+                selectedExercises.Add(RandomlyChooseOneExercise(exerciseResults));
             }
 
             return selectedExercises;
+        }
+
+        public static Exercise RandomlyChooseOneExercise(List<Exercise> exerciseResults)
+        {
+            int exerciseIndex = rand.Next(0, exerciseResults.Count);
+            Exercise exercise = exerciseResults.ElementAt(exerciseIndex);
+            exerciseResults.RemoveAt(exerciseIndex);
+            
+            return exercise;
         }
 
         public static int GetExerciseQty(LiftingComponent liftingComponent, int workoutMinutes)
