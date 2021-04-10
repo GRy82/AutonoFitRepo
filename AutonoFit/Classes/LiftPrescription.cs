@@ -82,7 +82,7 @@ namespace AutonoFit.Classes
             return exercises;
         }
 
-        public async Task<ClientExercise> GenerateLiftingExercise(ClientProgram currentProgram, int todaysGoal, int exerciseId)
+        public async Task<ClientExercise> GenerateLiftingParameters(ClientProgram currentProgram, int todaysGoal, int exerciseId)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
             List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(currentProgram.ProgramId, exerciseId);

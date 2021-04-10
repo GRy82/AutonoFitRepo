@@ -325,7 +325,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "4f627485-598c-43d5-82d6-6ea94b5399d2", "f7fd3767-d977-4df0-ab3c-cc69ace843d9", "Client", "CLIENT" });
+                values: new object[] { "e9417dc5-5f0f-4a7b-b9ae-0e95cac6e840", "87c14c98-9ed8-42a5-a575-b80f8247de14", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",
