@@ -262,7 +262,6 @@ namespace AutonoFit.Controllers
             List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             int todaysGoalNumber = liftPrescript.GetTodaysGoal(recentWorkoutCycle, currentProgram);
             CardioComponent cardioComponent = null;
-            List<ClientExercise> clientExercises = new List<ClientExercise> { };
             string upperOrLowerBody = "Upper Body";
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
             bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
@@ -284,14 +283,13 @@ namespace AutonoFit.Controllers
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
             LiftingComponent liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, currentProgram,
-                                                                                liftWorkoutInMinutes, equipment, client, clientExercises);
+                                                                                liftWorkoutInMinutes, equipment, client);
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
-            LinkClientExercises(clientExercises, currentProgram, clientWorkout);
             await _repo.SaveAsync();
 
-            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(clientExercises, liftingComponent.exercises, 
+            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(liftingComponent.exercises, 
                                                                             cardioComponent, liftingComponent, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
@@ -299,8 +297,7 @@ namespace AutonoFit.Controllers
 
         //Consider making this a member method of LiftingComponent
         private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientProgram currentProgram,
-                                                                        int liftWorkoutInMinutes, List<ClientEquipment> equipment, Client client,
-                                                                        List<ClientExercise> clientExercises)
+                                                                        int liftWorkoutInMinutes, List<ClientEquipment> equipment, Client client)
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<Exercise> totalExercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
@@ -324,7 +321,7 @@ namespace AutonoFit.Controllers
             return await GenerateLiftingComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, currentProgram, todaysGoalNumber);
         }
 
-        public async Task AssignParametersToClientExercise(int clientId, int exerciseId, ClientProgram currentProgram, int todaysGoalNumber)
+        public async Task AssignParametersToExercise(int clientId, int exerciseId, ClientProgram currentProgram, int todaysGoalNumber)
         {
             //var clientExercise = await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exerciseId);
             //clientExercise.ClientId = clientId;
@@ -332,15 +329,6 @@ namespace AutonoFit.Controllers
             //clientExercises.Add(clientExercise);
         }
 
-        private void LinkClientExercises(List<ClientExercise> clientExercises, ClientProgram currentProgram, ClientWorkout clientWorkout)
-        {
-            foreach (ClientExercise exercise in clientExercises)
-            {
-                exercise.WorkoutId = clientWorkout.Id;
-                exercise.ProgramId = currentProgram.ProgramId;
-                _repo.ClientExercise.CreateClientExercise(exercise);
-            }
-        }
 
         private ClientWorkout InstantiateClientWorkout(CardioComponent cardioComponent, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
         {
@@ -367,13 +355,12 @@ namespace AutonoFit.Controllers
             };
         }
 
-        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<ClientExercise> clientExercises, List<Exercise> todaysExercises, 
+        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<Exercise> todaysExercises, 
                                                                CardioComponent cardioComponent, LiftingComponent liftingComponent,
                                                                ClientWorkout clientWorkout)
         {
             return new ProgramWorkoutVM()
             {
-                ClientExercises = clientExercises,
                 Exercises = todaysExercises,
                 CardioComponent = cardioComponent,
                 LiftingComponent = liftingComponent,
@@ -387,11 +374,11 @@ namespace AutonoFit.Controllers
             clientWorkout.CardioRPE = programWorkoutVM.CardioRPE;
             clientWorkout.Completed = true;
             _repo.ClientWorkout.EditClientWorkout(clientWorkout);
-            List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(clientWorkout.Id);
-            for (int i = 0; i < clientExercises.Count; i++)
+            List<Exercise> exercises = await _repo.Exercise.GetExerciseByWorkoutAsync(clientWorkout.Id);
+            for (int i = 0; i < exercises.Count; i++)
             {
-                clientExercises[i].RPE = programWorkoutVM.RPEs[i];
-                _repo.ClientExercise.EditClientExercise(clientExercises[i]);
+                exercises[i].RPE = programWorkoutVM.RPEs[i];
+                _repo.Exercise.EditExercise(exercises[i]);
             }
             await _repo.SaveAsync();
 
@@ -451,15 +438,6 @@ namespace AutonoFit.Controllers
             return workout;
         }
 
-        public async Task LoadExercisesInWorkout(List<ClientExercise> workoutExercises, ClientWorkout workout)//Check for where this is needed. Delete it if it's not.
-        {
-            foreach (ClientExercise exercise in workoutExercises)
-            {
-                exercise.WorkoutId = workout.Id;
-                _repo.ClientExercise.CreateClientExercise(exercise);
-            }
-            await _repo.SaveAsync();
-        }
 
         private void CleanseExerciseDescriptions(List<Exercise> exercises)
         {
@@ -628,10 +606,10 @@ namespace AutonoFit.Controllers
                 List<ClientWorkout> clientWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(clientProgram.ProgramId);
                 foreach (ClientWorkout workout in clientWorkouts)
                 {
-                    List<ClientExercise> clientExercises = await _repo.ClientExercise.GetClientExerciseByWorkoutAsync(workout.Id); 
-                    foreach (ClientExercise exercise in clientExercises)
+                    List<Exercise> clientExercises = await _repo.Exercise.GetExerciseByWorkoutAsync(workout.Id); 
+                    foreach (Exercise exercise in clientExercises)
                     {
-                        _repo.ClientExercise.DeleteClientExercise(exercise);
+                        _repo.Exercise.DeleteExercise(exercise);
                     }
                     _repo.ClientWorkout.DeleteClientWorkout(workout);
                 }

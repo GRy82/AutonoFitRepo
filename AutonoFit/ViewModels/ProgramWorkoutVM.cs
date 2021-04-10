@@ -14,8 +14,6 @@ namespace AutonoFit.ViewModels
 
         public CardioComponent CardioComponent { get; set; }
 
-        public List<ClientExercise> ClientExercises { get; set; }
-
         public List<Exercise> Exercises { get; set; }
 
         public ClientWorkout ClientWorkout { get; set; }
