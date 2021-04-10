@@ -12,7 +12,7 @@ namespace AutonoFit.Contracts
         IClientEquipmentRepository ClientEquipment { get; }
         IEquipmentRepository Equipment { get; }
         IGoalsRepository Goals { get; }
-        IClientExerciseRepository ClientExercise { get; }
+        IExerciseRepository Exercise { get; }
         IClientWorkoutRepository ClientWorkout { get; }
         IClientProgramRepository ClientProgram { get; }
     
