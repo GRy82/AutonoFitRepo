@@ -267,9 +267,6 @@ namespace AutonoFit.Migrations
                     b.Property<int>("WorkoutId")
                         .HasColumnType("int");
 
-                    b.Property<int>("category")
-                        .HasColumnType("int");
-
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
 
@@ -351,8 +348,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "287ca790-2899-4c70-b587-943f59cdc196",
-                            ConcurrencyStamp = "a4536ad4-2ea4-4da8-bc9a-95d1d53ffe82",
+                            Id = "3fc2af9b-ae90-431c-b0cb-aeea539ad223",
+                            ConcurrencyStamp = "ded52d35-6725-4336-b1a0-e4b761757cd8",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

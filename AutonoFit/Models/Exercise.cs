@@ -11,7 +11,6 @@ namespace AutonoFit.Models
     {
             [Key]
             public int id { get; set; }
-            //public string uuid { get; set; }
 
             [ForeignKey("Client")]
             public int ClientId { get; set; }
@@ -20,27 +19,26 @@ namespace AutonoFit.Models
 
             [NotMapped]
             public string description { get; set; }
-            //public string creation_date { get; set; }
-            public int category { get; set; }
 
-            [NotMapped]
-            public int?[] muscles { get; set; }
+            //[NotMapped]
+            //public int category { get; set; }
 
-            [NotMapped]
-            public object[] muscles_secondary { get; set; }
+            //[NotMapped]
+            //public int?[] muscles { get; set; }
 
-            [NotMapped]
-            public int[] equipment { get; set; }
+            //[NotMapped]
+            //public object[] muscles_secondary { get; set; }
 
-            [NotMapped]
-            public int language { get; set; }
-            //public int license { get; set; }
-            //public string license_author { get; set; }
-            //public int?[] variations { get; set; }
+            //[NotMapped]
+            //public int[] equipment { get; set; }
+
+            //[NotMapped]
+            //public int language { get; set; }
 
             public int WorkoutId { get; set; }
 
             public int ProgramId { get; set; }
+
             public int RPE { get; set; }
 
             public int Reps { get; set; }
