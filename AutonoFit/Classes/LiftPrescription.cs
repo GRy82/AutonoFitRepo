@@ -82,27 +82,24 @@ namespace AutonoFit.Classes
             return exercises;
         }
 
-        public async Task<ClientExercise> GenerateLiftingParameters(ClientProgram currentProgram, int todaysGoal, int exerciseId)
+        public async Task GenerateLiftingExercise(ClientProgram currentProgram, int todaysGoal, Exercise exercise)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
-            List<ClientExercise> pastExercises = await _repo.ClientExercise.GetClientExercisesByProgramAsync(currentProgram.ProgramId, exerciseId);
-            ClientExercise newExercise = new ClientExercise();
+            List<Exercise> pastExercises = await _repo.Exercise.GetExercisesByProgramAsync(currentProgram.ProgramId, exercise.id);
             //default reps and rest seconds if this will be the first or second time performing this exercise.
-            newExercise.Reps = trainingStimulus.minReps;
-            newExercise.RestSeconds = trainingStimulus.maxRestSeconds;
+            exercise.Reps = trainingStimulus.minReps;
+            exercise.RestSeconds = trainingStimulus.maxRestSeconds;
 
-            if (pastExercises.Count >= 2)//exercise has been performed > 1 time. Now possible to progress reps/rest.
-                CheckLiftProgression(pastExercises, trainingStimulus, newExercise);
+            if (pastExercises.Count >= 2)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
+                CheckLiftProgression(pastExercises, trainingStimulus, exercise);
 
-            newExercise.Sets = trainingStimulus.sets;
-            newExercise.RestString = SharedUtility.ConvertToMinSecString(newExercise.RestSeconds);
-
-            return newExercise;
+            exercise.Sets = trainingStimulus.sets;
+            exercise.RestString = SharedUtility.ConvertToMinSecString(exercise.RestSeconds);
         }
 
-        private void CheckLiftProgression(List<ClientExercise> pastExercises, TrainingStimulus trainingStimulus, ClientExercise newExercise)
+        private void CheckLiftProgression(List<Exercise> pastExercises, TrainingStimulus trainingStimulus, Exercise newExercise)
         {
-            var past = pastExercises.OrderByDescending(c => c.Id);
+            var past = pastExercises.OrderByDescending(c => c.id);
             pastExercises = ConvertOrderableToExercise(past);
 
             newExercise.Reps = pastExercises[0].Reps;
@@ -117,18 +114,17 @@ namespace AutonoFit.Classes
         }
 
 
-        public List<ClientExercise> ConvertOrderableToExercise(IOrderedEnumerable<ClientExercise> elements)
+        public List<Exercise> ConvertOrderableToExercise(IOrderedEnumerable<Exercise> elements)
         {
-            List<ClientExercise> exercises = new List<ClientExercise> { };
+            List<Exercise> exercises = new List<Exercise> { };
             foreach (var element in elements)
             {
-                ClientExercise exercise = new ClientExercise();
+                Exercise exercise = new Exercise();
                 exercise.RestSeconds = element.RestSeconds;
                 exercise.RPE = element.RPE;
                 exercise.Reps = element.Reps;
                 exercise.Sets = element.Sets;
                 exercises.Add(exercise);
-
             }
             return exercises;
         }

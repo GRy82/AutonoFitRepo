@@ -314,19 +314,18 @@ namespace AutonoFit.Controllers
             if (liftWorkoutInMinutes <= 0) return chosenExercises;
             
             Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
+            await AssignPropertiesToExercise(newExercise, currentProgram, todaysGoalNumber);
             chosenExercises.Add(newExercise);
-            //AssignParametersToClientExercise();
-            //liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(clientExercise));
+            liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise));
            
             return await GenerateLiftingComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, currentProgram, todaysGoalNumber);
         }
 
-        public async Task AssignParametersToExercise(int clientId, int exerciseId, ClientProgram currentProgram, int todaysGoalNumber)
+        public async Task AssignPropertiesToExercise(Exercise exercise, ClientProgram currentProgram, int todaysGoalNumber)
         {
-            //var clientExercise = await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exerciseId);
-            //clientExercise.ClientId = clientId;
-            //clientExercise.ExerciseId = exerciseId;
-            //clientExercises.Add(clientExercise);
+            await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise);
+            var client = await _repo.Client.GetClientAsync(GetUserId());
+            exercise.ClientId = client.ClientId;
         }
 
 

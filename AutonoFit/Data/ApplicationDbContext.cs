@@ -25,7 +25,7 @@ namespace AutonoFit.Data
 
         public DbSet<ClientEquipment> ClientEquipment { get; set; }
 
-        public DbSet<ClientExercise> ClientExercise { get; set; }
+        public DbSet<Exercise> Exercise { get; set; }
 
         public DbSet<ClientWorkout> ClientWorkout { get; set; }
 
