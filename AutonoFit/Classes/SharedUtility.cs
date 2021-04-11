@@ -21,7 +21,8 @@ namespace AutonoFit.Classes
             StringBuilder url = new StringBuilder("https://wger.de/api/v2/exercise?language=2&limit=100&equipment=7,", expectedUrlLengthMax);
             foreach (ClientEquipment piece in equipmentList)
             {
-                url.Append(piece.Equipment.Name).Append(',');
+
+                url.Append(piece.EquipmentId).Append(',');
             }
             url.Remove(url.Length - 1, 1);
 

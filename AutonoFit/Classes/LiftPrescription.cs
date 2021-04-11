@@ -66,7 +66,7 @@ namespace AutonoFit.Classes
         public async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
         {
             StringBuilder url = new StringBuilder(SharedUtility.BuildEquipmentUrlString(workoutVM.Equipment));
-            List<Exercise> exercises = await FindExercisesByCategory(url, workoutVM.BodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            List<Exercise> exercises = await FindExercisesByCategory(new StringBuilder(url.ToString()), workoutVM.BodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
             await FindExercisesByMuscles(url, workoutVM.BodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
             SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
             return exercises;
@@ -75,7 +75,7 @@ namespace AutonoFit.Classes
         public async Task<List<Exercise>> GatherExercises(List<ClientEquipment> equipment, string bodySection)
         {
             StringBuilder url = new StringBuilder(SharedUtility.BuildEquipmentUrlString(equipment));
-            List<Exercise> exercises = await FindExercisesByCategory(url, bodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            List<Exercise> exercises = await FindExercisesByCategory(new StringBuilder(url.ToString()), bodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type
             await FindExercisesByMuscles(url, bodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
             SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
             return exercises;
@@ -132,7 +132,7 @@ namespace AutonoFit.Classes
         {
             ExerciseLibrary singleExerciseLibrary;
             int[] categories = SharedUtility.GetCategories(upperOrLowerBody);
-            url.Append("&muscles=");
+            url.Append("&category=");
 
             for (int j = 0; j < categories.Length; j++)
             {

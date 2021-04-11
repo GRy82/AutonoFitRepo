@@ -316,7 +316,7 @@ namespace AutonoFit.Controllers
             Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
             await AssignPropertiesToExercise(newExercise, currentProgram, todaysGoalNumber);
             chosenExercises.Add(newExercise);
-            liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise));
+            liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise) / 60);
            
             return await GenerateLiftingComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, currentProgram, todaysGoalNumber);
         }
