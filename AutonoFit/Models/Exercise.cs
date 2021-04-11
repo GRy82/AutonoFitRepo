@@ -20,21 +20,6 @@ namespace AutonoFit.Models
             [NotMapped]
             public string description { get; set; }
 
-            //[NotMapped]
-            //public int category { get; set; }
-
-            //[NotMapped]
-            //public int?[] muscles { get; set; }
-
-            //[NotMapped]
-            //public object[] muscles_secondary { get; set; }
-
-            //[NotMapped]
-            //public int[] equipment { get; set; }
-
-            //[NotMapped]
-            //public int language { get; set; }
-
             public int WorkoutId { get; set; }
 
             public int ProgramId { get; set; }

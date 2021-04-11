@@ -5,6 +5,7 @@ using AutonoFit.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AutonoFit.Classes
@@ -64,20 +65,18 @@ namespace AutonoFit.Classes
 
         public async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
         {
-            List<Exercise> exercises = await FindExercisesByCategory(workoutVM.Equipment,
-                                                                                  workoutVM.BodySection,
-                                                                                  new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
-            await FindExercisesByMuscles(workoutVM.Equipment, workoutVM.BodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
+            StringBuilder url = new StringBuilder(SharedUtility.BuildEquipmentUrlString(workoutVM.Equipment));
+            List<Exercise> exercises = await FindExercisesByCategory(url, workoutVM.BodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            await FindExercisesByMuscles(url, workoutVM.BodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
             SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
             return exercises;
         }
 
         public async Task<List<Exercise>> GatherExercises(List<ClientEquipment> equipment, string bodySection)
         {
-            List<Exercise> exercises = await FindExercisesByCategory(equipment,
-                                                                                  bodySection,
-                                                                                  new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
-            await FindExercisesByMuscles(equipment, bodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
+            StringBuilder url = new StringBuilder(SharedUtility.BuildEquipmentUrlString(equipment));
+            List<Exercise> exercises = await FindExercisesByCategory(url, bodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
+            await FindExercisesByMuscles(url, bodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
             SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
             return exercises;
         }
@@ -129,32 +128,37 @@ namespace AutonoFit.Classes
             return exercises;
         }
 
-        public async Task<List<Exercise>> FindExercisesByCategory(List<ClientEquipment> equipment, string upperOrLowerBody, List<Exercise> exercises)
+        public async Task<List<Exercise>> FindExercisesByCategory(StringBuilder url, string upperOrLowerBody, List<Exercise> exercises)
         {
-            ExerciseLibrary exerciseLibrary;
+            ExerciseLibrary singleExerciseLibrary;
             int[] categories = SharedUtility.GetCategories(upperOrLowerBody);
-            for (int i = 0; i < categories.Length; i++)
+            url.Append("&muscles=");
+
+            for (int j = 0; j < categories.Length; j++)
             {
-                string urlCategoryString = SharedUtility.BuildEquipmentUrlString(equipment) + "&category=" + categories[i];
-                exerciseLibrary = await _exerciseLibraryService.GetExercises(urlCategoryString);
-                if (exerciseLibrary.count > 0)
-                    exercises = SharedUtility.AddLibrarytoExercises(exercises, exerciseLibrary);
+                url.Append(categories[j]).Append(",");
             }
+            url.Remove(url.Length - 1, 1);
+
+            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(url.ToString());
+            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
 
             return exercises;
         }
 
-        public async Task<List<Exercise>> FindExercisesByMuscles(List<ClientEquipment> equipment, string upperOrLowerBody, List<Exercise> exercises)
+        public async Task<List<Exercise>> FindExercisesByMuscles(StringBuilder url, string upperOrLowerBody, List<Exercise> exercises)
         {
             ExerciseLibrary singleExerciseLibrary;
             int[] muscles = SharedUtility.GetMuscles(upperOrLowerBody);
-            string urlMusclesString = null;
+            url.Append("&muscles=");
+
             for (int j = 0; j < muscles.Length; j++)
             {
-                urlMusclesString += "&muscles=" + muscles[j];
+                url.Append(muscles[j]).Append(",");
             }
-            urlMusclesString = SharedUtility.BuildEquipmentUrlString(equipment) + urlMusclesString;
-            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(urlMusclesString);
+            url.Remove(url.Length -1, 1);
+
+            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(url.ToString());
             exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
 
             return exercises;

@@ -4,25 +4,28 @@ using AutonoFit.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AutonoFit.Classes
 {
     public static class SharedUtility
     {
+        public static int expectedUrlLengthMax = 150;
         public const int repTime = 4;
         public static Random rand = new Random();
 
 
-        public static string BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
+        public static String BuildEquipmentUrlString(List<ClientEquipment> equipmentList)
         {
-            string urlString = "https://wger.de/api/v2/exercise?language=2&limit=100&equipment=7";
+            StringBuilder url = new StringBuilder("https://wger.de/api/v2/exercise?language=2&limit=100&equipment=7,", expectedUrlLengthMax);
             foreach (ClientEquipment piece in equipmentList)
             {
-                urlString += "&equipment=" + piece.EquipmentId;
+                url.Append(piece.Equipment.Name).Append(',');
             }
+            url.Remove(url.Length - 1, 1);
 
-            return urlString;
+            return url.ToString();
         }
 
         public static List<Exercise> RandomizeExercises(List<Exercise> exerciseResults, int exerciseQuantity)
