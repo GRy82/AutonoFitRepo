@@ -230,36 +230,6 @@ namespace AutonoFit.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClientExercise",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClientId = table.Column<int>(nullable: false),
-                    ExerciseId = table.Column<int>(nullable: false),
-                    WorkoutId = table.Column<int>(nullable: false),
-                    ProgramId = table.Column<int>(nullable: false),
-                    RPE = table.Column<int>(nullable: false),
-                    Reps = table.Column<int>(nullable: false),
-                    Sets = table.Column<int>(nullable: false),
-                    RestSeconds = table.Column<int>(nullable: false),
-                    RestString = table.Column<string>(nullable: true),
-                    DeltaRPECount = table.Column<int>(nullable: false),
-                    LastPerformed = table.Column<int>(nullable: true),
-                    TimeSinceLast = table.Column<TimeSpan>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClientExercise", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ClientExercise_Client_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Client",
-                        principalColumn: "ClientId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ClientWorkout",
                 columns: table => new
                 {
@@ -281,6 +251,34 @@ namespace AutonoFit.Migrations
                     table.PrimaryKey("PK_ClientWorkout", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ClientWorkout_Client_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Client",
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Exercise",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<int>(nullable: false),
+                    name = table.Column<string>(nullable: true),
+                    category = table.Column<int>(nullable: false),
+                    WorkoutId = table.Column<int>(nullable: false),
+                    ProgramId = table.Column<int>(nullable: false),
+                    RPE = table.Column<int>(nullable: false),
+                    Reps = table.Column<int>(nullable: false),
+                    Sets = table.Column<int>(nullable: false),
+                    RestSeconds = table.Column<int>(nullable: false),
+                    RestString = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Exercise", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Exercise_Client_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Client",
                         principalColumn: "ClientId",
@@ -325,7 +323,7 @@ namespace AutonoFit.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "e9417dc5-5f0f-4a7b-b9ae-0e95cac6e840", "87c14c98-9ed8-42a5-a575-b80f8247de14", "Client", "CLIENT" });
+                values: new object[] { "287ca790-2899-4c70-b587-943f59cdc196", "a4536ad4-2ea4-4da8-bc9a-95d1d53ffe82", "Client", "CLIENT" });
 
             migrationBuilder.InsertData(
                 table: "Equipment",
@@ -411,11 +409,6 @@ namespace AutonoFit.Migrations
                 column: "EquipmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientExercise_ClientId",
-                table: "ClientExercise",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ClientProgram_ClientId",
                 table: "ClientProgram",
                 column: "ClientId");
@@ -428,6 +421,11 @@ namespace AutonoFit.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ClientWorkout_ClientId",
                 table: "ClientWorkout",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Exercise_ClientId",
+                table: "Exercise",
                 column: "ClientId");
         }
 
@@ -452,10 +450,10 @@ namespace AutonoFit.Migrations
                 name: "ClientEquipment");
 
             migrationBuilder.DropTable(
-                name: "ClientExercise");
+                name: "ClientProgram");
 
             migrationBuilder.DropTable(
-                name: "ClientProgram");
+                name: "Exercise");
 
             migrationBuilder.DropTable(
                 name: "Goals");

@@ -76,56 +76,6 @@ namespace AutonoFit.Migrations
                     b.ToTable("ClientEquipment");
                 });
 
-            modelBuilder.Entity("AutonoFit.Models.ClientExercise", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeltaRPECount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("LastPerformed")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProgramId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RPE")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reps")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RestSeconds")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RestString")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Sets")
-                        .HasColumnType("int");
-
-                    b.Property<TimeSpan?>("TimeSinceLast")
-                        .HasColumnType("time");
-
-                    b.Property<int>("WorkoutId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.ToTable("ClientExercise");
-                });
-
             modelBuilder.Entity("AutonoFit.Models.ClientProgram", b =>
                 {
                     b.Property<int>("ProgramId")
@@ -286,6 +236,50 @@ namespace AutonoFit.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AutonoFit.Models.Exercise", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProgramId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RPE")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Reps")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RestSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RestString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Sets")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkoutId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Exercise");
+                });
+
             modelBuilder.Entity("AutonoFit.Models.Goals", b =>
                 {
                     b.Property<int>("GoalId")
@@ -357,8 +351,8 @@ namespace AutonoFit.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e9417dc5-5f0f-4a7b-b9ae-0e95cac6e840",
-                            ConcurrencyStamp = "87c14c98-9ed8-42a5-a575-b80f8247de14",
+                            Id = "287ca790-2899-4c70-b587-943f59cdc196",
+                            ConcurrencyStamp = "a4536ad4-2ea4-4da8-bc9a-95d1d53ffe82",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -555,15 +549,6 @@ namespace AutonoFit.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AutonoFit.Models.ClientExercise", b =>
-                {
-                    b.HasOne("AutonoFit.Models.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("AutonoFit.Models.ClientProgram", b =>
                 {
                     b.HasOne("AutonoFit.Models.Client", "Client")
@@ -578,6 +563,15 @@ namespace AutonoFit.Migrations
                 });
 
             modelBuilder.Entity("AutonoFit.Models.ClientWorkout", b =>
+                {
+                    b.HasOne("AutonoFit.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AutonoFit.Models.Exercise", b =>
                 {
                     b.HasOne("AutonoFit.Models.Client", "Client")
                         .WithMany()

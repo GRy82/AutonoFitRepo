@@ -17,13 +17,22 @@ namespace AutonoFit.Models
             public int ClientId { get; set; }
             public Client Client { get; set; }
             public string name { get; set; }
-            public string status { get; set; }
+
+            [NotMapped]
             public string description { get; set; }
             //public string creation_date { get; set; }
             public int category { get; set; }
+
+            [NotMapped]
             public int?[] muscles { get; set; }
+
+            [NotMapped]
             public object[] muscles_secondary { get; set; }
+
+            [NotMapped]
             public int[] equipment { get; set; }
+
+            [NotMapped]
             public int language { get; set; }
             //public int license { get; set; }
             //public string license_author { get; set; }

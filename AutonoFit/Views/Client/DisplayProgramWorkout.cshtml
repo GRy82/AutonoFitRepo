@@ -26,14 +26,14 @@
                 <th>RPE</th>
             </tr>
             <tbody>
-                @for (int i = 0; i < Model.ClientExercises.Count; i++)
+                @for (int i = 0; i < Model.Exercises.Count; i++)
                 {
                     <tr>
                         <td>@Model.Exercises[i].name</td>
                         <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.Exercises[i].description</details></td>
-                        <td>@Model.ClientExercises[i].Sets</td>
-                        <td>@Model.ClientExercises[i].Reps</td>
-                        <td>@Model.ClientExercises[i].RestString</td>
+                        <td>@Model.Exercises[i].Sets</td>
+                        <td>@Model.Exercises[i].Reps</td>
+                        <td>@Model.Exercises[i].RestString</td>
                         <td><input type="number" min="6" max="20" value="12" asp-for="@Model.RPEs" /></td>
                     </tr>
                 }
