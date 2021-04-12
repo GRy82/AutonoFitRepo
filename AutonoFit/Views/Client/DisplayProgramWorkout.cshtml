@@ -16,30 +16,34 @@
 <hr />
 <div class="container">
     <form asp-action="CompleteProgramWorkout" style="top: 30px;">
-        <table class="table table-dark table-hover lift-table">
-            <tr>
-                <th>Exercise Name</th>
-                <th>Description</th>
-                <th>Sets</th>
-                <th>Repetitions</th>
-                <th>Rest Time</th>
-                <th>RPE</th>
-            </tr>
-            <tbody>
-                @for (int i = 0; i < Model.Exercises.Count; i++)
-                {
-                    <tr>
-                        <td>@Model.Exercises[i].name</td>
-                        <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.Exercises[i].description</details></td>
-                        <td>@Model.Exercises[i].Sets</td>
-                        <td>@Model.Exercises[i].Reps</td>
-                        <td>@Model.Exercises[i].RestString</td>
-                        <td><input type="number" min="6" max="20" value="12" asp-for="@Model.RPEs" /></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <br />
+        @if (Model.LiftingComponent != null)
+        {
+            <table class="table table-dark table-hover lift-table">
+                <tr>
+                    <th>Exercise Name</th>
+                    <th>Description</th>
+                    <th>Sets</th>
+                    <th>Repetitions</th>
+                    <th>Rest Time</th>
+                    <th>RPE</th>
+                </tr>
+                <tbody>
+                        @for (int i = 0; i < Model.LiftingComponent.exercises.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.LiftingComponent.exercises[i].name</td>
+                                <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.LiftingComponent.exercises[i].description</details></td>
+                                <td>@Model.LiftingComponent.exercises[i].Sets</td>
+                                <td>@Model.LiftingComponent.exercises[i].Reps</td>
+                                <td>@Model.LiftingComponent.exercises[i].RestString</td>
+                                <td><input type="number" min="6" max="20" value="12" asp-for="@Model.RPEs" /></td>
+                            </tr>
+                        }
+                
+                </tbody>
+            </table>
+            <br />
+        }
 
         @if (Model.CardioComponent != null)
         {
