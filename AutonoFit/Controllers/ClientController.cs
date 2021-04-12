@@ -272,7 +272,7 @@ namespace AutonoFit.Controllers
 
             int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
-                upperOrLowerBody = liftPrescript.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram.GoalCount);
+                upperOrLowerBody = liftPrescript.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram);
             if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
                 if (cardioComponent.runType == "Easy")
                 {
@@ -281,16 +281,20 @@ namespace AutonoFit.Controllers
                 }
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
-            var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-            LiftingComponent liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, currentProgram,
-                                                                                liftWorkoutInMinutes, equipment, client);
+            LiftingComponent liftingComponent = null;
+            if (!todayIsCardioGoal || supplementalLiftNeeded)
+            {
+                var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
+                liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, currentProgram,
+                                                                                    liftWorkoutInMinutes, equipment, client);
+            }
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
+            if (liftingComponent != null) LinkExercisesToWorkout(liftingComponent, clientWorkout);
             await _repo.SaveAsync();
 
-            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(liftingComponent.exercises, 
-                                                                            cardioComponent, liftingComponent, clientWorkout);
+            ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(cardioComponent, liftingComponent, clientWorkout);
 
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
@@ -326,6 +330,7 @@ namespace AutonoFit.Controllers
             await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise);
             var client = await _repo.Client.GetClientAsync(GetUserId());
             exercise.ClientId = client.ClientId;
+            exercise.ProgramId = currentProgram.ProgramId;
         }
 
 
@@ -354,15 +359,20 @@ namespace AutonoFit.Controllers
             };
         }
 
-        private ProgramWorkoutVM InstantiateProgramWorkoutVM(List<Exercise> todaysExercises, 
-                                                               CardioComponent cardioComponent, LiftingComponent liftingComponent,
-                                                               ClientWorkout clientWorkout)
+        private void LinkExercisesToWorkout(LiftingComponent liftingComponent, ClientWorkout clientWorkout)
+        {
+            foreach (var exercise in liftingComponent.exercises)
+                exercise.WorkoutId = clientWorkout.Id;
+        }
+
+        private ProgramWorkoutVM InstantiateProgramWorkoutVM(CardioComponent cardioComponent, LiftingComponent liftingComponent, 
+                                                                                                    ClientWorkout clientWorkout)
         {
             return new ProgramWorkoutVM()
             {
-                Exercises = todaysExercises,
-                CardioComponent = cardioComponent,
-                LiftingComponent = liftingComponent,
+                LiftingComponent = liftingComponent ?? null,
+                Exercises = liftingComponent != null ? liftingComponent.exercises : null,
+                CardioComponent = cardioComponent ?? null,
                 ClientWorkout = clientWorkout
             };
         }
@@ -373,11 +383,11 @@ namespace AutonoFit.Controllers
             clientWorkout.CardioRPE = programWorkoutVM.CardioRPE;
             clientWorkout.Completed = true;
             _repo.ClientWorkout.EditClientWorkout(clientWorkout);
-            List<Exercise> exercises = await _repo.Exercise.GetExerciseByWorkoutAsync(clientWorkout.Id);
-            for (int i = 0; i < exercises.Count; i++)
+            int exerciseQty = programWorkoutVM.LiftingComponent.exercises.Count;
+            for (int i = 0; i < exerciseQty; i++)
             {
-                exercises[i].RPE = programWorkoutVM.RPEs[i];
-                _repo.Exercise.EditExercise(exercises[i]);
+                 programWorkoutVM.LiftingComponent.exercises[i].RPE = programWorkoutVM.RPEs[i];
+                _repo.Exercise.CreateExercise(programWorkoutVM.LiftingComponent.exercises[i]);
             }
             await _repo.SaveAsync();
 
