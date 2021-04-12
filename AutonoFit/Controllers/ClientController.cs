@@ -398,18 +398,17 @@ namespace AutonoFit.Controllers
         //-----------------------------------Helper Methods----------------------------------------------------
 
 
-
+        //Come back to make this more performant, limiting results to be more recent, more relevant.  
         public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(currentProgram.ProgramId);
             if (recentWorkouts.Count == 0) {
-                return new List<ClientWorkout> { };
+                return new List<ClientWorkout>();
             }
 
             var workouts = from s in recentWorkouts
                                 orderby s.Id descending
                                 select s;
-
 
             List<ClientWorkout> lastWorkoutCycle = new List<ClientWorkout> { };
             foreach (var workout in workouts)

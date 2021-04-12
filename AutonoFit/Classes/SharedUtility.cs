@@ -185,6 +185,14 @@ namespace AutonoFit.Classes
             return false;
         }
 
+        public static bool HasTwoLiftingGoals(List<int> goalIds)
+        {
+            if (!CheckCardio(goalIds))
+                return true;
+
+            return false;
+        }
+
         public static double GetPaceCoefficient(string runType)
         {
             double paceCoefficient = 0;

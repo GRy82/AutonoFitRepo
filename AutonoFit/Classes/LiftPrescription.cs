@@ -36,7 +36,8 @@ namespace AutonoFit.Classes
                 }
                 else//past workouts available to check
                 {
-                    if (!goalIds.Contains(4) && !goalIds.Contains(5))//if only lifting goals, only alternate goals once you have two consecutive lifts of same goal, one UB, one LB.
+                    bool twoLiftingGoals = SharedUtility.CheckCardio(new List<int> { });
+                    if (!SharedUtility.CheckCardio())//if only lifting goals, only alternate goals once you have two consecutive lifts of same goal, one UB, one LB.
                     {
                         if (recentWorkoutCycle.Count == 1 || recentWorkoutCycle[0].GoalId != recentWorkoutCycle[1].GoalId)
                         {
@@ -54,14 +55,18 @@ namespace AutonoFit.Classes
             }
         }
 
+        //Come back to this after getting today's goal accurately.
         public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
+            bool hasTwoGoals = currentProgram.GoalCount == 2;
+            bool hasTwoLiftingGoals = hasTwoGoals && !SharedUtility.CheckCardio(new List<int> { currentProgram.GoalOneId,
+                                                                                currentProgram.GoalTwoId ?? 0 });
             if (recentWorkoutCycle.Count == 0)
-            {
                 return "Upper Body"; // this is the first workout of the program, arbitrarily start with upper body.
-            }
-            bool 
-            if(currentProgram.GoalCount == 2 &&  )
+            
+            if(hasTwoLiftingGoals)
+                return recentWorkoutCycle[]
+
             return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }
 
