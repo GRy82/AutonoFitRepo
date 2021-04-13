@@ -42,15 +42,16 @@ namespace AutonoFit.Classes
         }
 
         //Only called if a lift is needed.
+        //Body part selection of Supplemental lifts is already accounted for. Do not worry about it here.
         public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
-            bool hasTwoGoals = currentProgram.GoalCount == 2;
-            bool hasTwoLiftingGoals = hasTwoGoals && !SharedUtility.CheckCardio(new List<int> { currentProgram.GoalOneId,
-                                                                                currentProgram.GoalTwoId ?? 0 });
-            if (recentWorkoutCycle.Count == 0)
-                return "Upper Body"; // this is the first workout of the program, arbitrarily start with upper body.          
+            bool lowerBodyNeedsRest = recentWorkoutCycle[0].BodyParts == "Both" || recentWorkoutCycle[0].BodyParts == "Lower Body";
+            bool firstWorkout = recentWorkoutCycle.Count == 0; //arbitrarily start with upper body.
 
-            return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
+            if (firstWorkout || lowerBodyNeedsRest)
+                return "Upper Body";
+
+            return "Lower Body";
         }
 
         public async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)

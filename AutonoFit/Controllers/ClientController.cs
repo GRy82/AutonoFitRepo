@@ -266,7 +266,7 @@ namespace AutonoFit.Controllers
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
 
             if (todayIsCardioGoal) //if cardio in any capactiy
-                cardioComponent = await cardioPrescript.GetTodaysCardio(recentWorkoutCycle, currentProgram);//******* CHeck here
+                cardioComponent = await cardioPrescript.GetTodaysCardio(recentWorkoutCycle, currentProgram);
 
             bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
                                                                         cardioComponent.GetType().Equals(new SixLift())));
