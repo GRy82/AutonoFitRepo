@@ -27,18 +27,18 @@ namespace AutonoFit.Classes
         {
             if (currentProgram.GoalCount == 1)
                 return currentProgram.GoalOneId;
-            //GoalCount == 2
+            // else GoalCount == 2
             int workoutsCompleted = await programModule.GetWorkoutsCompletedByProgram(currentProgram.ProgramId);
             if (!SharedUtility.HasTwoLiftingGoals(currentProgram))// Has 1 cardio goal, 1 lifting goal. Just alternate between goals.
                 return workoutsCompleted % 2 == 0 ? currentProgram.GoalOneId : (int)currentProgram.GoalTwoId;
-            //Has 2 lifting goals. Goals remain the same for two workouts in a row. See chart below to make sense of following code.                                  
+            //Has 2 lifting goals. Goals remain the same for 2 workouts in a row. See chart below to make sense of following code.                                  
             if (workoutsCompleted % 2 == 1)
                 workoutsCompleted++;
             return workoutsCompleted % 4 == 0 ? (int)currentProgram.GoalTwoId : currentProgram.GoalOneId;
             
             //         workoutsCompleted : 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-            //                     Goal# : 1 | 1 | 2 | 2 | 1 | 1 | 2 | 2 |
-            // (Upper/Lower)Body Section : U | L | U | L | U | L | U | L |  
+            //                     Goal# : 1 | 1 | 2 | 2 | 1 | 1 | 2 | 2 | 
+            // (Upper/Lower)Body Section : U | L | U | L | U | L | U | L | *** Alternating Upper/lower body is what's healthy/important.
         }
 
         //Only called if a lift is needed.

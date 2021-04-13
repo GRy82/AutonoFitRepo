@@ -259,8 +259,8 @@ namespace AutonoFit.Controllers
         public async Task<ActionResult> GenerateProgramWorkout(int programId)
         {
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
-            int todaysGoalNumber = liftPrescript.GetTodaysGoal(recentWorkoutCycle, currentProgram);
-            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
+            int todaysGoalNumber = await liftPrescript.GetTodaysGoal(currentProgram);
+            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram, todaysGoalNumber);
             CardioComponent cardioComponent = null;
             string upperOrLowerBody = "Upper Body";
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
@@ -399,7 +399,7 @@ namespace AutonoFit.Controllers
 
 
         //Come back to make this more performant, limiting results to be more recent, more relevant.  
-        public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)
+        public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram, int todaysGoalNumber)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(currentProgram.ProgramId);
             
@@ -410,10 +410,13 @@ namespace AutonoFit.Controllers
                                 orderby s.Id descending
                                 select s;
 
-            recentWorkouts = workouts.ToList();
-   
-            for()
-                
+            recentWorkouts = new List<ClientWorkout>();
+
+            foreach (var workout in workouts)
+                if (workout.GoalId != todaysGoalNumber)
+                    recentWorkouts.Add(workout);
+
+            return recentWorkouts;
         }
 
 
