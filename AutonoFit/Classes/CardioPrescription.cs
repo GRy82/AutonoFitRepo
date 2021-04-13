@@ -30,9 +30,13 @@ namespace AutonoFit.Classes
             else
                 runType = AdvanceRunType(recentWorkoutCycle[0].RunType);// not the first run. Cycle run type.
 
-            if (runType == "Easy" && currentProgram.GoalCount == 1 && //RunType == easy after the advancement from Speed run.
-                currentProgram.DaysPerWeek == 6 && recentWorkoutCycle[0].RunType == "Speed") 
-                return new SixLift(); //this object will indicate a lift should be done instead of a run. This is because of excessive cardio in the week.
+            if(runType == "6-lift")
+            {
+                if (currentProgram.GoalCount == 1 && currentProgram.DaysPerWeek > 5)//excessive cardio, trigger a lift instead.
+                    return new SixLift();
+
+                runType = AdvanceRunType("6-lift");//Cardio not actually excessive. Toggle one more time to a legitimate run type.
+            }
 
             return await CreateCardioComponent(currentProgram, runType, recentWorkoutCycle);
             //fitnessParameters = ConvertFitnessDictCardioValues(fitnessParameters);//not sure what this does
@@ -42,7 +46,7 @@ namespace AutonoFit.Classes
         {
             CardioComponent cardioComponent = CardioComponentFactoryMethod(runType);
        
-            //increases difficulty of cardio if 2 consecutive workouts have been done with decreasing RPE scores.
+            //dec. pace/inc. difficulty if 2 consecutive cardio workouts have been done with decreasing RPE scores.
             if (recentWorkoutCycle.Count > 1)
                 await CheckCardioProgression(currentProgram, recentWorkoutCycle);
 
@@ -101,7 +105,7 @@ namespace AutonoFit.Classes
 
         public string AdvanceRunType(string runType)
         {
-            string[] runTypes = new string[] { "Easy", "Moderate", "Long", "Speed" };
+            string[] runTypes = new string[] { "Easy", "Moderate", "Long", "Speed", "6-lift" };
             int index = runType.IndexOf(runType);
             string newRunType = index != (runTypes.Length - 1) ? runTypes[index + 1] : runTypes[0];
 
@@ -111,13 +115,11 @@ namespace AutonoFit.Classes
         public List<ClientWorkout> OmitSupplementaryLifts(List<ClientWorkout> recentWorkoutCycle)//Makes sure that no "6 Lift" exercises make it in the collection.
         {
             List<ClientWorkout> recentCardioWorkouts = new List<ClientWorkout> { };
+
             foreach (ClientWorkout workout in recentWorkoutCycle)
-            {
                 if (workout.GoalId > 3 && workout.RunType != null)//Lift goal or run goal with no run type
-                {
                     recentCardioWorkouts.Add(workout);
-                }
-            }
+            
             return recentCardioWorkouts;
         }
     }
