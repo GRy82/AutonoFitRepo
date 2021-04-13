@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,7 +11,10 @@ namespace AutonoFit.Models
     public class Exercise
     {
             [Key]
-            public int id { get; set; }
+            public int Id { get; set; }
+
+            [JsonProperty(PropertyName = "id")]
+            public int exerciseId { get; set; }
 
             [ForeignKey("Client")]
             public int ClientId { get; set; }

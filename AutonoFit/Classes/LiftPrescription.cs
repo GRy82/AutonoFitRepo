@@ -45,10 +45,11 @@ namespace AutonoFit.Classes
         //Body part selection of Supplemental lifts is already accounted for. Do not worry about it here.
         public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
+            if (recentWorkoutCycle.Count == 0)
+                return "Upper Body"; //arbitrarily start with upper body in new program.
             bool lowerBodyNeedsRest = recentWorkoutCycle[0].BodyParts == "Both" || recentWorkoutCycle[0].BodyParts == "Lower Body";
-            bool firstWorkout = recentWorkoutCycle.Count == 0; //arbitrarily start with upper body.
 
-            if (firstWorkout || lowerBodyNeedsRest)
+            if (lowerBodyNeedsRest)
                 return "Upper Body";
 
             return "Lower Body";

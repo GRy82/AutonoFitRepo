@@ -291,7 +291,9 @@ namespace AutonoFit.Controllers
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
-            if (liftingComponent != null) LinkExercisesToWorkout(liftingComponent, clientWorkout);
+            if (liftingComponent != null)
+                CreateExercisesInDatabase(liftingComponent, clientWorkout);
+
             await _repo.SaveAsync();
 
             ProgramWorkoutVM programWorkoutVM = InstantiateProgramWorkoutVM(cardioComponent, liftingComponent, clientWorkout);
@@ -359,10 +361,13 @@ namespace AutonoFit.Controllers
             };
         }
 
-        private void LinkExercisesToWorkout(LiftingComponent liftingComponent, ClientWorkout clientWorkout)
+        private void CreateExercisesInDatabase(LiftingComponent liftingComponent, ClientWorkout clientWorkout)
         {
             foreach (var exercise in liftingComponent.exercises)
+            {
                 exercise.WorkoutId = clientWorkout.Id;
+                _repo.Exercise.CreateExercise(exercise);
+            }
         }
 
         private ProgramWorkoutVM InstantiateProgramWorkoutVM(CardioComponent cardioComponent, LiftingComponent liftingComponent, 
@@ -383,11 +388,11 @@ namespace AutonoFit.Controllers
             clientWorkout.CardioRPE = programWorkoutVM.CardioRPE;
             clientWorkout.Completed = true;
             _repo.ClientWorkout.EditClientWorkout(clientWorkout);
-            int exerciseQty = programWorkoutVM.LiftingComponent.exercises.Count;
+            int exerciseQty = programWorkoutVM.Exercises.Count;
             for (int i = 0; i < exerciseQty; i++)
             {
-                 programWorkoutVM.LiftingComponent.exercises[i].RPE = programWorkoutVM.RPEs[i];
-                _repo.Exercise.CreateExercise(programWorkoutVM.LiftingComponent.exercises[i]);
+                 programWorkoutVM.Exercises[i].RPE = programWorkoutVM.RPEs[i];
+                _repo.Exercise.CreateExercise(programWorkoutVM.Exercises[i]);
             }
             await _repo.SaveAsync();
 

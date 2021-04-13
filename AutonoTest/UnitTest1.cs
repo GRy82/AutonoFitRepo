@@ -1,3 +1,5 @@
+using AutonoFit.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using Xunit;
 
@@ -8,7 +10,7 @@ namespace AutonoTest
         [Fact]
         public void Test1()
         {
-
+            
         }
     }
 }

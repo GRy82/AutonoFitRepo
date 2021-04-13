@@ -18,7 +18,7 @@ namespace AutonoFit.Data.Repositories
 
         }
 
-        public void CreateExercise(Exercise clientExercise) => Create(clientExercise);
+        public void CreateExercise(Exercise exercise) => Create(exercise);
 
         public async Task<List<Exercise>> GetAllExercisesAsync(int clientId) =>
             await FindByCondition(c => c.ClientId.Equals(clientId)).ToListAsync();
@@ -34,12 +34,9 @@ namespace AutonoFit.Data.Repositories
             List<Exercise> programExercises = await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
             List<Exercise> exercises = new List<Exercise> { };
             foreach (Exercise exercise in programExercises)
-            {
                 if (exercise.id == exerciseId)
-                {
                     exercises.Add(exercise);
-                }
-            }
+             
             return exercises;
         }
 

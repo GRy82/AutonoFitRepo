@@ -28,18 +28,18 @@
                     <th>RPE</th>
                 </tr>
                 <tbody>
-                        @for (int i = 0; i < Model.LiftingComponent.exercises.Count; i++)
-                        {
-                            <tr>
-                                <td>@Model.LiftingComponent.exercises[i].name</td>
-                                <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.LiftingComponent.exercises[i].description</details></td>
-                                <td>@Model.LiftingComponent.exercises[i].Sets</td>
-                                <td>@Model.LiftingComponent.exercises[i].Reps</td>
-                                <td>@Model.LiftingComponent.exercises[i].RestString</td>
-                                <td><input type="number" min="6" max="20" value="12" asp-for="@Model.RPEs" /></td>
-                            </tr>
-                        }
-                
+                    @for (int i = 0; i < Model.LiftingComponent.exercises.Count; i++)
+                    {
+                        <tr>
+                            <td>@Model.LiftingComponent.exercises[i].name</td>
+                            <td><details style="max-width: 60%;"><summary>Instructions</summary>@Model.LiftingComponent.exercises[i].description</details></td>
+                            <td>@Model.LiftingComponent.exercises[i].Sets</td>
+                            <td>@Model.LiftingComponent.exercises[i].Reps</td>
+                            <td>@Model.LiftingComponent.exercises[i].RestString</td>
+                            <td><input type="number" min="6" max="20" value="12" asp-for="@Model.RPEs" /></td>
+                        </tr>       
+                    }
+
                 </tbody>
             </table>
             <br />
@@ -58,11 +58,17 @@
                     <dd class="col-md-6">@Model.CardioComponent.paceString</dd>
                 </dl>
             </div>
-        
+
             <label asp-for="@Model.CardioRPE"></label>
             <input type="number" min="6" max="20" value="12" asp-for="@Model.CardioRPE" id="cardio-rpe" />
         }
-
+        @if(Model.LiftingComponent != null)
+         {
+            @for (int i = 0; i < Model.LiftingComponent.exercises.Count; i++)
+              {
+                <input type = "hidden" asp-for= "@Model.LiftingComponent.exercises[i].id" />
+              }
+         }
         <input type="hidden" asp-for="@Model.ClientWorkout.Id" />
         <input type="submit" class="complete-btn" value="Workout Completed" />
     </form>
