@@ -259,8 +259,8 @@ namespace AutonoFit.Controllers
         public async Task<ActionResult> GenerateProgramWorkout(int programId)
         {
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
-            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             int todaysGoalNumber = liftPrescript.GetTodaysGoal(recentWorkoutCycle, currentProgram);
+            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram);
             CardioComponent cardioComponent = null;
             string upperOrLowerBody = "Upper Body";
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
@@ -402,34 +402,18 @@ namespace AutonoFit.Controllers
         public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(currentProgram.ProgramId);
-            if (recentWorkouts.Count == 0) {
+            
+            if (recentWorkouts.Count == 0) 
                 return new List<ClientWorkout>();
-            }
-
+            
             var workouts = from s in recentWorkouts
                                 orderby s.Id descending
                                 select s;
 
-            List<ClientWorkout> lastWorkoutCycle = new List<ClientWorkout> { };
-            foreach (var workout in workouts)
-            {
-                ClientWorkout convertedWorkout = new ClientWorkout();
-                convertedWorkout.Id = workout.Id;
-                convertedWorkout.CardioRPE = workout.CardioRPE;
-                convertedWorkout.BodyParts = workout.BodyParts;
-                convertedWorkout.ClientId = workout.ClientId;
-                convertedWorkout.Completed = workout.Completed;
-                convertedWorkout.DatePerformed = workout.DatePerformed;
-                convertedWorkout.mileDistance = workout.mileDistance;
-                convertedWorkout.milePaceSeconds = workout.milePaceSeconds;
-                convertedWorkout.ProgramId = workout.ProgramId;
-                convertedWorkout.GoalId = workout.GoalId;
-                convertedWorkout.RunType = workout.RunType;
-
-                lastWorkoutCycle.Add(convertedWorkout);
-            }
-
-            return lastWorkoutCycle;
+            recentWorkouts = workouts.ToList();
+   
+            for()
+                
         }
 
 

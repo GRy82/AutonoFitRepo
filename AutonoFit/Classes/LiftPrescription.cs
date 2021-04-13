@@ -14,58 +14,41 @@ namespace AutonoFit.Classes
     {
         private IRepositoryWrapper _repo;
         private ExerciseLibraryService _exerciseLibraryService;
+        private ProgramModule programModule;
         private const int repTime = 4;
         public LiftPrescription(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
             _exerciseLibraryService = exerciseLibraryService;
+            programModule = new ProgramModule(repo);
         }
 
-        public int GetTodaysGoal(List<ClientWorkout> recentWorkoutCycle, ClientProgram currentProgram)
+        public async Task<int> GetTodaysGoal(ClientProgram currentProgram)
         {
-            List<int> goalIds = new List<int> { currentProgram.GoalOneId, Convert.ToInt32(currentProgram.GoalTwoId) };
-            if (currentProgram.GoalCount == 1)//If program has one goal, then return the only goal in the list that isn't 0.
-            {
-                return goalIds[1] == 0 ? goalIds[0] : goalIds[1];
-            }
-            else //Program has two goals. 
-            {
-                if (recentWorkoutCycle.Count == 0)//if no past workouts to go off of...
-                {
-                    return goalIds[0]; //arbitrarily start with first listed goal.  
-                }
-                else//past workouts available to check
-                {
-                    bool twoLiftingGoals = SharedUtility.CheckCardio(new List<int> { });
-                    if (!SharedUtility.CheckCardio())//if only lifting goals, only alternate goals once you have two consecutive lifts of same goal, one UB, one LB.
-                    {
-                        if (recentWorkoutCycle.Count == 1 || recentWorkoutCycle[0].GoalId != recentWorkoutCycle[1].GoalId)
-                        {
-                            return Convert.ToInt32(recentWorkoutCycle[0].GoalId); //return same goal as last workout.
-                        }
-                        else if (recentWorkoutCycle[0].GoalId == recentWorkoutCycle[1].GoalId)
-                        {
-                            return goalIds[0] == recentWorkoutCycle[0].GoalId ? goalIds[1] : goalIds[0]; //return the other goal.
-                        }
-                    }
-                    // else cardio goals are present
-
-                    return recentWorkoutCycle[0].GoalId == goalIds[0] ? goalIds[1] : goalIds[0]; //return the goal that is not that of the last workout.        
-                }
-            }
+            if (currentProgram.GoalCount == 1)
+                return currentProgram.GoalOneId;
+            //GoalCount == 2
+            int workoutsCompleted = await programModule.GetWorkoutsCompletedByProgram(currentProgram.ProgramId);
+            if (!SharedUtility.HasTwoLiftingGoals(currentProgram))// Has 1 cardio goal, 1 lifting goal. Just alternate between goals.
+                return workoutsCompleted % 2 == 0 ? currentProgram.GoalOneId : (int)currentProgram.GoalTwoId;
+            //Has 2 lifting goals. Goals remain the same for two workouts in a row. See chart below to make sense of following code.                                  
+            if (workoutsCompleted % 2 == 1)
+                workoutsCompleted++;
+            return workoutsCompleted % 4 == 0 ? (int)currentProgram.GoalTwoId : currentProgram.GoalOneId;
+            
+            //         workoutsCompleted : 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+            //                     Goal# : 1 | 1 | 2 | 2 | 1 | 1 | 2 | 2 |
+            // (Upper/Lower)Body Section : U | L | U | L | U | L | U | L |  
         }
 
-        //Come back to this after getting today's goal accurately.
+        //Only called if a lift is needed.
         public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
         {
             bool hasTwoGoals = currentProgram.GoalCount == 2;
             bool hasTwoLiftingGoals = hasTwoGoals && !SharedUtility.CheckCardio(new List<int> { currentProgram.GoalOneId,
                                                                                 currentProgram.GoalTwoId ?? 0 });
             if (recentWorkoutCycle.Count == 0)
-                return "Upper Body"; // this is the first workout of the program, arbitrarily start with upper body.
-            
-            if(hasTwoLiftingGoals)
-                return recentWorkoutCycle[]
+                return "Upper Body"; // this is the first workout of the program, arbitrarily start with upper body.          
 
             return recentWorkoutCycle[0].BodyParts == "Upper Body" ? "Lower Body" : "Upper Body"; //always can alternate the body parts. 
         }

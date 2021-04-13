@@ -91,8 +91,9 @@ namespace AutonoFit.Classes
             return cardioComponent;
         }
 
+        //Accounts for multiple goals represented in recent workouts.
         public async Task CheckCardioProgression(ClientProgram currentProgram, List<ClientWorkout> recentWorkoutCycle)
-        {
+        { // Decrease base mile pace if RPE difficulty at given base pace is decreasing. This is regardless of run type.
             bool readyToProgress = (currentProgram.GoalCount == 1 && recentWorkoutCycle[0].CardioRPE < recentWorkoutCycle[1].CardioRPE) ||
                 (currentProgram.GoalCount == 2 && recentWorkoutCycle[1].CardioRPE < recentWorkoutCycle[3].CardioRPE);
 

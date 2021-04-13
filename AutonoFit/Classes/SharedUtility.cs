@@ -185,9 +185,9 @@ namespace AutonoFit.Classes
             return false;
         }
 
-        public static bool HasTwoLiftingGoals(List<int> goalIds)
+        public static bool HasTwoLiftingGoals(ClientProgram currentProgram)
         {
-            if (!CheckCardio(goalIds))
+            if (!CheckCardio(new List<int> { currentProgram.GoalOneId, currentProgram.GoalTwoId ?? 0})) 
                 return true;
 
             return false;
