@@ -264,15 +264,15 @@ namespace AutonoFit.Controllers
             CardioComponent cardioComponent = null;
             string upperOrLowerBody = "Upper Body";
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
-            bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
-                cardioComponent.GetType().Equals(new SixLift())));
 
             if (todayIsCardioGoal) //if cardio in any capactiy
-                cardioComponent = await cardioPrescript.GetTodaysCardio(recentWorkoutCycle, currentProgram);
+                cardioComponent = await cardioPrescript.GetTodaysCardio(recentWorkoutCycle, currentProgram);//******* CHeck here
 
+            bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
+                                                                        cardioComponent.GetType().Equals(new SixLift())));
             int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
-                upperOrLowerBody = liftPrescript.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram);
+                upperOrLowerBody = liftPrescript.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram);//******* CHeck here
             if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
                 if (cardioComponent.runType == "Easy")
                 {
@@ -285,8 +285,8 @@ namespace AutonoFit.Controllers
             if (!todayIsCardioGoal || supplementalLiftNeeded)
             {
                 var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-                liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, currentProgram,
-                                                                                    liftWorkoutInMinutes, equipment, client);
+                liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber,
+                                                    currentProgram, liftWorkoutInMinutes, equipment);
             }
 
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
@@ -301,7 +301,7 @@ namespace AutonoFit.Controllers
 
         //Consider making this a member method of LiftingComponent
         private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientProgram currentProgram,
-                                                                        int liftWorkoutInMinutes, List<ClientEquipment> equipment, Client client)
+                                                                        int liftWorkoutInMinutes, List<ClientEquipment> equipment)
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<Exercise> totalExercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
@@ -397,8 +397,7 @@ namespace AutonoFit.Controllers
         //-------------------------------------------------------------------------------------------------------
         //-----------------------------------Helper Methods----------------------------------------------------
 
-
-        //Come back to make this more performant, limiting results to be more recent, more relevant.  
+        //Make sure IOrderedEnumerable can be converted to List<ClientWorkout> implicitly.
         public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram, int todaysGoalNumber)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(currentProgram.ProgramId);
