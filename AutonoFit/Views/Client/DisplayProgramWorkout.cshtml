@@ -66,7 +66,7 @@
          {
             @for (int i = 0; i < Model.LiftingComponent.exercises.Count; i++)
               {
-                <input type = "hidden" asp-for= "@Model.LiftingComponent.exercises[i].id" />
+                <input type = "hidden" asp-for= "@Model.Exercises[i].Id" />
               }
          }
         <input type="hidden" asp-for="@Model.ClientWorkout.Id" />

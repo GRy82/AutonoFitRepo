@@ -82,10 +82,10 @@ namespace AutonoFit.Classes
             List<int> addedExerciseIds = new List<int> { };
             foreach (Exercise exercise in exercises)
             {
-                if (!addedExerciseIds.Contains(exercise.id) && exercise.id != 393)//exercise 393 is trash. It's a full workout.
+                if (!addedExerciseIds.Contains(exercise.exerciseId) && exercise.exerciseId != 393)//exercise 393 is trash. It's a full workout.
                 {
                     revisedResults.Add(exercise);
-                    addedExerciseIds.Add(exercise.id);
+                    addedExerciseIds.Add(exercise.exerciseId);
                 }
             }
             return revisedResults;
