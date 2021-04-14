@@ -284,6 +284,7 @@ namespace AutonoFit.Controllers
             LiftingComponent liftingComponent = null;
             ClientWorkout clientWorkout = InstantiateClientWorkout(cardioComponent, client, upperOrLowerBody, currentProgram, todaysGoalNumber);
             _repo.ClientWorkout.CreateClientWorkout(clientWorkout);
+            await _repo.SaveAsync();
 
             if (!todayIsCardioGoal || supplementalLiftNeeded)
             {
@@ -302,7 +303,7 @@ namespace AutonoFit.Controllers
         }
 
         //Consider making this a member method of LiftingComponent
-        private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber,ClientWorkout clientWorkout,
+        private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientWorkout clientWorkout,
                                                         ClientProgram currentProgram, int liftWorkoutInMinutes, List<ClientEquipment> equipment)
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
