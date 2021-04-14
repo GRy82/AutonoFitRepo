@@ -60,7 +60,7 @@ namespace AutonoFit.Classes
             StringBuilder url = new StringBuilder(SharedUtility.BuildEquipmentUrlString(workoutVM.Equipment));
             List<Exercise> exercises = await FindExercisesByCategory(new StringBuilder(url.ToString()), workoutVM.BodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type.
             await FindExercisesByMuscles(url, workoutVM.BodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
-            SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
+            exercises = SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
             return exercises;
         }
 
@@ -69,7 +69,7 @@ namespace AutonoFit.Classes
             StringBuilder url = new StringBuilder(SharedUtility.BuildEquipmentUrlString(equipment));
             List<Exercise> exercises = await FindExercisesByCategory(new StringBuilder(url.ToString()), bodySection, new List<Exercise> { }); //Get exercises by category and repackage into Result reference type
             await FindExercisesByMuscles(url, bodySection, exercises); //Get exercises by muslces and repackage into Result reference type.
-            SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
+            exercises = SharedUtility.RemoveRepeats(exercises); //Get rid of repeats
             return exercises;
         }
 
