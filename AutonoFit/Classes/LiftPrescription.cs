@@ -16,6 +16,11 @@ namespace AutonoFit.Classes
         private ExerciseLibraryService _exerciseLibraryService;
         private ProgramModule programModule;
         private const int repTime = 4;
+
+        public LiftPrescription()
+        {
+
+        }
         public LiftPrescription(IRepositoryWrapper repo, ExerciseLibraryService exerciseLibraryService)
         {
             _repo = repo;
@@ -88,7 +93,7 @@ namespace AutonoFit.Classes
             exercise.RestString = SharedUtility.ConvertToMinSecString(exercise.RestSeconds);
         }
 
-        private void CheckLiftProgression(List<Exercise> pastExercises, TrainingStimulus trainingStimulus, Exercise newExercise)
+        public void CheckLiftProgression(List<Exercise> pastExercises, TrainingStimulus trainingStimulus, Exercise newExercise)
         {
             var past = pastExercises.OrderByDescending(c => c.Id);
             pastExercises = ConvertOrderableToExercise(past);
