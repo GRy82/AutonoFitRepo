@@ -119,35 +119,38 @@ namespace AutonoFit.Classes
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<Exercise> totalExercises = await GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            liftingComponent.exercises = await AddExercisesToComponent(totalExercises, new List<Exercise>(), clientWorkout, currentProgram,
-                                                                        todaysGoalNumber, liftWorkoutInMinutes, liftWorkoutInMinutes);
+            List<Exercise> previouslyPerformed = await _repo.Exercise.GetExercisesByProgramAsync(currentProgram.ProgramId);
+            liftingComponent.exercises = await AddExercisesToComponent(totalExercises, new List<Exercise>(), previouslyPerformed, clientWorkout,
+                                                                    currentProgram, todaysGoalNumber, liftWorkoutInMinutes, liftWorkoutInMinutes);
             CleanseExerciseDescriptions(liftingComponent.exercises);
 
             return liftingComponent;
         }
 
-        private async Task<List<Exercise>> AddExercisesToComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises, ClientWorkout clientWorkout, 
-                                    ClientProgram currentProgram, int todaysGoalNumber, int availableMinutes, int liftWorkoutMinutes)
+        private async Task<List<Exercise>> AddExercisesToComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises,   
+                                 List<Exercise> previouslyPerformed, ClientWorkout clientWorkout,  ClientProgram currentProgram,
+                                                            int todaysGoalNumber,  int availableMinutes, int liftWorkoutMinutes)
         {
             if (availableMinutes <= 0) return chosenExercises;
 
-            Exercise newExercise = SelectOneExercise(totalExercises, availableMinutes, liftWorkoutMinutes);
+            Exercise newExercise = SelectOneExercise(totalExercises, previouslyPerformed, availableMinutes, liftWorkoutMinutes);
             await AssignPropertiesToExercise(newExercise, clientWorkout, currentProgram, todaysGoalNumber);
             chosenExercises.Add(newExercise);
             availableMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise) / 60);
 
-            return await AddExercisesToComponent(totalExercises, chosenExercises, clientWorkout, currentProgram,
-                                                        todaysGoalNumber, availableMinutes, liftWorkoutMinutes);
+            return await AddExercisesToComponent(totalExercises, chosenExercises, previouslyPerformed,
+                clientWorkout, currentProgram, todaysGoalNumber, availableMinutes, liftWorkoutMinutes);
         }
 
         //Will randomly choose from exercises that have been done before until those repeated exercises account for half the workout duration.
         //At that point, exercises will be picked at random from a larger pool of exercises--those that have been previously performed,
         //and those that have not been. This promotes variety and continuity simultaneously.  
-        private Exercise SelectOneExercise(List<Exercise> totalExercises, int availableMinutes, int liftWorkoutMinutes)
+        private Exercise SelectOneExercise(List<Exercise> totalExercises, List<Exercise> previouslyPerformed, int availableMinutes, int liftWorkoutMinutes)
         {
             if(availableMinutes <= liftWorkoutMinutes / 2)
                 return SharedUtility.RandomlyChooseOneExercise(totalExercises);
-
+   
+            return SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
         }
 
         public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)

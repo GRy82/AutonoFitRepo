@@ -40,6 +40,8 @@ namespace AutonoFit.Classes
             return selectedExercises;
         }
 
+        //returns a randomly selected exercise, and removes the seleciton from the collection,
+        //so it can't be chosen again.
         public static Exercise RandomlyChooseOneExercise(List<Exercise> exerciseResults)
         {
             int exerciseIndex = rand.Next(0, exerciseResults.Count);
