@@ -58,5 +58,40 @@ namespace AutonoTest
             Assert.Equal(newExercise.Reps, strength.minReps + strength.repsInterval);
             Assert.Equal(newExercise.RestSeconds, strength.maxRestSeconds - strength.restInterval);
         }
+
+        [Fact]
+        public void TestSelectOneExercise()
+        {
+            //Arrange
+            List<Exercise> totalExercises = new List<Exercise> ();
+            for (int i = 0; i < 3; i++)
+            {
+                totalExercises.Add(new Exercise());
+                totalExercises[i].exerciseId = i;
+            }
+
+            List<Exercise> previouslyPerformed = new List<Exercise>();
+            for(int i = 0; i < 2; i++)
+            {
+                previouslyPerformed.Add(new Exercise());
+                previouslyPerformed[i].exerciseId = i;
+            }
+
+            int liftWorkoutMinutes = 8;
+            int availableMinutes = liftWorkoutMinutes;
+            //Act
+            LiftPrescription liftPrescript = new LiftPrescription();
+            var exercise1 = liftPrescript.SelectOneExercise(totalExercises, previouslyPerformed, availableMinutes, liftWorkoutMinutes);
+            availableMinutes /= 2;
+            var exercise2 = liftPrescript.SelectOneExercise(totalExercises, previouslyPerformed, availableMinutes, liftWorkoutMinutes);
+
+            //Assert
+            Assert.NotNull(exercise1);
+            Assert.NotNull(exercise2);
+            Assert.NotEqual(exercise1, exercise2);
+            Assert.DoesNotContain(exercise1, totalExercises);
+            Assert.DoesNotContain(exercise2, totalExercises);
+            Assert.DoesNotContain(exercise1, previouslyPerformed);
+        }
     }
 }

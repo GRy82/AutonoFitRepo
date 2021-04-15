@@ -145,12 +145,14 @@ namespace AutonoFit.Classes
         //Will randomly choose from exercises that have been done before until those repeated exercises account for half the workout duration.
         //At that point, exercises will be picked at random from a larger pool of exercises--those that have been previously performed,
         //and those that have not been. This promotes variety and continuity simultaneously.  
-        private Exercise SelectOneExercise(List<Exercise> totalExercises, List<Exercise> previouslyPerformed, int availableMinutes, int liftWorkoutMinutes)
+        public Exercise SelectOneExercise(List<Exercise> totalExercises, List<Exercise> previouslyPerformed, int availableMinutes, int liftWorkoutMinutes)
         {
             if(availableMinutes <= liftWorkoutMinutes / 2)
                 return SharedUtility.RandomlyChooseOneExercise(totalExercises);
    
-            return SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
+            var exercise = SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
+            totalExercises.Remove(exercise);
+            return exercise;
         }
 
         public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
@@ -165,31 +167,32 @@ namespace AutonoFit.Classes
         public async Task SetLiftingExerciseParameters(ClientProgram currentProgram, int todaysGoal, Exercise exercise)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
-            List<Exercise> pastExercises = await _repo.Exercise.GetAllOccurrencesByProgramAsync(currentProgram.ProgramId, exercise.exerciseId);
+            List<Exercise> repeatPerformances = await _repo.Exercise.GetAllOccurrencesByProgramAsync(currentProgram.ProgramId, exercise.exerciseId);
             //default reps and rest seconds if this will be the first or second time performing this exercise.
             exercise.Reps = trainingStimulus.minReps;
             exercise.RestSeconds = trainingStimulus.maxRestSeconds;
 
-            if (pastExercises.Count >= 1)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
-                CheckLiftProgression(pastExercises, trainingStimulus, exercise);
+            if (repeatPerformances.Count >= 1)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
+                CheckLiftProgression(repeatPerformances, trainingStimulus, exercise);
 
             exercise.Sets = trainingStimulus.sets;
             exercise.RestString = SharedUtility.ConvertToMinSecString(exercise.RestSeconds);
         }
 
-        public void CheckLiftProgression(List<Exercise> pastExercises, TrainingStimulus trainingStimulus, Exercise newExercise)
+        public void CheckLiftProgression(List<Exercise> repeatPerformances, TrainingStimulus trainingStimulus, Exercise newExercise)
         {
-            var past = pastExercises.OrderByDescending(c => c.Id);
-            pastExercises = ConvertOrderableToExercise(past);
+            var past = repeatPerformances.OrderByDescending(c => c.Id);
+            repeatPerformances = ConvertOrderableToExercise(past);
 
-            newExercise.Reps = pastExercises[0].Reps;
-            newExercise.RestSeconds = pastExercises[0].RestSeconds;
+            newExercise.Reps = repeatPerformances[0].Reps;
+            newExercise.RestSeconds = repeatPerformances[0].RestSeconds;
             //TO progress parameters, RPE must have decreased, last workout reps must be >= to second last. (Goals must be the same, but this is already guaranteed.)
-            if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps >= pastExercises[1].Reps)
+            if (repeatPerformances[0].RPE < repeatPerformances[1].RPE && repeatPerformances[0].Reps >= repeatPerformances[1].Reps)
             {
-                newExercise.Reps = pastExercises[0].Reps + 1 > trainingStimulus.maxReps ? trainingStimulus.minReps : pastExercises[0].Reps + trainingStimulus.repsInterval;
-                newExercise.RestSeconds = pastExercises[0].RestSeconds - trainingStimulus.restInterval < trainingStimulus.minRestSeconds ?
-                    trainingStimulus.maxRestSeconds : pastExercises[0].RestSeconds - trainingStimulus.restInterval;
+                newExercise.Reps = repeatPerformances[0].Reps + 1 > trainingStimulus.maxReps ? 
+                    trainingStimulus.minReps : repeatPerformances[0].Reps + trainingStimulus.repsInterval;
+                newExercise.RestSeconds = repeatPerformances[0].RestSeconds - trainingStimulus.restInterval < trainingStimulus.minRestSeconds ?
+                    trainingStimulus.maxRestSeconds : repeatPerformances[0].RestSeconds - trainingStimulus.restInterval;
             }
         }
 
