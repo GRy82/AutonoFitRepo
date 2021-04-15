@@ -289,8 +289,8 @@ namespace AutonoFit.Controllers
             if (!todayIsCardioGoal || supplementalLiftNeeded)
             {
                 var equipment = await _repo.ClientEquipment.GetClientEquipmentAsync(client.ClientId);
-                liftingComponent = await GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, clientWorkout,
-                                                                   currentProgram, liftWorkoutInMinutes, equipment);
+                liftingComponent = await liftPrescript.GenerateLiftingComponent(upperOrLowerBody, todaysGoalNumber, clientWorkout,
+                                                                     currentProgram, liftWorkoutInMinutes, equipment);
             }
 
             if (liftingComponent != null)
@@ -301,42 +301,7 @@ namespace AutonoFit.Controllers
 
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
-
-        //Consider making this a member method of LiftingComponent
-        private async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientWorkout clientWorkout,
-                                                        ClientProgram currentProgram, int liftWorkoutInMinutes, List<ClientEquipment> equipment)
-        {
-            LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
-            List<Exercise> totalExercises = await liftPrescript.GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            liftingComponent.exercises = await GenerateLiftingComponent(totalExercises, new List<Exercise>(), liftWorkoutInMinutes,
-                                                                        clientWorkout, currentProgram, todaysGoalNumber);
-            CleanseExerciseDescriptions(liftingComponent.exercises);
-
-            return liftingComponent;
-        }
-
-        private async Task<List<Exercise>> GenerateLiftingComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises, int liftWorkoutInMinutes, 
-                                                                            ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
-        {
-            if (liftWorkoutInMinutes <= 0) return chosenExercises;
-            
-            Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
-            await AssignPropertiesToExercise(newExercise, clientWorkout, currentProgram, todaysGoalNumber);
-            chosenExercises.Add(newExercise);
-            liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise) / 60);
-           
-            return await GenerateLiftingComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, clientWorkout, currentProgram, todaysGoalNumber);
-        }
-
-        public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
-        {
-            await liftPrescript.GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise);
-            var client = await _repo.Client.GetClientAsync(GetUserId());
-            exercise.ClientId = client.ClientId;
-            exercise.WorkoutId = clientWorkout.Id;
-            exercise.ProgramId = currentProgram.ProgramId;
-        }
-
+        
 
         private ClientWorkout InstantiateClientWorkout(CardioComponent cardioComponent, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
         {
@@ -437,12 +402,6 @@ namespace AutonoFit.Controllers
             return workout;
         }
 
-
-        private void CleanseExerciseDescriptions(List<Exercise> exercises)
-        {
-            foreach (Exercise exercise in exercises)
-                exercise.description = SharedUtility.RemoveTags(exercise.description);
-        }
 
         //---------------------------------------------------------------------------------------------------
         //---------------------------------------------------------------------------------------------------

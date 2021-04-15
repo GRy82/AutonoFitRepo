@@ -78,6 +78,76 @@ namespace AutonoFit.Classes
             return exercises;
         }
 
+        public async Task<List<Exercise>> FindExercisesByCategory(StringBuilder url, string upperOrLowerBody, List<Exercise> exercises)
+        {
+            ExerciseLibrary singleExerciseLibrary;
+            int[] categories = SharedUtility.GetCategories(upperOrLowerBody);
+            url.Append("&category=");
+
+            for (int j = 0; j < categories.Length; j++)
+            {
+                url.Append(categories[j]).Append(",");
+            }
+            url.Remove(url.Length - 1, 1);
+
+            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(url.ToString());
+            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
+
+            return exercises;
+        }
+
+        public async Task<List<Exercise>> FindExercisesByMuscles(StringBuilder url, string upperOrLowerBody, List<Exercise> exercises)
+        {
+            ExerciseLibrary singleExerciseLibrary;
+            int[] muscles = SharedUtility.GetMuscles(upperOrLowerBody);
+            url.Append("&muscles=");
+
+            for (int j = 0; j < muscles.Length; j++)
+            {
+                url.Append(muscles[j]).Append(",");
+            }
+            url.Remove(url.Length - 1, 1);
+
+            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(url.ToString());
+            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
+
+            return exercises;
+        }
+
+        public async Task<LiftingComponent> GenerateLiftingComponent(string upperOrLowerBody, int todaysGoalNumber, ClientWorkout clientWorkout,
+                                                        ClientProgram currentProgram, int liftWorkoutInMinutes, List<ClientEquipment> equipment)
+        {
+            LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
+            List<Exercise> totalExercises = await GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
+            liftingComponent.exercises = await GenerateLiftingComponent(totalExercises, new List<Exercise>(), liftWorkoutInMinutes,
+                                                                        clientWorkout, currentProgram, todaysGoalNumber);
+            CleanseExerciseDescriptions(liftingComponent.exercises);
+
+            return liftingComponent;
+        }
+
+        private async Task<List<Exercise>> GenerateLiftingComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises, int liftWorkoutInMinutes,
+                                                                            ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
+        {
+            if (liftWorkoutInMinutes <= 0) return chosenExercises;
+
+            Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
+            await AssignPropertiesToExercise(newExercise, clientWorkout, currentProgram, todaysGoalNumber);
+            chosenExercises.Add(newExercise);
+            liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise) / 60);
+
+            return await GenerateLiftingComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, clientWorkout, currentProgram, todaysGoalNumber);
+        }
+
+        public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
+        {
+            await GenerateLiftingExercise(currentProgram, todaysGoalNumber, exercise);
+            var client = await _repo.Client.GetClientAsync(clientWorkout.ClientId);//Check this
+            exercise.ClientId = client.ClientId;
+            exercise.WorkoutId = clientWorkout.Id;
+            exercise.ProgramId = currentProgram.ProgramId;
+        }
+
         public async Task GenerateLiftingExercise(ClientProgram currentProgram, int todaysGoal, Exercise exercise)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
@@ -125,40 +195,10 @@ namespace AutonoFit.Classes
             return exercises;
         }
 
-        public async Task<List<Exercise>> FindExercisesByCategory(StringBuilder url, string upperOrLowerBody, List<Exercise> exercises)
+        private void CleanseExerciseDescriptions(List<Exercise> exercises)
         {
-            ExerciseLibrary singleExerciseLibrary;
-            int[] categories = SharedUtility.GetCategories(upperOrLowerBody);
-            url.Append("&category=");
-
-            for (int j = 0; j < categories.Length; j++)
-            {
-                url.Append(categories[j]).Append(",");
-            }
-            url.Remove(url.Length - 1, 1);
-
-            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(url.ToString());
-            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
-
-            return exercises;
-        }
-
-        public async Task<List<Exercise>> FindExercisesByMuscles(StringBuilder url, string upperOrLowerBody, List<Exercise> exercises)
-        {
-            ExerciseLibrary singleExerciseLibrary;
-            int[] muscles = SharedUtility.GetMuscles(upperOrLowerBody);
-            url.Append("&muscles=");
-
-            for (int j = 0; j < muscles.Length; j++)
-            {
-                url.Append(muscles[j]).Append(",");
-            }
-            url.Remove(url.Length -1, 1);
-
-            singleExerciseLibrary = await _exerciseLibraryService.GetExercises(url.ToString());
-            exercises = SharedUtility.AddLibrarytoExercises(exercises, singleExerciseLibrary);
-
-            return exercises;
+            foreach (Exercise exercise in exercises)
+                exercise.description = SharedUtility.RemoveTags(exercise.description);
         }
     }
 }
