@@ -10,33 +10,33 @@ namespace AutonoFit.Models
 {
     public class Exercise
     {
-            [Key]
-            public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
-            [JsonProperty(PropertyName = "id")]
-            public int exerciseId { get; set; }
+        [JsonProperty(PropertyName = "id")]
+        public int exerciseId { get; set; }
 
-            [ForeignKey("Client")]
-            public int ClientId { get; set; }
-            public Client Client { get; set; }
-            public string name { get; set; }
+        [ForeignKey("Client")]
+        public int ClientId { get; set; }
+        public Client Client { get; set; }
+        public string name { get; set; }
+        public int WorkoutId { get; set; }
 
-            [NotMapped]
-            public string description { get; set; }
+        [NotMapped]
+        public string description { get; set; }
 
-            public int WorkoutId { get; set; }
 
-            public int ProgramId { get; set; }
+        public int ProgramId { get; set; }
 
-            public int RPE { get; set; }
+        public int RPE { get; set; }
 
-            public int Reps { get; set; }
+        public int Reps { get; set; }
 
-            public int Sets { get; set; }
+        public int Sets { get; set; }
 
-            public int RestSeconds { get; set; }
+        public int RestSeconds { get; set; }
 
-            public string RestString { get; set; }
+        public string RestString { get; set; }
 
     }
 }

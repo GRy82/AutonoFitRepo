@@ -417,7 +417,7 @@ namespace AutonoFit.Controllers
             recentWorkouts = new List<ClientWorkout>();
 
             foreach (var workout in workouts)
-                if (workout.GoalId != todaysGoalNumber)
+                if (workout.GoalId == todaysGoalNumber)
                     recentWorkouts.Add(workout);
 
             return recentWorkouts;

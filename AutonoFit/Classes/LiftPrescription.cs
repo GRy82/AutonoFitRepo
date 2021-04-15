@@ -86,7 +86,7 @@ namespace AutonoFit.Classes
             exercise.Reps = trainingStimulus.minReps;
             exercise.RestSeconds = trainingStimulus.maxRestSeconds;
 
-            if (pastExercises.Count >= 2)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
+            if (pastExercises.Count >= 1)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
                 CheckLiftProgression(pastExercises, trainingStimulus, exercise);
 
             exercise.Sets = trainingStimulus.sets;
@@ -100,8 +100,8 @@ namespace AutonoFit.Classes
 
             newExercise.Reps = pastExercises[0].Reps;
             newExercise.RestSeconds = pastExercises[0].RestSeconds;
-
-            if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps == pastExercises[1].Reps)
+            //TO progress parameters, RPE must have decreased, last workout reps must be >= to second last. (Goals must be the same, but this is already guaranteed.)
+            if (pastExercises[0].RPE < pastExercises[1].RPE && pastExercises[0].Reps >= pastExercises[1].Reps)
             {
                 newExercise.Reps = pastExercises[0].Reps + 1 > trainingStimulus.maxReps ? trainingStimulus.minReps : pastExercises[0].Reps + trainingStimulus.repsInterval;
                 newExercise.RestSeconds = pastExercises[0].RestSeconds - trainingStimulus.restInterval < trainingStimulus.minRestSeconds ?
