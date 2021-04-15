@@ -119,24 +119,30 @@ namespace AutonoFit.Classes
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<Exercise> totalExercises = await GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            liftingComponent.exercises = await GenerateLiftingComponent(totalExercises, new List<Exercise>(), liftWorkoutInMinutes,
+            liftingComponent.exercises = await AddExercisesToComponent(totalExercises, new List<Exercise>(), liftWorkoutInMinutes,
                                                                         clientWorkout, currentProgram, todaysGoalNumber);
             CleanseExerciseDescriptions(liftingComponent.exercises);
 
             return liftingComponent;
         }
 
-        private async Task<List<Exercise>> GenerateLiftingComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises, int liftWorkoutInMinutes,
+        private async Task<List<Exercise>> AddExercisesToComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises, int liftWorkoutInMinutes,
                                                                             ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
         {
             if (liftWorkoutInMinutes <= 0) return chosenExercises;
 
-            Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
+            Exercise newExercise = SelectOneExercise(totalExercises, liftWorkoutInMinutes, currentProgram);
             await AssignPropertiesToExercise(newExercise, clientWorkout, currentProgram, todaysGoalNumber);
             chosenExercises.Add(newExercise);
             liftWorkoutInMinutes -= (int)Math.Round(SharedUtility.GetSingleExerciseTime(newExercise) / 60);
 
-            return await GenerateLiftingComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, clientWorkout, currentProgram, todaysGoalNumber);
+            return await AddExercisesToComponent(totalExercises, chosenExercises, liftWorkoutInMinutes, clientWorkout, currentProgram, todaysGoalNumber);
+        }
+
+        private Exercise SelectOneExercise(List<Exercise> totalExercises, int liftWorkoutMinutes, ClientProgram currentProgram)
+        {
+            if(liftWorkoutMinutes)
+            Exercise newExercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
         }
 
         public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)
