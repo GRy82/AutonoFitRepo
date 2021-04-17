@@ -147,7 +147,7 @@ namespace AutonoFit.Classes
         //and those that have not been. This promotes variety and continuity simultaneously.  
         public Exercise SelectOneExercise(List<Exercise> totalExercises, List<Exercise> previouslyPerformed, int availableMinutes, int liftWorkoutMinutes)
         {
-            if(availableMinutes <= liftWorkoutMinutes / 2)
+            if(availableMinutes <= liftWorkoutMinutes / 2 || previouslyPerformed.Count == 0)
                 return SharedUtility.RandomlyChooseOneExercise(totalExercises);
    
             var exercise = SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
@@ -172,7 +172,7 @@ namespace AutonoFit.Classes
             exercise.Reps = trainingStimulus.minReps;
             exercise.RestSeconds = trainingStimulus.maxRestSeconds;
 
-            if (repeatPerformances.Count >= 1)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
+            if (repeatPerformances.Count > 1)//exercise has been performed > 1 time in the past. It's possible to progress reps/rest.
                 CheckLiftProgression(repeatPerformances, trainingStimulus, exercise);
 
             exercise.Sets = trainingStimulus.sets;
