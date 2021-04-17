@@ -217,7 +217,8 @@ namespace AutonoFit.Classes
         private void CleanseExerciseDescriptions(List<Exercise> exercises)
         {
             foreach (Exercise exercise in exercises)
-                exercise.description = SharedUtility.RemoveTags(exercise.description);
+                exercise.description = exercise.description == null ? "No description provided from database." 
+                    : SharedUtility.RemoveTags(exercise.description);           
         }
     }
 }
