@@ -151,8 +151,13 @@ namespace AutonoFit.Classes
                 return SharedUtility.RandomlyChooseOneExercise(totalExercises);
    
             var exercise = SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
-            totalExercises.Remove(exercise);
-            return exercise;
+
+            //You still want to use the exercise from totalExercises, because that contains a description
+            // property whereas an exercise from previouslyPerformed does not.
+            var matchingExercise = totalExercises.Find(c => c.exerciseId == exercise.exerciseId);
+            totalExercises.Remove(matchingExercise);
+
+            return matchingExercise;
         }
 
         public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)

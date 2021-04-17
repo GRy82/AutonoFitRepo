@@ -75,10 +75,12 @@ namespace AutonoTest
             {
                 previouslyPerformed.Add(new Exercise());
                 previouslyPerformed[i].exerciseId = i;
+                previouslyPerformed[i].description = null;//mimics the way it's stored in dB.
             }
 
             int liftWorkoutMinutes = 8;
             int availableMinutes = liftWorkoutMinutes;
+            
             //Act
             LiftPrescription liftPrescript = new LiftPrescription();
             var exercise1 = liftPrescript.SelectOneExercise(totalExercises, previouslyPerformed, availableMinutes, liftWorkoutMinutes);
