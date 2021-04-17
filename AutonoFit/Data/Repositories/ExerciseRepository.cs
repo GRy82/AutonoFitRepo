@@ -32,12 +32,12 @@ namespace AutonoFit.Data.Repositories
         public async Task<List<Exercise>> GetExercisesByProgramAsync(int programId) =>
             await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
 
-        public async Task<List<Exercise>> GetAllOccurrencesByProgramAsync(int programId, int exerciseId)
+        public async Task<List<Exercise>> GetExercisesByProgramGoalAsync(int programId, int exerciseId, int goalId)
         {
             List<Exercise> programExercises = await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
             List<Exercise> exercises = new List<Exercise> { };
             foreach (Exercise exercise in programExercises)
-                if (exercise.exerciseId == exerciseId)
+                if (exercise.exerciseId == exerciseId && exercise.GoalId == goalId)
                     exercises.Add(exercise);
              
             return exercises;

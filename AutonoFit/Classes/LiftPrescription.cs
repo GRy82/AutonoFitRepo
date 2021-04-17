@@ -159,6 +159,7 @@ namespace AutonoFit.Classes
         {
             await SetLiftingExerciseParameters(currentProgram, todaysGoalNumber, exercise);
             var client = await _repo.Client.GetClientAsync(clientWorkout.ClientId);//Check this
+            exercise.GoalId = todaysGoalNumber;
             exercise.ClientId = client.ClientId;
             exercise.WorkoutId = clientWorkout.Id;
             exercise.ProgramId = currentProgram.ProgramId;
@@ -167,7 +168,8 @@ namespace AutonoFit.Classes
         public async Task SetLiftingExerciseParameters(ClientProgram currentProgram, int todaysGoal, Exercise exercise)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
-            List<Exercise> repeatPerformances = await _repo.Exercise.GetAllOccurrencesByProgramAsync(currentProgram.ProgramId, exercise.exerciseId);
+            List<Exercise> repeatPerformances = await _repo.Exercise.GetExercisesByProgramGoalAsync(currentProgram.ProgramId, 
+                                                                                                    exercise.exerciseId, todaysGoal);
             //default reps and rest seconds if this will be the first or second time performing this exercise.
             exercise.Reps = trainingStimulus.minReps;
             exercise.RestSeconds = trainingStimulus.maxRestSeconds;

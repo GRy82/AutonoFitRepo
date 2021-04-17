@@ -21,6 +21,7 @@ namespace AutonoFit.Models
         public Client Client { get; set; }
         public string name { get; set; }
         public int WorkoutId { get; set; }
+        public int GoalId { get; set; }
 
         [NotMapped]
         public string description { get; set; }
