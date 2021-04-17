@@ -261,11 +261,11 @@ namespace AutonoFit.Controllers
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             int todaysGoalNumber = await liftPrescript.GetTodaysGoal(currentProgram);
             var recentWorkouts = await GatherRecentWorkouts(currentProgram);
-            List<ClientWorkout> pastSameGoalWorkouts = FilterWorkoutsByGoal(recentWorkouts, todaysGoalNumber);
             CardioComponent cardioComponent = null;
             string upperOrLowerBody = "Upper Body";
-            bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
 
+            bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
+            List<ClientWorkout> pastSameGoalWorkouts = FilterWorkoutsByGoal(recentWorkouts, todaysGoalNumber);
             if (todayIsCardioGoal) //if cardio in any capactiy
                 cardioComponent = await cardioPrescript.GetTodaysCardio(pastSameGoalWorkouts, currentProgram);
 
@@ -275,8 +275,8 @@ namespace AutonoFit.Controllers
 
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
             {
-                var lastWorkout = recentWorkouts.OrderByDescending(c => c.Id).Take(1);
-                upperOrLowerBody = liftPrescript.GetBodyParts((ClientWorkout)lastWorkout, todaysGoalNumber, currentProgram);//******* CHeck here
+                var lastWorkoutBodyParts = recentWorkouts.ElementAt(0).BodyParts;
+                upperOrLowerBody = liftPrescript.GetBodyParts(lastWorkoutBodyParts, todaysGoalNumber, currentProgram);//******* CHeck here
             }
             if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
                 if (cardioComponent.runType == "Easy")
