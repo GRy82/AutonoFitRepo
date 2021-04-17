@@ -48,12 +48,12 @@ namespace AutonoFit.Classes
 
         //Only called if a lift is needed.
         //Body part selection of Supplemental lifts is already accounted for. Do not worry about it here.
-        public string GetBodyParts(List<ClientWorkout> recentWorkoutCycle, int todaysGoalNumber, ClientProgram currentProgram)
+        public string GetBodyParts(ClientWorkout lastWorkout, int todaysGoalNumber, ClientProgram currentProgram)
         {
-            if (recentWorkoutCycle.Count == 0)
+            if (lastWorkout == null)
                 return "Upper Body"; //arbitrarily start with upper body in new program.
-            bool lowerBodyNeedsRest = recentWorkoutCycle[0].BodyParts == "Both" || recentWorkoutCycle[0].BodyParts == "Lower Body";
 
+            bool lowerBodyNeedsRest = lastWorkout.BodyParts == "Both" || lastWorkout.BodyParts == "Lower Body";
             if (lowerBodyNeedsRest)
                 return "Upper Body";
 

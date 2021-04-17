@@ -260,19 +260,24 @@ namespace AutonoFit.Controllers
         {
             ClientProgram currentProgram = await _repo.ClientProgram.GetClientProgramAsync(programId);
             int todaysGoalNumber = await liftPrescript.GetTodaysGoal(currentProgram);
-            List<ClientWorkout> recentWorkoutCycle = await GatherWorkoutCycle(currentProgram, todaysGoalNumber);
+            var recentWorkouts = await GatherRecentWorkouts(currentProgram);
+            List<ClientWorkout> pastSameGoalWorkouts = FilterWorkoutsByGoal(recentWorkouts, todaysGoalNumber);
             CardioComponent cardioComponent = null;
             string upperOrLowerBody = "Upper Body";
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
 
             if (todayIsCardioGoal) //if cardio in any capactiy
-                cardioComponent = await cardioPrescript.GetTodaysCardio(recentWorkoutCycle, currentProgram);
+                cardioComponent = await cardioPrescript.GetTodaysCardio(pastSameGoalWorkouts, currentProgram);
 
             bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
                                                                         cardioComponent.GetType().Equals(new SixLift())));
             int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
+
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
-                upperOrLowerBody = liftPrescript.GetBodyParts(recentWorkoutCycle, todaysGoalNumber, currentProgram);//******* CHeck here
+            {
+                var lastWorkout = recentWorkouts.OrderByDescending(c => c.Id).Take(1);
+                upperOrLowerBody = liftPrescript.GetBodyParts((ClientWorkout)lastWorkout, todaysGoalNumber, currentProgram);//******* CHeck here
+            }
             if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
                 if (cardioComponent.runType == "Easy")
                 {
@@ -368,24 +373,29 @@ namespace AutonoFit.Controllers
         //-----------------------------------Helper Methods----------------------------------------------------
 
         //Make sure IOrderedEnumerable can be converted to List<ClientWorkout> implicitly.
-        public async Task<List<ClientWorkout>> GatherWorkoutCycle(ClientProgram currentProgram, int todaysGoalNumber)
+        public async Task<IOrderedEnumerable<ClientWorkout>> GatherRecentWorkouts(ClientProgram currentProgram)
         {
             List<ClientWorkout> recentWorkouts = await _repo.ClientWorkout.GetAllWorkoutsByProgramAsync(currentProgram.ProgramId);
-            
-            if (recentWorkouts.Count == 0) 
-                return new List<ClientWorkout>();
-            
+
+            if (recentWorkouts.Count == 0)
+                return null;
+
             var workouts = from s in recentWorkouts
-                                orderby s.Id descending
-                                select s;
+                           orderby s.Id descending
+                           select s;
 
-            recentWorkouts = new List<ClientWorkout>();
+            return workouts;
+        }
 
-            foreach (var workout in workouts)
+        public List<ClientWorkout> FilterWorkoutsByGoal(IOrderedEnumerable<ClientWorkout> recentWorkouts, int todaysGoalNumber)
+        {
+            List<ClientWorkout> sameGoalWorkouts = new List<ClientWorkout>();
+
+            foreach (var workout in recentWorkouts)
                 if (workout.GoalId == todaysGoalNumber)
-                    recentWorkouts.Add(workout);
+                    sameGoalWorkouts.Add(workout);
 
-            return recentWorkouts;
+            return sameGoalWorkouts;
         }
 
 
