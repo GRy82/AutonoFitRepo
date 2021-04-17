@@ -119,7 +119,7 @@ namespace AutonoFit.Classes
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<Exercise> totalExercises = await GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            List<Exercise> previouslyPerformed = await _repo.Exercise.GetExercisesByProgramAsync(currentProgram.ProgramId);
+            List<Exercise> previouslyPerformed = await _repo.Exercise.GetDiffExercisesByProgramGoalAsync(currentProgram.ProgramId, todaysGoalNumber);
             liftingComponent.exercises = await AddExercisesToComponent(totalExercises, new List<Exercise>(), previouslyPerformed, clientWorkout,
                                                                     currentProgram, todaysGoalNumber, liftWorkoutInMinutes, liftWorkoutInMinutes);
             CleanseExerciseDescriptions(liftingComponent.exercises);
@@ -173,7 +173,7 @@ namespace AutonoFit.Classes
         public async Task SetLiftingExerciseParameters(ClientProgram currentProgram, int todaysGoal, Exercise exercise)
         {
             TrainingStimulus trainingStimulus = SharedUtility.SetTrainingStimulus(todaysGoal);
-            List<Exercise> repeatPerformances = await _repo.Exercise.GetExercisesByProgramGoalAsync(currentProgram.ProgramId, 
+            List<Exercise> repeatPerformances = await _repo.Exercise.GetSameExercisesByProgramGoalAsync(currentProgram.ProgramId, 
                                                                                                     exercise.exerciseId, todaysGoal);
             //default reps and rest seconds if this will be the first or second time performing this exercise.
             exercise.Reps = trainingStimulus.minReps;

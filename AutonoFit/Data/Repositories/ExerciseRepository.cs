@@ -32,15 +32,20 @@ namespace AutonoFit.Data.Repositories
         public async Task<List<Exercise>> GetExercisesByProgramAsync(int programId) =>
             await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
 
-        public async Task<List<Exercise>> GetExercisesByProgramGoalAsync(int programId, int exerciseId, int goalId)
+        public async Task<List<Exercise>> GetSameExercisesByProgramGoalAsync(int programId, int exerciseId, int goalId)
         {
-            List<Exercise> programExercises = await FindByCondition(c => c.ProgramId.Equals(programId)).ToListAsync();
-            List<Exercise> exercises = new List<Exercise> { };
-            foreach (Exercise exercise in programExercises)
-                if (exercise.exerciseId == exerciseId && exercise.GoalId == goalId)
-                    exercises.Add(exercise);
-             
-            return exercises;
+            return await FindByCondition(c => c.ProgramId.Equals(programId)
+                                           && c.GoalId.Equals(goalId)
+                                           && c.exerciseId.Equals(exerciseId))
+                                               .ToListAsync();
+            
+        }
+
+        public async Task<List<Exercise>> GetDiffExercisesByProgramGoalAsync(int programId, int goalId)
+        {
+            return await FindByCondition(c => c.ProgramId.Equals(programId)
+                                           && c.GoalId.Equals(goalId))
+                                               .ToListAsync();
         }
 
         public void EditExercise(Exercise exercise) => Update(exercise);
