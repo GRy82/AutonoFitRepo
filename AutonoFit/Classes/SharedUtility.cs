@@ -93,6 +93,7 @@ namespace AutonoFit.Classes
             return revisedResults;
         }
 
+        //may be getting rid of this.
         public static int[] GetCategories(string bodySection)
         {
             int[] categories;
@@ -117,10 +118,10 @@ namespace AutonoFit.Classes
             switch (bodySection)
             {
                 case "Upper Body":
-                    muscles = new int[] { 1, 2, 3, 4, 5, 6, 9, 12, 13, 14 };
+                    muscles = new int[] { 1, 2, 3, 4, 5, 9, 12, 13 };
                     break;
                 case "Lower Body":
-                    muscles = new int[] { 6, 7, 8, 10, 11, 14, 15 };
+                    muscles = new int[] { 7, 8, 10, 11, 15 };
                     break;
                 default:
                     muscles = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
