@@ -65,19 +65,14 @@ namespace AutonoFit.Classes
             switch (runType)
             {
                 case "Easy":
-                    cardioComponent = new EasyRun();
-                    break;
+                    return new EasyRun();
                 case "Moderate":
-                    cardioComponent = new ModerateRun();
-                    break;
-                case "Long":
-                    cardioComponent = new LongRun();
-                    break;
+                    return new ModerateRun();
+                 case "Long":
+                    return new LongRun();
                 case "Speed":
-                    cardioComponent = new SpeedRun();
-                    break;
+                    return new SpeedRun();
             }
-
             return cardioComponent;
         }
 
