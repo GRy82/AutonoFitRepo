@@ -275,7 +275,7 @@ namespace AutonoFit.Controllers
 
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
             {
-                var lastWorkoutBodyParts = recentWorkouts.ElementAt(0).BodyParts;
+                var lastWorkoutBodyParts = recentWorkouts?.ElementAt(0).BodyParts;
                 upperOrLowerBody = liftPrescript.GetBodyParts(lastWorkoutBodyParts, todaysGoalNumber, currentProgram);//******* CHeck here
             }
             if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
@@ -390,6 +390,7 @@ namespace AutonoFit.Controllers
         public List<ClientWorkout> FilterWorkoutsByGoal(IOrderedEnumerable<ClientWorkout> recentWorkouts, int todaysGoalNumber)
         {
             List<ClientWorkout> sameGoalWorkouts = new List<ClientWorkout>();
+            if (recentWorkouts == null) return sameGoalWorkouts;
 
             foreach (var workout in recentWorkouts)
                 if (workout.GoalId == todaysGoalNumber)
