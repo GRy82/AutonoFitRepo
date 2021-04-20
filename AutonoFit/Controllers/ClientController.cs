@@ -270,9 +270,9 @@ namespace AutonoFit.Controllers
 
             bool supplementalLiftNeeded = cardioComponent != null && (cardioComponent is EasyRun ||
                                                                         cardioComponent is SixLift);
-            int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
             var lastWorkoutBodyParts = recentWorkouts?.ElementAt(0).BodyParts;
-            string upperOrLowerBody = SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLiftNeeded, cardioComponent.runType);
+            string upperOrLowerBody = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLiftNeeded, cardioComponent?.runType);
+            int liftWorkoutInMinutes = SetLiftMinutes(currentProgram.MinutesPerSession, cardioComponent);//default value
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             LiftingComponent liftingComponent = null;
@@ -296,17 +296,13 @@ namespace AutonoFit.Controllers
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
         
-        private string SetBodyParts(string lastWorkoutBodyParts, bool todayIsCardioGoal, bool supplementalLiftNeeded, string runType)
+        
+
+        private int SetLiftMinutes(int totalWorkoutMinutes, CardioComponent cardioComponent)
         {
-            string upperOrLowerBody = "Upper Body";
-            if (!todayIsCardioGoal)//if true, determine body parts, then generate lifting component.
-                upperOrLowerBody = liftPrescript.GetBodyParts(lastWorkoutBodyParts);//******* CHeck here
-            
-            if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
-                if (runType == "Easy")
-                    upperOrLowerBody = "Both";//Must divide liftWorkoutInMinutes by 2 at some point in this case.
-                
-            return upperOrLowerBody;
+            if (cardioComponent != null && cardioComponent is EasyRun) totalWorkoutMinutes /= 2;
+
+            return totalWorkoutMinutes;
         }
 
         private ClientWorkout InstantiateClientWorkout(CardioComponent cardioComponent, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)

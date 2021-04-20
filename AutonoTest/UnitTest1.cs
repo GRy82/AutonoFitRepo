@@ -95,5 +95,21 @@ namespace AutonoTest
             Assert.DoesNotContain(exercise2, totalExercises);
             Assert.DoesNotContain(exercise1, previouslyPerformed);
         }
+
+        [Fact]
+        public void TestSetBodyPartsForLiftingGoal()
+        {
+            //Arrange
+            string expected = "Lower Body";
+            bool todaysGoal = false;
+            string lastWorkoutBodyParts = "Upper Body";
+            bool supplementalLift = false;
+            CardioComponent cardioComponent = null;
+            //Act
+            LiftPrescription liftPrescript = new LiftPrescription();
+            string bodyParts = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todaysGoal, supplementalLift, cardioComponent?.runType);
+            //Assert
+            Assert.Equal(bodyParts, expected);
+        }
     }
 }

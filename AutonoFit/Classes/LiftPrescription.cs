@@ -46,6 +46,19 @@ namespace AutonoFit.Classes
             // (Upper/Lower)Body Section : U | L | U | L | U | L | U | L | *** Alternating Upper/lower body is what's healthy/important.
         }
 
+        public string SetBodyParts(string lastWorkoutBodyParts, bool todayIsCardioGoal, bool supplementalLiftNeeded, string runType)
+        {
+            string upperOrLowerBody = "Upper Body";
+            if (!todayIsCardioGoal)//if true, determine body parts, then generate lifting component.
+                upperOrLowerBody = GetBodyParts(lastWorkoutBodyParts);//******* CHeck here
+
+            if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
+                if (runType == "Easy")
+                    upperOrLowerBody = "Both";
+
+            return upperOrLowerBody;
+        }
+
         //Only called if a lift is needed.
         //Body part selection of Supplemental lifts is already accounted for. Do not worry about it here.
         public string GetBodyParts(string lastWorkoutBodyParts)
