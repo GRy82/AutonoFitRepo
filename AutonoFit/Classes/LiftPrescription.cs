@@ -48,6 +48,8 @@ namespace AutonoFit.Classes
 
         public string SetBodyParts(string lastWorkoutBodyParts, bool todayIsCardioGoal, bool supplementalLiftNeeded, string runType)
         {
+            if (todayIsCardioGoal && !supplementalLiftNeeded) return null;
+            
             string upperOrLowerBody = "Upper Body";
             if (!todayIsCardioGoal)//if true, determine body parts, then generate lifting component.
                 upperOrLowerBody = GetBodyParts(lastWorkoutBodyParts);//******* CHeck here

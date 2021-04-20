@@ -101,13 +101,64 @@ namespace AutonoTest
         {
             //Arrange
             string expected = "Lower Body";
-            bool todaysGoal = false;
+            bool todayIsCardioGoal = false;
             string lastWorkoutBodyParts = "Upper Body";
             bool supplementalLift = false;
             CardioComponent cardioComponent = null;
             //Act
             LiftPrescription liftPrescript = new LiftPrescription();
-            string bodyParts = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todaysGoal, supplementalLift, cardioComponent?.runType);
+            string bodyParts = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLift, cardioComponent?.runType);
+            //Assert
+            Assert.Equal(bodyParts, expected);
+        }
+
+        [Fact]
+        public void TestSetBodyPartsForEasyRun()
+        {
+            //Arrange
+            string expected = "Both";
+            bool todayIsCardioGoal = true;
+            string lastWorkoutBodyParts = "Upper Body";
+            bool supplementalLift = true;
+            CardioComponent cardioComponent = new EasyRun();
+            cardioComponent.runType = "Easy";
+            //Act
+            LiftPrescription liftPrescript = new LiftPrescription();
+            string bodyParts = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLift, cardioComponent?.runType);
+            //Assert
+            Assert.Equal(bodyParts, expected);
+        }
+
+        [Fact]
+        public void TestSetBodyPartsForSixLift()
+        {
+            //Arrange
+            string expected = "Upper Body";
+            bool todayIsCardioGoal = true;
+            string lastWorkoutBodyParts = " ";
+            bool supplementalLift = true;
+            CardioComponent cardioComponent = new SixLift();
+            cardioComponent.runType = "6-lift";
+            //Act
+            LiftPrescription liftPrescript = new LiftPrescription();
+            string bodyParts = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLift, cardioComponent?.runType);
+            //Assert
+            Assert.Equal(bodyParts, expected);
+        }
+
+        [Fact]
+        public void TestSetBodyPartsForOtherCardio()
+        {
+            //Arrange
+            string expected = null;
+            bool todayIsCardioGoal = true;
+            string lastWorkoutBodyParts = " ";
+            bool supplementalLift = false;
+            CardioComponent cardioComponent = new ModerateRun();
+            cardioComponent.runType = "Moderate";
+            //Act
+            LiftPrescription liftPrescript = new LiftPrescription();
+            string bodyParts = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLift, cardioComponent?.runType);
             //Assert
             Assert.Equal(bodyParts, expected);
         }
