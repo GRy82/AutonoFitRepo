@@ -48,7 +48,7 @@ namespace AutonoFit.Classes
 
         //Only called if a lift is needed.
         //Body part selection of Supplemental lifts is already accounted for. Do not worry about it here.
-        public string GetBodyParts(string lastWorkoutBodyParts, int todaysGoalNumber, ClientProgram currentProgram)
+        public string GetBodyParts(string lastWorkoutBodyParts)
         {
             if (lastWorkoutBodyParts == null)
                 return "Upper Body"; //arbitrarily start with upper body in new program.
@@ -149,6 +149,7 @@ namespace AutonoFit.Classes
         //and those that have not been. This promotes variety and continuity simultaneously.  
         public Exercise SelectOneExercise(List<Exercise> totalExercises, List<Exercise> previouslyPerformed, int availableMinutes, int liftWorkoutMinutes)
         {
+
             if(availableMinutes <= liftWorkoutMinutes / 2 || previouslyPerformed.Count == 0)
                 return SharedUtility.RandomlyChooseOneExercise(totalExercises);
    
@@ -159,7 +160,7 @@ namespace AutonoFit.Classes
             var matchingExercise = totalExercises.Find(c => c.exerciseId == exercise.exerciseId);
             totalExercises.Remove(matchingExercise);
 
-            return matchingExercise;
+            return matchingExercise == null ? exercise : matchingExercise;
         }
 
         public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)

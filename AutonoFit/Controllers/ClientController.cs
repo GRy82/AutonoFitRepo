@@ -262,7 +262,6 @@ namespace AutonoFit.Controllers
             int todaysGoalNumber = await liftPrescript.GetTodaysGoal(currentProgram);
             var recentWorkouts = await GatherRecentWorkouts(currentProgram);
             CardioComponent cardioComponent = null;
-            string upperOrLowerBody = "Upper Body";
 
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
             List<ClientWorkout> pastSameGoalWorkouts = FilterWorkoutsByGoal(recentWorkouts, todaysGoalNumber);
@@ -272,18 +271,8 @@ namespace AutonoFit.Controllers
             bool supplementalLiftNeeded = cardioComponent != null && (cardioComponent is EasyRun ||
                                                                         cardioComponent is SixLift);
             int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
-
-            if (!todayIsCardioGoal)//if true, Generate a Lifting componenent
-            {
-                var lastWorkoutBodyParts = recentWorkouts?.ElementAt(0).BodyParts;
-                upperOrLowerBody = liftPrescript.GetBodyParts(lastWorkoutBodyParts, todaysGoalNumber, currentProgram);//******* CHeck here
-            }
-            if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
-                if (cardioComponent.runType == "Easy")
-                {
-                    upperOrLowerBody = "Both";
-                    liftWorkoutInMinutes /= 2;
-                }
+            var lastWorkoutBodyParts = recentWorkouts?.ElementAt(0).BodyParts;
+            string upperOrLowerBody = SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLiftNeeded, cardioComponent.runType);
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             LiftingComponent liftingComponent = null;
@@ -307,6 +296,18 @@ namespace AutonoFit.Controllers
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
         
+        private string SetBodyParts(string lastWorkoutBodyParts, bool todayIsCardioGoal, bool supplementalLiftNeeded, string runType)
+        {
+            string upperOrLowerBody = "Upper Body";
+            if (!todayIsCardioGoal)//if true, determine body parts, then generate lifting component.
+                upperOrLowerBody = liftPrescript.GetBodyParts(lastWorkoutBodyParts);//******* CHeck here
+            
+            if (supplementalLiftNeeded) //if supplemental lift. Easy run accompanied by full body lift. 6-Lift accompanied by upper body.  
+                if (runType == "Easy")
+                    upperOrLowerBody = "Both";//Must divide liftWorkoutInMinutes by 2 at some point in this case.
+                
+            return upperOrLowerBody;
+        }
 
         private ClientWorkout InstantiateClientWorkout(CardioComponent cardioComponent, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
         {
