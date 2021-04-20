@@ -14,7 +14,7 @@ namespace AutonoFit.Contracts
         Task<List<Exercise>> GetExerciseByWorkoutAsync(int workoutId);
         Task<List<Exercise>> GetExercisesByProgramAsync(int programId);
         Task<List<Exercise>> GetSameExercisesByProgramGoalAsync(int programId, int exerciseId, int goalId);
-        Task<List<Exercise>> GetDiffExercisesByProgramGoalAsync(int programId, int goalId);
+        Task<List<Exercise>> GetPreviousExercisesAsync(int programId, int goalId);
         void EditExercise(Exercise exercise);
         void DeleteExercise(Exercise exercise);
     }

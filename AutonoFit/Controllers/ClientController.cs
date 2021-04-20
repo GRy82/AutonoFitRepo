@@ -272,7 +272,7 @@ namespace AutonoFit.Controllers
                                                                         cardioComponent is SixLift);
             var lastWorkoutBodyParts = recentWorkouts?.ElementAt(0).BodyParts;
             string upperOrLowerBody = liftPrescript.SetBodyParts(lastWorkoutBodyParts, todayIsCardioGoal, supplementalLiftNeeded, cardioComponent?.runType);
-            int liftWorkoutInMinutes = SetLiftMinutes(currentProgram.MinutesPerSession, cardioComponent);//default value
+            int liftWorkoutInMinutes = liftPrescript.SetLiftMinutes(currentProgram.MinutesPerSession, cardioComponent);//default value
 
             Client client = await _repo.Client.GetClientAsync(GetUserId());
             LiftingComponent liftingComponent = null;
@@ -296,14 +296,6 @@ namespace AutonoFit.Controllers
             return View("DisplayProgramWorkout", programWorkoutVM);
         }
         
-        
-
-        private int SetLiftMinutes(int totalWorkoutMinutes, CardioComponent cardioComponent)
-        {
-            if (cardioComponent != null && cardioComponent is EasyRun) totalWorkoutMinutes /= 2;
-
-            return totalWorkoutMinutes;
-        }
 
         private ClientWorkout InstantiateClientWorkout(CardioComponent cardioComponent, Client client, string bodyParts, ClientProgram currentProgram, int todaysGoalNumber)
         {

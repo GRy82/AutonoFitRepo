@@ -61,6 +61,8 @@ namespace AutonoFit.Classes
             return upperOrLowerBody;
         }
 
+
+
         //Only called if a lift is needed.
         //Body part selection of Supplemental lifts is already accounted for. Do not worry about it here.
         public string GetBodyParts(string lastWorkoutBodyParts)
@@ -73,6 +75,12 @@ namespace AutonoFit.Classes
                 return "Upper Body";
 
             return "Lower Body";
+        }
+        public int SetLiftMinutes(int totalWorkoutMinutes, CardioComponent cardioComponent)
+        {
+            if (cardioComponent != null && cardioComponent is EasyRun) totalWorkoutMinutes /= 2;
+
+            return totalWorkoutMinutes;
         }
 
         public async Task<List<Exercise>> GatherExercises(SingleWorkoutVM workoutVM)
@@ -136,12 +144,22 @@ namespace AutonoFit.Classes
         {
             LiftingComponent liftingComponent = new LiftingComponent(SharedUtility.SetTrainingStimuli(new List<int> { todaysGoalNumber }));
             List<Exercise> totalExercises = await GatherExercises(equipment, upperOrLowerBody);//Gets all eligible exercises, and no repeats.
-            List<Exercise> previouslyPerformed = await _repo.Exercise.GetDiffExercisesByProgramGoalAsync(currentProgram.ProgramId, todaysGoalNumber);
+            List<Exercise> previouslyPerformed = await GetRelevantPreviousExercises(currentProgram.ProgramId, todaysGoalNumber, totalExercises);
             liftingComponent.exercises = await AddExercisesToComponent(totalExercises, new List<Exercise>(), previouslyPerformed, clientWorkout,
                                                                     currentProgram, todaysGoalNumber, liftWorkoutInMinutes, liftWorkoutInMinutes);
             CleanseExerciseDescriptions(liftingComponent.exercises);
 
             return liftingComponent;
+        }
+
+        public async Task<List<Exercise>> GetRelevantPreviousExercises(int programId, int todaysGoalNumber, List<Exercise> totalExercises)
+        {
+            List<Exercise> previouslyPerformed = await _repo.Exercise.GetPreviousExercisesAsync(programId, todaysGoalNumber);
+            var exercisesFromBoth = new List<Exercise>();
+            foreach(var exercise in previouslyPerformed)
+                if (totalExercises.Contains(exercise)) exercisesFromBoth.Add(exercise);
+
+            return exercisesFromBoth;
         }
 
         private async Task<List<Exercise>> AddExercisesToComponent(List<Exercise> totalExercises, List<Exercise> chosenExercises,   
@@ -164,18 +182,18 @@ namespace AutonoFit.Classes
         //and those that have not been. This promotes variety and continuity simultaneously.  
         public Exercise SelectOneExercise(List<Exercise> totalExercises, List<Exercise> previouslyPerformed, int availableMinutes, int liftWorkoutMinutes)
         {
-
-            if(availableMinutes <= liftWorkoutMinutes / 2 || previouslyPerformed.Count == 0)
-                return SharedUtility.RandomlyChooseOneExercise(totalExercises);
-   
-            var exercise = SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
-
-            //You still want to use the exercise from totalExercises, because that contains a description
-            // property whereas an exercise from previouslyPerformed does not.
-            var matchingExercise = totalExercises.Find(c => c.exerciseId == exercise.exerciseId);
-            totalExercises.Remove(matchingExercise);
-
-            return matchingExercise == null ? exercise : matchingExercise;
+            //OPTIMIZE THIS METHOD LATER.
+            Exercise exercise;
+            if (availableMinutes <= liftWorkoutMinutes / 2 || previouslyPerformed.Count == 0)
+            {
+                exercise = SharedUtility.RandomlyChooseOneExercise(totalExercises);
+                previouslyPerformed.Remove(exercise);
+                return exercise;
+            }
+            
+            exercise = SharedUtility.RandomlyChooseOneExercise(previouslyPerformed);
+            totalExercises.Remove(exercise);
+            return exercise;
         }
 
         public async Task AssignPropertiesToExercise(Exercise exercise, ClientWorkout clientWorkout, ClientProgram currentProgram, int todaysGoalNumber)

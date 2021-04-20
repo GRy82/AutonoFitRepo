@@ -41,11 +41,11 @@ namespace AutonoFit.Data.Repositories
             
         }
 
-        public async Task<List<Exercise>> GetDiffExercisesByProgramGoalAsync(int programId, int goalId)
+        public async Task<List<Exercise>> GetPreviousExercisesAsync(int programId, int goalId)
         {
             return await FindByCondition(c => c.ProgramId.Equals(programId)
-                                           && c.GoalId.Equals(goalId))
-                                               .ToListAsync();
+                                                   && c.GoalId.Equals(goalId))
+                                                       .ToListAsync();
         }
 
         public void EditExercise(Exercise exercise) => Update(exercise);
