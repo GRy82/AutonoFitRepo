@@ -44,8 +44,8 @@ namespace AutonoFit.Classes
                 milePace *= SharedUtility.GetPaceCoefficient("Moderate");
 
             distanceMiles = runDuration / milePace;
-            durationString = SharedUtility.ConvertToMinSec((int)(runDuration * 60));
-            paceString = SharedUtility.ConvertToMinSec((int)(milePace * 60));
+            durationString = SharedUtility.ConvertToMinSec(runDuration);
+            paceString = SharedUtility.ConvertToMinSec(milePace);
         }
     }
 }

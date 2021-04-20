@@ -12,6 +12,7 @@ namespace AutonoFit.Classes
     public static class SharedUtility
     {
         public static int expectedUrlLengthMax = 150;
+        public static int expectedCardioStringMax = 50;
         public const int repTime = 4;
         public static Random rand = new Random();
 
@@ -149,20 +150,17 @@ namespace AutonoFit.Classes
             return newString;
         }
 
-        public static string ConvertToMinSec(int input) //inputin seconds. This does not round to nearest 15 seconds.
+        public static string ConvertToMinSec(double input) //input in minutes. This does not round to nearest 15 seconds.
         {
-            int minutes = input / 60;
-            int seconds = input % 60;
-            string newString = null;
+            int minutes = (int)input;
+            int seconds = (int)((input - minutes) * 60);
+            StringBuilder newString = new StringBuilder("", expectedCardioStringMax);
             if (minutes != 0)
-            {
-                newString += minutes + " min ";
-            }
+                newString.Append(minutes + " min ");
             if (seconds != 0)
-            {
-                newString += seconds + " sec";
-            }
-            return newString;
+                newString.Append(seconds + " sec");
+
+            return newString.ToString();
         }
 
 

@@ -38,8 +38,10 @@ namespace AutonoFit.Classes
                 runType = AdvanceRunType("6-lift");//Cardio not actually excessive. Toggle one more time to a legitimate run type.
             }
 
-            return await CreateCardioComponent(currentProgram, runType, recentWorkoutCycle);
-            //fitnessParameters = ConvertFitnessDictCardioValues(fitnessParameters);//not sure what this does
+            var cardioComponent = await CreateCardioComponent(currentProgram, runType, recentWorkoutCycle);
+            cardioComponent.durationString = SharedUtility.ConvertToMinSec(cardioComponent.runDuration);
+            cardioComponent.paceString = SharedUtility.ConvertToMinSec(cardioComponent.milePace);
+            return cardioComponent;
         }
 
         public async Task<CardioComponent> CreateCardioComponent(ClientProgram currentProgram, string runType, List<ClientWorkout> recentWorkoutCycle)
