@@ -266,11 +266,11 @@ namespace AutonoFit.Controllers
 
             bool todayIsCardioGoal = (todaysGoalNumber == 4 || todaysGoalNumber == 5);
             List<ClientWorkout> pastSameGoalWorkouts = FilterWorkoutsByGoal(recentWorkouts, todaysGoalNumber);
-            if (todayIsCardioGoal) //if cardio in any capactiy
+            if (todayIsCardioGoal) 
                 cardioComponent = await cardioPrescript.GetTodaysCardio(pastSameGoalWorkouts, currentProgram);
 
-            bool supplementalLiftNeeded = (cardioComponent != null && (cardioComponent.GetType().Equals(new EasyRun()) ||
-                                                                        cardioComponent.GetType().Equals(new SixLift())));
+            bool supplementalLiftNeeded = cardioComponent != null && (cardioComponent is EasyRun ||
+                                                                        cardioComponent is SixLift);
             int liftWorkoutInMinutes = currentProgram.MinutesPerSession;//default value
 
             if (!todayIsCardioGoal)//if true, Generate a Lifting componenent

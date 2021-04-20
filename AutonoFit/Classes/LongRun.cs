@@ -7,6 +7,5 @@ namespace AutonoFit.Classes
 {
     public class LongRun : CardioComponent
     {
-        public new readonly double paceCoefficient = 1.39;
     }
 }

@@ -50,11 +50,11 @@ namespace AutonoFit.Classes
             if (recentWorkoutCycle.Count > 1)
                 await CheckCardioProgression(currentProgram, recentWorkoutCycle);
 
+            cardioComponent.runType = runType;
             cardioComponent.milePace = (double)currentProgram.MileMinutes + (Convert.ToDouble(currentProgram.MileSeconds) / 60);
-            cardioComponent.milePace *= cardioComponent.paceCoefficient;
+            cardioComponent.milePace *= SharedUtility.GetPaceCoefficient(cardioComponent.runType);
             cardioComponent.runDuration = cardioComponent.GetRunDuration(currentProgram.MinutesPerSession);
             cardioComponent.distanceMiles = cardioComponent.runDuration / cardioComponent.milePace;
-            cardioComponent.runType = runType;
 
             return cardioComponent;
         }

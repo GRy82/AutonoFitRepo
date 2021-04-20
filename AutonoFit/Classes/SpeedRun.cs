@@ -7,8 +7,6 @@ namespace AutonoFit.Classes
 {
     public class SpeedRun : CardioComponent
     {
-        public new readonly double paceCoefficient = 1.1;
-
         public override int GetRunDuration(int sessionMinutes)
         {
             int halfSessionMinutes = sessionMinutes / 2;
