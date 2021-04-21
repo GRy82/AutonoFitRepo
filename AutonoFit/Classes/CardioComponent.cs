@@ -44,6 +44,11 @@ namespace AutonoFit.Classes
                 milePace *= SharedUtility.GetPaceCoefficient("Moderate");
 
             distanceMiles = runDuration / milePace;
+            StringifyCardioValues();
+        }
+
+        public void StringifyCardioValues()
+        {
             durationString = SharedUtility.ConvertToMinSec(runDuration);
             paceString = SharedUtility.ConvertToMinSec(milePace);
         }

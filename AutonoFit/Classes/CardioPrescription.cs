@@ -39,8 +39,8 @@ namespace AutonoFit.Classes
             }
 
             var cardioComponent = await CreateCardioComponent(currentProgram, runType, recentWorkoutCycle);
-            cardioComponent.durationString = SharedUtility.ConvertToMinSec(cardioComponent.runDuration);
-            cardioComponent.paceString = SharedUtility.ConvertToMinSec(cardioComponent.milePace);
+            cardioComponent.StringifyCardioValues();
+
             return cardioComponent;
         }
 
