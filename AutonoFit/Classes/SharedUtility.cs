@@ -14,6 +14,8 @@ namespace AutonoFit.Classes
         public static int expectedUrlLengthMax = 150;
         public static int expectedCardioStringMax = 50;
         public const int repTime = 4;
+        public const int muscEndTransitionTime = 45;
+        public const int otherLiftTransitionTime = 10;
         public static Random rand = new Random();
 
 
@@ -52,20 +54,28 @@ namespace AutonoFit.Classes
             return exercise;
         }
 
-        public static int GetExerciseQty(LiftingComponent liftingComponent, int workoutMinutes)
+        public static int GetExerciseQty(LiftingComponent liftingComponent, int workoutMinutes, List<int> goalIds)
         {
-            double singleExerciseTime = GetSingleExerciseTime(liftingComponent);
+            double singleExerciseTime = GetSingleExerciseTime(liftingComponent, goalIds);
             return (int)((workoutMinutes * 60) / singleExerciseTime);//convert workout minutes to seconds, then divide by seconds per exerise.
         }
 
-        public static double GetSingleExerciseTime(LiftingComponent liftingComponent)// return value is in seconds
+        public static double GetSingleExerciseTime(LiftingComponent liftingComponent, List<int> goalIds)// return value is in seconds
         {
-            return (liftingComponent.reps * repTime + liftingComponent.rest) * liftingComponent.sets; 
+            // transitioning exercises takes energy. For goals where transition time is a large portion of the rest time, 
+            // and extra time is needed to ACTUALLY rest, added time is figured into the overall workout duration.
+            int exerciseTransitionTime = goalIds.Contains(3) || goalIds.Contains(4) ?
+                muscEndTransitionTime : otherLiftTransitionTime; 
+            return (liftingComponent.reps * repTime + liftingComponent.rest) * liftingComponent.sets + exerciseTransitionTime; 
         }
 
         public static double GetSingleExerciseTime(Exercise exercise)
         {
-            return (exercise.Reps * repTime + exercise.RestSeconds) * exercise.Sets;
+            // transitioning exercises takes energy. For goals where transition time is a large portion of the rest time, 
+            // and extra time is needed to ACTUALLY rest, added time is figured into the overall workout duration.
+            int exerciseTransitionTime = exercise.GoalId == 3 || exercise.GoalId == 4 ?
+                muscEndTransitionTime : otherLiftTransitionTime;
+            return (exercise.Reps * repTime + exercise.RestSeconds) * exercise.Sets + exerciseTransitionTime;
         }
 
         public static List<Exercise> AddLibrarytoExercises(List<Exercise> exercises, ExerciseLibrary exerciseLibrary)
